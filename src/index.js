@@ -623,17 +623,12 @@ function TrackRecordPage({ lang, current, setCurrent }) {
 
 function LocalBranchPage({ lang, current, setCurrent }) {
   const d = t.localBranch;
-  const [images, setImages] = useState([]);
-  const fileInputRef = useRef();
 
-  const handleFiles = (e) => {
-    const files = Array.from(e.target.files);
-    files.forEach(f => {
-      const reader = new FileReader();
-      reader.onload = ev => setImages(prev => [...prev, { src: ev.target.result, name: f.name }]);
-      reader.readAsDataURL(f);
-    });
-  };
+  // Lista das tuas imagens que estão na pasta public/assets
+  const imagensFixas = [
+    { src: "/assets/1a.jpg", alt: "Escritório Istambul" },
+    { src: "/assets/1b.jpg", alt: "Equipa Técnica" }
+  ];
 
   return (
     <PageWrapper lang={lang} current={current} setCurrent={setCurrent}>
@@ -641,17 +636,14 @@ function LocalBranchPage({ lang, current, setCurrent }) {
       <BodyText>{lang === "tr" ? d.body.tr : d.body.en}</BodyText>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 20 }}>
-        {/* Key points */}
+        {/* Pontos Chave */}
         <div>
           {d.bullets.map((b, i) => (
             <div key={i} style={{
               display: "flex", alignItems: "flex-start", gap: 12,
               padding: "12px 0", borderBottom: `1px solid ${COLORS.navy}`,
             }}>
-              <div style={{
-                width: 6, height: 6, borderRadius: "50%",
-                background: COLORS.teal, marginTop: 7, flexShrink: 0,
-              }} />
+              <div style={{ width: 6, height: 6, borderRadius: "50%", background: COLORS.teal, marginTop: 7, flexShrink: 0 }} />
               <div style={{ fontSize: 14, color: "#b0c4d8", lineHeight: 1.6 }}>
                 {lang === "tr" ? b.tr : b.en}
               </div>
@@ -659,62 +651,27 @@ function LocalBranchPage({ lang, current, setCurrent }) {
           ))}
         </div>
 
-        {/* Image gallery */}
-        <div>
-          <div style={{
-            padding: "16px", background: COLORS.navy, borderRadius: 10,
-            border: `1px dashed ${COLORS.lightBlue}`,
-            textAlign: "center", marginBottom: 16,
-          }}>
-            <div style={{ fontSize: 12, color: COLORS.midGray, marginBottom: 12 }}>
-              {lang === "tr"
-                ? "Yerel şubeye ait kendi fotoğraflarınızı ekleyin"
-                : "Upload your own photos of the local branch"}
+        {/* Galeria de Imagens Fixas */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+          {imagensFixas.map((img, i) => (
+            <div key={i}>
+              <img 
+                src={img.src} 
+                alt={img.alt} 
+                style={{
+                  width: "100%", 
+                  height: 150, 
+                  objectFit: "cover",
+                  borderRadius: 8, 
+                  border: `1px solid ${COLORS.blue}`
+                }} 
+              />
             </div>
-            <button onClick={() => fileInputRef.current.click()} style={{
-              padding: "8px 20px", background: COLORS.lightBlue, color: "#fff",
-              border: "none", borderRadius: 6, cursor: "pointer", fontSize: 13, fontWeight: 600,
-            }}>
-              + {lang === "tr" ? "Fotoğraf Ekle" : "Add Photos"}
-            </button>
-            <input ref={fileInputRef} type="file" accept="image/*" multiple
-              style={{ display: "none" }} onChange={handleFiles} />
-          </div>
-
-          {images.length > 0 ? (
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-              {images.map((img, i) => (
-                <div key={i} style={{ position: "relative" }}>
-                  <img src={img.src} alt={img.name} style={{
-                    width: "100%", height: 120, objectFit: "cover",
-                    borderRadius: 8, border: `1px solid ${COLORS.blue}`,
-                  }} />
-                  <button onClick={() => setImages(prev => prev.filter((_, j) => j !== i))} style={{
-                    position: "absolute", top: 4, right: 4, background: `${COLORS.dark}cc`,
-                    color: "#fff", border: "none", borderRadius: "50%",
-                    width: 20, height: 20, cursor: "pointer", fontSize: 10, lineHeight: 1,
-                  }}>✕</button>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div style={{
-              height: 120, background: COLORS.dark, borderRadius: 8,
-              border: `1px solid ${COLORS.navy}`, display: "flex",
-              alignItems: "center", justifyContent: "center",
-            }}>
-              <div style={{ color: COLORS.midGray, fontSize: 12, textAlign: "center" }}>
-                {lang === "tr" ? "Fotoğraflar burada görünecek" : "Photos will appear here"}
-              </div>
-            </div>
-          )}
+          ))}
         </div>
       </div>
 
-      <div style={{
-        display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
-        gap: 12, marginTop: 32,
-      }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 12, marginTop: 32 }}>
         {[
           { value: "10+", label_en: "Years in Turkey", label_tr: "Yıl Türkiye'de" },
           { value: "Süper Lig", label_en: "Regular Client", label_tr: "Düzenli Müşteri" },
