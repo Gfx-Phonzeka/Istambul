@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from "react";
-
+import React, { useState, useRef, useEffect } from "react";
+import { createRoot } from "react-dom/client";
 const COLORS = {
   navy: "#0d2a4a",
   blue: "#1a4a7a",
@@ -1460,7 +1460,7 @@ function FinancialPage({ lang, current, setCurrent }) {
 
 // ─── APP ROOT ─────────────────────────────────────────────────────────────────
 
-export default function App() {
+function App() {
   const [current, setCurrent] = useState("home");
   const [language, setLanguage] = useState("en");
   const [menuOpen, setMenuOpen] = useState(false);
@@ -1490,10 +1490,7 @@ export default function App() {
   };
 
   return (
-    <div style={{
-      background: COLORS.dark, minHeight: "100vh",
-      fontFamily: "system-ui, -apple-system, sans-serif",
-    }}>
+    <div style={{ background: "#0a1e33", minHeight: "100vh", fontFamily: "system-ui, sans-serif" }}>
       <NavBar
         current={current} setCurrent={setCurrent}
         language={language} setLanguage={setLanguage}
@@ -1503,3 +1500,7 @@ export default function App() {
     </div>
   );
 }
+
+const container = document.getElementById("root");
+const root = createRoot(container);
+root.render(<App />);
