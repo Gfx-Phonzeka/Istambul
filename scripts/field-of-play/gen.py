@@ -47,9 +47,10 @@ for sno, key in SLIDES.items():
     if stacked and key != "athletics":
         # cameras the plan does not place (roving, RF, aerial...): lined up in a labelled strip at the top
         x0 = 0.03
-        items.append(["t", 88.0, 22.0, "NOT FIXED ON PLAN:", 10, "#5b6676", 700, 0])
+        first = 0.965 - (len(stacked) - 1) * 0.042
+        items.append(["t", round(first * W - 85, 1), 22.0, "NOT FIXED ON PLAN:", 10, "#5b6676", 700, 0])
         for i, n in enumerate(stacked):
-            cams[key][n] = [round(0.175 + i * 0.042, 4), 0.037]
+            cams[key][n] = [round(first + i * 0.042, 4), 0.037]
     for it in LAYOUTS[key]:  # noqa
         t_ = it["t"]
         if t_ == "r":
