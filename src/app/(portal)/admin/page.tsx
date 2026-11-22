@@ -41,8 +41,8 @@ export default async function AdminHome() {
       )}
       {admin && (
         <div className="grid grid-4">
-          <Card><div className="muted small">{t("admin.tabs.pending")}</div><div className="countdown-value">{pending}</div></Card>
-          <Card><div className="muted small">{t("admin.totalUsers")}</div><div className="countdown-value">{approved}</div></Card>
+          <Card><div className="muted small">{t("admin.tabs.pending")}</div><div className="stat-value">{pending}</div></Card>
+          <Card><div className="muted small">{t("admin.totalUsers")}</div><div className="stat-value">{approved}</div></Card>
         </div>
       )}
       {!admin && <Alert tone="info">{t("admin.staffOnly")}</Alert>}

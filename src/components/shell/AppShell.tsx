@@ -44,7 +44,7 @@ export function AppShell({
     { href: "/", icon: "home", label: t("nav.dashboard") },
     { href: "/handbook", icon: "book", label: t("nav.handbook") },
     { href: "/media-hub", icon: "download", label: t("nav.mediaHub") },
-    { href: "/schedule", icon: "calendar", label: t("nav.schedule") },
+    { href: "/schedule", icon: "calendar", label: t("nav.schedule"), short: t("nav.scheduleShort") },
   ];
 
   return (
@@ -107,7 +107,11 @@ export function AppShell({
         {bottom.map((b) => (
           <Link key={b.href} href={b.href} aria-current={isActive(pathname, b.href) ? "page" : undefined}>
             <Icon name={b.icon} />
-            <span>{b.label}</span>
+            {"short" in b ? (
+              <span><span className="label-long">{b.label}</span><span className="label-short">{b.short}</span></span>
+            ) : (
+              <span>{b.label}</span>
+            )}
           </Link>
         ))}
         <button type="button" onClick={() => setDrawer(true)}>

@@ -43,13 +43,16 @@ export default async function Dashboard() {
 
       {urgent.map((a) => (
         <div key={a.id} className="urgent-banner" role="alert">
-          <div className="row" style={{ marginBottom: "var(--space-2)" }}>
-            <Badge tone="danger">{t("dashboard.urgent")}</Badge>
-            {visBadge(a.visibility)}
-            <span className="muted small">{formatDate(a.published_at, locale)}</span>
+          <span className="urgent-icon" aria-hidden="true"><Icon name="alert" /></span>
+          <div className="urgent-body">
+            <div className="item-meta">
+              <Badge tone="danger">{t("dashboard.urgent")}</Badge>
+              {visBadge(a.visibility)}
+              <span>{formatDate(a.published_at, locale)}</span>
+            </div>
+            <Link href={`/news/${a.id}`} className="item-title">{pick(locale, a.title_en, a.title_tr)}</Link>
+            <p className="item-excerpt">{excerpt(pick(locale, a.body_en, a.body_tr), 300)}</p>
           </div>
-          <Link href={`/news/${a.id}`}><strong>{pick(locale, a.title_en, a.title_tr)}</strong></Link>
-          <p style={{ margin: "var(--space-2) 0 0" }}>{excerpt(pick(locale, a.body_en, a.body_tr), 300)}</p>
         </div>
       ))}
 
@@ -71,12 +74,12 @@ export default async function Dashboard() {
             <ul className="list">
               {normal.map((a) => (
                 <li key={a.id}>
-                  <div className="row" style={{ marginBottom: 4 }}>
-                    <span className="muted small">{formatDate(a.published_at, locale)}</span>
+                  <div className="item-meta">
+                    <span>{formatDate(a.published_at, locale)}</span>
                     {visBadge(a.visibility)}
                   </div>
-                  <Link href={`/news/${a.id}`}><strong>{pick(locale, a.title_en, a.title_tr)}</strong></Link>
-                  <p className="small" style={{ margin: "4px 0 0" }}>{excerpt(pick(locale, a.body_en, a.body_tr))}</p>
+                  <Link href={`/news/${a.id}`} className="item-title">{pick(locale, a.title_en, a.title_tr)}</Link>
+                  <p className="item-excerpt">{excerpt(pick(locale, a.body_en, a.body_tr))}</p>
                 </li>
               ))}
             </ul>
@@ -92,10 +95,13 @@ export default async function Dashboard() {
                 {(deadlines as Deadline[]).map((d) => {
                   const days = Math.ceil((new Date(d.due_at).getTime() - Date.now()) / 86400000);
                   return (
-                    <li key={d.id} className="row-between">
-                      <div>
-                        <div>{pick(locale, d.title_en, d.title_tr)} {visBadge(d.visibility)}</div>
-                        <div className="muted small">{formatDateTime(d.due_at, locale)}</div>
+                    <li key={d.id} className="deadline">
+                      <div className="deadline-main">
+                        <div className="item-title">{pick(locale, d.title_en, d.title_tr)}</div>
+                        <div className="item-meta">
+                          <span>{formatDateTime(d.due_at, locale)}</span>
+                          {visBadge(d.visibility)}
+                        </div>
                       </div>
                       <Badge tone={days <= 14 ? "warning" : "primary"}>{days >= 0 ? t("dashboard.daysLeft", { n: days }) : t("dashboard.overdue")}</Badge>
                     </li>
@@ -105,20 +111,22 @@ export default async function Dashboard() {
             )}
           </Card>
           <Card title={t("dashboard.whatsNew")}>
-            <p className="small muted">
+            <p className="item-meta" style={{ marginBottom: "var(--space-3)" }}>
               {profile.previous_login_at ? t("dashboard.lastVisit", { date: formatDateTime(profile.previous_login_at, locale) }) : t("dashboard.firstVisit")}
             </p>
             {(changes ?? []).length === 0 ? (
-              <p className="small" style={{ margin: 0 }}>{t("dashboard.whatsNewSoon")}</p>
+              <p className="item-excerpt" style={{ margin: 0 }}>{t("dashboard.whatsNewSoon")}</p>
             ) : (
               <ul className="list">
                 {(changes ?? []).map((c) => (
-                  <li key={`${c.kind}-${c.id}`} className="row" style={{ gap: 8 }}>
-                    <Badge tone={c.published_at && c.published_at > since ? "success" : "info"}>
-                      {c.published_at && c.published_at > since ? t("dashboard.isNew") : t("dashboard.isUpdated")}
-                    </Badge>
-                    <span className="muted small">{t(`kinds.${c.kind}`)}</span>
-                    <Link href={c.href}>{pick(locale, c.title_en, c.title_tr)}</Link>
+                  <li key={`${c.kind}-${c.id}`}>
+                    <div className="item-meta">
+                      <Badge tone={c.published_at && c.published_at > since ? "success" : "info"}>
+                        {c.published_at && c.published_at > since ? t("dashboard.isNew") : t("dashboard.isUpdated")}
+                      </Badge>
+                      <span>{t(`kinds.${c.kind}`)}</span>
+                    </div>
+                    <Link href={c.href} className="item-title">{pick(locale, c.title_en, c.title_tr)}</Link>
                   </li>
                 ))}
               </ul>
@@ -127,22 +135,21 @@ export default async function Dashboard() {
         </div>
       </div>
 
-      <section>
-        <h2>{t("dashboard.shortcuts")}</h2>
-        <div className="grid grid-3">
+      <Card title={t("dashboard.shortcuts")}>
+        <ul className="shortcut-list">
           {ALL_NAV.filter((n) => n.href !== "/").map((n) => (
-            <Link key={n.href} href={n.href} className="card card-link">
-              <div className="shortcut">
-                <span className="shortcut-icon"><Icon name={n.icon} /></span>
-                <div>
-                  <strong>{t(`nav.${n.key}`)}</strong>
-                  <div className="muted small">{t(`sectionInfo.${n.key}`)}</div>
-                </div>
-              </div>
-            </Link>
+            <li key={n.href}>
+              <Link href={n.href} className="shortcut">
+                <span className="shortcut-icon"><Icon name={n.icon} size={18} /></span>
+                <span>
+                  <span className="shortcut-title">{t(`nav.${n.key}`)}</span>
+                  <span className="shortcut-desc">{t(`sectionInfo.${n.key}`)}</span>
+                </span>
+              </Link>
+            </li>
           ))}
-        </div>
-      </section>
+        </ul>
+      </Card>
 
       <p className="muted small">{t("common.exampleNote")}</p>
     </div>
