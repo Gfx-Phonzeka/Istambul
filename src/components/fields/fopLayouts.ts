@@ -290,7 +290,7 @@ export const FOP_LAYOUTS: Record<string, FopItem[]> = {
     ["r", 344.1, 528.2, 311.8, 19.2, "#b9bcc4", "none", 0, 0, 0],
   ],
   "swimming": [
-    ["t", 670.0, 22.0, "NOT FIXED ON PLAN:", 10, "#5b6676", 700, 0],
+    ["t", 742.0, 22.0, "NOT FIXED ON PLAN:", 10, "#5b6676", 700, 0],
     ["r", 86.9, 36.3, 824.4, 463.6, "#f4f6f8", "#2b3a4e", 2, 0, 0],
     ["r", 137.8, 88.3, 721.6, 359.2, "#dde3ea", "#8f9aaa", 2, 0, 0],
     ["r", 170.2, 114.1, 658.7, 308.1, "#3f9acc", "#2b3a4e", 3, 0, 0],
@@ -337,7 +337,7 @@ export const FOP_LAYOUTS: Record<string, FopItem[]> = {
     ["t", 676.6, 518.4, "AUDIO & VAR DESK", 11, "#5b6676", 600, 0],
   ],
   "gym-artistic": [
-    ["t", 628.0, 22.0, "NOT FIXED ON PLAN:", 10, "#5b6676", 700, 0],
+    ["t", 712.0, 22.0, "NOT FIXED ON PLAN:", 10, "#5b6676", 700, 0],
     ["r", 79.8, 42.8, 843.5, 489.5, "none", "#2b3a4e", 3, 0, 0],
     ["r", 116.9, 61.9, 767.6, 58.0, "#dde3ea", "#2b3a4e", 2, 0, 0],
     ["r", 212.6, 82.6, 575.3, 18.2, "#2b3a4e", "#2b3a4e", 1, 0, 0],
@@ -477,7 +477,7 @@ export const FOP_LAYOUTS: Record<string, FopItem[]> = {
     ["t", 499.3, 538.1, "JUDGES & TIMEKEEPER", 10, "#5b6676", 600, 0],
   ],
   "shooting": [
-    ["t", 670.0, 22.0, "NOT FIXED ON PLAN:", 10, "#5b6676", 700, 0],
+    ["t", 742.0, 22.0, "NOT FIXED ON PLAN:", 10, "#5b6676", 700, 0],
     ["r", 176.8, 75.5, 647.9, 446.9, "#f7f8fa", "#2b3a4e", 4, 0, 0],
     ["r", 212.1, 97.8, 576.6, 71.3, "#f4f6f8", "#8f9aaa", 2, 1, 0],
     ["t", 500.0, 133.5, "SPECTATOR TRIBUNE & JURY", 11, "#2b3a4e", 700, 0],
@@ -490,7 +490,7 @@ export const FOP_LAYOUTS: Record<string, FopItem[]> = {
     ["t", 500.0, 464.9, "TARGETS (ELECTRONIC TARGET SYSTEM)", 10, "#d7372a", 700, 0],
   ],
   "pentathlon": [
-    ["t", 754.0, 22.0, "NOT FIXED ON PLAN:", 10, "#5b6676", 700, 0],
+    ["t", 802.0, 22.0, "NOT FIXED ON PLAN:", 10, "#5b6676", 700, 0],
     ["r", 127.2, 39.3, 745.6, 521.4, "#f7f8fa", "#b8c1cc", 2, 0, 10],
     ["r", 144.7, 60.1, 312.7, 197.3, "#fbf1d2", "#c98a1a", 2, 1, 0],
     ["t", 301.0, 81.9, "OBSTACLE ARENA", 11, "#a0600a", 700, 0],
@@ -527,7 +527,7 @@ export const FOP_LAYOUTS: Record<string, FopItem[]> = {
     ["t", 766.3, 414.4, "FINISH", 8, "#ffffff", 700, 0],
   ],
   "canoe": [
-    ["t", 796.0, 22.0, "NOT FIXED ON PLAN:", 10, "#5b6676", 700, 0],
+    ["t", 832.0, 22.0, "NOT FIXED ON PLAN:", 10, "#5b6676", 700, 0],
     ["r", 58.3, 39.3, 883.4, 519.1, "#f7f8fa", "#b8c1cc", 2, 0, 8],
     ["r", 114.3, 76.4, 770.5, 443.3, "#dcebf7", "#2f86c9", 3, 0, 0],
     ["l", 114.3, 125.6, 884.8, 125.6, "#7fb2d6", 2, 1],

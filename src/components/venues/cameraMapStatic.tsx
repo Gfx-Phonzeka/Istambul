@@ -11,7 +11,7 @@ export const SCREEN_CAMS: CameraPalette = {
 };
 export const PRINT_CAMS: CameraPalette = { l1: "#16202e", l2: "#0a6b70", l3: "#a15c00", special: "#d7372a", highlight: "#f2b200", text: "#fff" };
 
-export const W = 1000, H = 600, R = 19;
+export const W = 1000, H = 600, R = 13;
 
 export function CameraMarker({ c, selected, pal, font = "Helvetica, Arial, sans-serif" }: { c: CameraPoint; selected: boolean; pal: CameraPalette; font?: string }) {
   const cx = c.x * W, cy = c.y * H;
@@ -20,15 +20,15 @@ export function CameraMarker({ c, selected, pal, font = "Helvetica, Arial, sans-
   return (
     <g>
       {rad != null && (
-        <path d={`M ${cx + Math.cos(rad) * (R + 16)} ${cy + Math.sin(rad) * (R + 16)} L ${cx + Math.cos(rad + 0.35) * (R + 2)} ${cy + Math.sin(rad + 0.35) * (R + 2)} L ${cx + Math.cos(rad - 0.35) * (R + 2)} ${cy + Math.sin(rad - 0.35) * (R + 2)} Z`} fill={color} />
+        <path d={`M ${cx + Math.cos(rad) * (R + 12)} ${cy + Math.sin(rad) * (R + 12)} L ${cx + Math.cos(rad + 0.35) * (R + 2)} ${cy + Math.sin(rad + 0.35) * (R + 2)} L ${cx + Math.cos(rad - 0.35) * (R + 2)} ${cy + Math.sin(rad - 0.35) * (R + 2)} Z`} fill={color} />
       )}
-      {selected && <circle cx={cx} cy={cy} r={R + 9} fill="none" stroke={pal.highlight} strokeWidth={6} />}
+      {selected && <circle cx={cx} cy={cy} r={R + 7} fill="none" stroke={pal.highlight} strokeWidth={5} />}
       {c.is_special ? (
-        <rect x={cx - R} y={cy - R} width={R * 2} height={R * 2} transform={`rotate(45 ${cx} ${cy})`} fill={color} stroke={pal.special} strokeWidth={4} />
+        <rect x={cx - R * 0.85} y={cy - R * 0.85} width={R * 1.7} height={R * 1.7} transform={`rotate(45 ${cx} ${cy})`} fill={color} stroke={pal.special} strokeWidth={3} />
       ) : (
         <circle cx={cx} cy={cy} r={R} fill={color} stroke="#fff" strokeWidth={2} />
       )}
-      <text x={cx} y={cy + 6} textAnchor="middle" fontSize={c.number.length > 2 ? 13 : 17} fontWeight={700} fill={pal.text} fontFamily={font}>
+      <text x={cx} y={cy + 4} textAnchor="middle" fontSize={c.number.length > 2 ? 9 : 12} fontWeight={700} fill={pal.text} fontFamily={font}>
         {c.number}
       </text>
     </g>
