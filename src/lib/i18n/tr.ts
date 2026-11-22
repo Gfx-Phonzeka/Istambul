@@ -556,7 +556,7 @@ const tr: Messages = {
     done: "Otomatik çeviri eklendi. Lütfen kontrol edin, ardından kaydedin veya yayınlayın.",
     nothing: "Çevrilecek İngilizce metin yok (veya Türkçe alanlar zaten dolu).",
     errors: {
-      not_configured: "Otomatik çeviri henüz etkin değil (Vercel'e bir Anthropic API anahtarı eklenmelidir).",
+      not_configured: "Otomatik çeviri henüz etkin değil (Vercel'e bir DeepL veya Anthropic anahtarı eklenmelidir).",
       too_long: "Metin tek seferde çevrilemeyecek kadar uzun. Alan alan çevirin.",
       failed: "Otomatik çeviri başarısız oldu. Lütfen tekrar deneyin.",
     },

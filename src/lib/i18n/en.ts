@@ -554,7 +554,7 @@ const en = {
     done: "Automatic translation added. Please review it, then save or publish.",
     nothing: "There is no English text to translate (or the Turkish fields are already filled).",
     errors: {
-      not_configured: "Automatic translation is not switched on yet (an Anthropic API key must be added in Vercel).",
+      not_configured: "Automatic translation is not switched on yet (a DeepL or Anthropic key must be added in Vercel).",
       too_long: "The text is too long to translate at once. Translate field by field.",
       failed: "The automatic translation failed. Please try again.",
     },
