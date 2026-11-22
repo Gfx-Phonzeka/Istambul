@@ -41,18 +41,13 @@ export const ALL_NAV: NavItem[] = NAV_GROUPS.flatMap((g) => g.items);
 
 /** Sections still under construction, with the stage they arrive in. */
 export const PLACEHOLDER_SECTIONS: Record<string, string> = {
-  news: "news",
   briefings: "briefings",
   "media-hub": "mediaHub",
-  handbook: "handbook",
   venues: "venues",
   "camera-maps": "cameraMaps",
   schedule: "schedule",
   broadcast: "broadcast",
   requests: "requests",
-  faq: "faq",
-  glossary: "glossary",
-  contacts: "contacts",
 };
 
 export function isActive(pathname: string, href: string) {

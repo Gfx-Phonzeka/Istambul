@@ -44,9 +44,10 @@ export default async function AdminHome() {
         </div>
       )}
       {!admin && <Alert tone="info">{t("admin.staffOnly")}</Alert>}
-      <Card title={t("admin.content")}>
-        <p className="muted small" style={{ margin: 0 }}>{t("admin.contentSoon")}</p>
-      </Card>
+      <Link href="/admin/content" className="card card-link row">
+        <span className="shortcut-icon"><Icon name="file" /></span>
+        <div><strong>{t("cms.title")}</strong><div className="muted small">{t("cms.intro")}</div></div>
+      </Link>
       {tiles.length > 0 && (
         <div className="grid grid-4">
           {tiles.map((x) => (

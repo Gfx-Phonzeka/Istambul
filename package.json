@@ -14,16 +14,34 @@
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.119.2",
+    "@tiptap/extension-image": "^2.27.3",
+    "@tiptap/extension-link": "^2.27.3",
+    "@tiptap/extension-table": "^2.27.3",
+    "@tiptap/extension-table-cell": "^2.27.3",
+    "@tiptap/extension-table-header": "^2.27.3",
+    "@tiptap/extension-table-row": "^2.27.3",
+    "@tiptap/extension-underline": "^2.27.3",
+    "@tiptap/extension-youtube": "^2.27.3",
+    "@tiptap/pm": "^2.27.3",
+    "@tiptap/react": "^2.27.3",
+    "@tiptap/starter-kit": "^2.27.3",
     "exceljs": "^4.4.0",
+    "html-to-pdfmake": "^2.6.0",
+    "jsdom": "^26.1.0",
     "next": "^15.5.29",
+    "pdfmake": "^0.2.23",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "sanitize-html": "^2.18.2",
     "server-only": "^0.0.1"
   },
   "devDependencies": {
+    "@types/jsdom": "^21.1.7",
     "@types/node": "^22.18.0",
+    "@types/pdfmake": "^0.2.11",
     "@types/react": "^19.1.12",
     "@types/react-dom": "^19.1.9",
+    "@types/sanitize-html": "^2.16.0",
     "typescript": "^5.9.3"
   }
 }

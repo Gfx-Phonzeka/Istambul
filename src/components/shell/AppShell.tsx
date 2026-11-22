@@ -83,7 +83,7 @@ export function AppShell({
               {g.items.map((it) => (
                 <Link key={it.href} href={it.href} className="nav-link" aria-current={isActive(pathname, it.href) ? "page" : undefined}>
                   <Icon name={it.icon} className="nav-icon" />
-                  {t(it.key.startsWith("admin.") || it.key.startsWith("common.") ? it.key : `nav.${it.key}`)}
+                  {t(it.key.includes(".") ? it.key : `nav.${it.key}`)}
                 </Link>
               ))}
             </div>

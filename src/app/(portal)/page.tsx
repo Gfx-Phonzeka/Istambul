@@ -7,6 +7,7 @@ import { formatDate, formatDateTime } from "@/lib/format";
 import { Badge, Card, EmptyState, Icon, PageHeader } from "@/components/ui";
 import { Countdown } from "@/components/Countdown";
 import { ALL_NAV } from "@/lib/nav";
+import { excerpt } from "@/lib/content/render";
 
 export const metadata = { title: "Home" };
 
@@ -21,10 +22,13 @@ export default async function Dashboard() {
   const { t, locale } = await getT();
   const supabase = await createClient();
 
-  const [{ data: opening }, { data: announcements }, { data: deadlines }] = await Promise.all([
+  const since = profile.previous_login_at ?? new Date(Date.now() - 14 * 86400000).toISOString();
+  const [{ data: opening }, { data: announcements }, { data: deadlines }, { data: changes }] = await Promise.all([
     supabase.from("settings").select("value").eq("key", "opening_ceremony").maybeSingle(),
     supabase.from("announcements").select("*").eq("status", "published").order("published_at", { ascending: false }).limit(6),
-    supabase.from("deadlines").select("*").gte("due_at", new Date(Date.now() - 86400000).toISOString()).order("due_at").limit(5),
+    supabase.from("deadlines").select("*").eq("status", "published").gte("due_at", new Date(Date.now() - 86400000).toISOString()).order("due_at").limit(5),
+    supabase.from("content_index").select("kind,id,title_en,title_tr,href,published_at,content_updated_at")
+      .gt("content_updated_at", since).order("content_updated_at", { ascending: false }).limit(8),
   ]);
   const ceremony = opening?.value as { at: string; label_en: string; label_tr?: string } | undefined;
   const list = (announcements ?? []) as Announcement[];
@@ -44,8 +48,8 @@ export default async function Dashboard() {
             {visBadge(a.visibility)}
             <span className="muted small">{formatDate(a.published_at, locale)}</span>
           </div>
-          <strong>{pick(locale, a.title_en, a.title_tr)}</strong>
-          <p style={{ margin: "var(--space-2) 0 0" }}>{pick(locale, a.body_en, a.body_tr)}</p>
+          <Link href={`/news/${a.id}`}><strong>{pick(locale, a.title_en, a.title_tr)}</strong></Link>
+          <p style={{ margin: "var(--space-2) 0 0" }}>{excerpt(pick(locale, a.body_en, a.body_tr), 300)}</p>
         </div>
       ))}
 
@@ -59,7 +63,7 @@ export default async function Dashboard() {
       )}
 
       <div className="grid grid-2">
-        <Card title={t("dashboard.announcements")}>
+        <Card title={t("dashboard.announcements")} actions={<Link href="/news" className="small">{t("common.viewAll")}</Link>}>
           {normal.length === 0 ? (
             <EmptyState icon="megaphone">{t("dashboard.noAnnouncements")}</EmptyState>
           ) : (
@@ -70,8 +74,8 @@ export default async function Dashboard() {
                     <span className="muted small">{formatDate(a.published_at, locale)}</span>
                     {visBadge(a.visibility)}
                   </div>
-                  <strong>{pick(locale, a.title_en, a.title_tr)}</strong>
-                  <p className="small" style={{ margin: "4px 0 0" }}>{pick(locale, a.body_en, a.body_tr)}</p>
+                  <Link href={`/news/${a.id}`}><strong>{pick(locale, a.title_en, a.title_tr)}</strong></Link>
+                  <p className="small" style={{ margin: "4px 0 0" }}>{excerpt(pick(locale, a.body_en, a.body_tr))}</p>
                 </li>
               ))}
             </ul>
@@ -103,7 +107,21 @@ export default async function Dashboard() {
             <p className="small muted">
               {profile.previous_login_at ? t("dashboard.lastVisit", { date: formatDateTime(profile.previous_login_at, locale) }) : t("dashboard.firstVisit")}
             </p>
-            <p className="small" style={{ margin: 0 }}>{t("dashboard.whatsNewSoon")}</p>
+            {(changes ?? []).length === 0 ? (
+              <p className="small" style={{ margin: 0 }}>{t("dashboard.whatsNewSoon")}</p>
+            ) : (
+              <ul className="list">
+                {(changes ?? []).map((c) => (
+                  <li key={`${c.kind}-${c.id}`} className="row" style={{ gap: 8 }}>
+                    <Badge tone={c.published_at && c.published_at > since ? "success" : "info"}>
+                      {c.published_at && c.published_at > since ? t("dashboard.isNew") : t("dashboard.isUpdated")}
+                    </Badge>
+                    <span className="muted small">{t(`kinds.${c.kind}`)}</span>
+                    <Link href={c.href}>{pick(locale, c.title_en, c.title_tr)}</Link>
+                  </li>
+                ))}
+              </ul>
+            )}
           </Card>
         </div>
       </div>
