@@ -85,13 +85,21 @@ p { margin: 0 0 var(--space-3); }
 .alert-danger { background: var(--color-danger-soft); border-color: var(--color-danger); color: var(--color-danger); }
 
 /* ---------- Forms ---------- */
-.field { display: flex; flex-direction: column; gap: var(--space-1); }
+.field { display: flex; flex-direction: column; gap: var(--space-1); min-width: 0; }
 .field label, .label { font-size: var(--text-sm); font-weight: var(--weight-medium); }
 .input, .select, .textarea {
   width: 100%; min-height: 42px; padding: var(--space-2) var(--space-3);
   border: 1px solid var(--color-border-strong); border-radius: var(--radius-md);
   font: inherit; color: inherit; background: var(--color-surface);
+  box-sizing: border-box; min-width: 0; max-width: 100%;
 }
+/* iOS Safari draws date/time inputs with their own size, centred text and no border box: align them with the other fields. */
+.input[type="date"], .input[type="time"], .input[type="datetime-local"] {
+  -webkit-appearance: none; appearance: none; display: block; height: 42px; line-height: 1.2; text-align: left;
+}
+.input::-webkit-date-and-time-value { text-align: left; margin: 0; }
+.input::-webkit-datetime-edit { padding: 0; }
+.form-grid > * { min-width: 0; }
 .textarea { min-height: 96px; resize: vertical; }
 .input:focus, .select:focus, .textarea:focus { outline: 2px solid var(--color-focus); outline-offset: 0; border-color: var(--color-focus); }
 .hint { font-size: var(--text-xs); color: var(--color-text-muted); }
