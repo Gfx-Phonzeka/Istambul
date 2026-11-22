@@ -2,6 +2,9 @@
 // Each drawing is an independent component on a 1000 × 600 canvas, so it can be redesigned in phase 2
 // without touching the camera logic. Colours come from a palette (CSS variables on screen, fixed colours in PDFs).
 
+import { FOP_LAYOUTS } from "./fopLayouts";
+import { FopDrawing } from "./fop";
+
 export interface FieldPalette { bg: string; fill: string; line: string; water: string }
 
 export const SCREEN_PALETTE: FieldPalette = {
@@ -100,6 +103,7 @@ export const FIELD_DRAWINGS: Record<string, (props: P) => React.JSX.Element> = {
 };
 
 export function FieldDrawing({ shape, palette = SCREEN_PALETTE }: { shape: string; palette?: FieldPalette }) {
+  if (FOP_LAYOUTS[shape]) return <FopDrawing shape={shape} font={palette === PRINT_PALETTE ? "Roboto" : undefined} />;
   const Drawing = FIELD_DRAWINGS[shape] ?? Generic;
   return (
     <g>

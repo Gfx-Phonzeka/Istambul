@@ -34,7 +34,9 @@ export type ContentTypeKey =
 
 export const FEED_TYPES = ["multilateral", "iso", "highlights", "ceremony", "other"] as const;
 
-export const FIELD_SHAPES = ["generic", "track", "pool", "pitch", "court", "ring", "mat", "piste", "circle"] as const;
+export const FIELD_SHAPES = ["generic", "track", "pool", "pitch", "court", "ring", "mat", "piste", "circle",
+  "athletics", "fencing", "3x3", "rugby", "table-tennis", "judo", "wrestling", "archery", "coastal-rowing", "volleyball", "climbing", "badminton", "padel", "triathlon", "swimming", "artistic-swimming", "gym-artistic", "gym-rhythmic", "gym-trampoline", "gym-aerobic", "weightlifting", "taekwondo", "squash", "boxing", "muaythai", "shooting", "pentathlon", "canoe",
+] as const;
 
 export const BRIEFING_CATEGORIES = ["welcome", "ibc", "signal", "graphics", "operations", "venues"] as const;
 export const MEDIA_CATEGORIES = ["graphics", "bumpers", "curtains", "promos", "music"] as const;
