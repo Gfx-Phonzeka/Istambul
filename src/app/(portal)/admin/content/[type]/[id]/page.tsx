@@ -90,6 +90,8 @@ export default async function EditContent({ params, searchParams }: { params: Pr
       case "venue": previewUrl = `/venues/${row.slug}?preview=1`; break;
       case "camera_plan": previewUrl = `/camera-maps/${row.id}?preview=1`; break;
       case "cluster": case "sport": case "venue_sport": previewUrl = `/venues?preview=1`; break;
+      case "schedule_session": previewUrl = `/schedule?preview=1`; break;
+      case "broadcast_feed": case "distribution_channel": case "tech_parameter": case "info_block": previewUrl = `/broadcast?preview=1`; break;
       default: previewUrl = `${type.publicPath}?preview=1`;
     }
   }

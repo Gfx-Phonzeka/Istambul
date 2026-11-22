@@ -1,7 +1,7 @@
 // Content types managed in the backoffice. One generic editor drives all of them.
 // Labels are i18n keys. A "bilingual" field maps to two columns: <name>_en and <name>_tr.
 
-export type FieldKind = "text" | "textarea" | "richtext" | "select" | "number" | "datetime" | "date" | "reference" | "slug" | "email";
+export type FieldKind = "text" | "textarea" | "richtext" | "select" | "number" | "datetime" | "date" | "reference" | "slug" | "email" | "boolean";
 
 export interface Field {
   name: string;
@@ -29,7 +29,10 @@ export interface ContentType {
 export type ContentTypeKey =
   | "handbook_chapter" | "handbook_section" | "announcement" | "deadline" | "faq_category" | "faq"
   | "glossary_term" | "contact_area" | "contact" | "legal_page" | "briefing_video" | "media_asset"
-  | "cluster" | "sport" | "venue" | "venue_sport" | "camera_plan";
+  | "cluster" | "sport" | "venue" | "venue_sport" | "camera_plan"
+  | "schedule_session" | "broadcast_feed" | "distribution_channel" | "tech_parameter" | "info_block";
+
+export const FEED_TYPES = ["multilateral", "iso", "highlights", "ceremony", "other"] as const;
 
 export const FIELD_SHAPES = ["generic", "track", "pool", "pitch", "court", "ring", "mat", "piste", "circle"] as const;
 
@@ -240,10 +243,89 @@ CONTENT_TYPES.camera_plan = {
   order: [{ column: "venue_id", ascending: true }, { column: "position", ascending: true }],
 };
 
+const code: Field = { name: "code", label: "cms.fields.code", kind: "text", required: true, help: "cms.help.code" };
+
+CONTENT_TYPES.schedule_session = {
+  key: "schedule_session", table: "schedule_sessions", label: "cms.types.schedule_session", singular: "cms.single.schedule_session",
+  titleColumn: "code", publicPath: "/schedule", parent: { column: "sport_id", type: "sport" },
+  fields: [
+    code,
+    { name: "sport_id", label: "cms.fields.sport", kind: "reference", ref: "sport", required: true },
+    { name: "venue_id", label: "cms.fields.venue", kind: "reference", ref: "venue", required: true },
+    { name: "discipline", label: "cms.fields.discipline", kind: "text", bilingual: true },
+    { name: "phase", label: "cms.fields.phase", kind: "text", bilingual: true, required: true },
+    { name: "start_at", label: "cms.fields.startAt", kind: "datetime", required: true },
+    { name: "end_at", label: "cms.fields.endAt", kind: "datetime", required: true },
+    { name: "is_medal", label: "cms.fields.isMedal", kind: "boolean" },
+    { name: "medal_events", label: "cms.fields.medalEvents", kind: "text", bilingual: true },
+    { name: "is_oq", label: "cms.fields.isOq", kind: "boolean" },
+    { name: "notes", label: "cms.fields.notes", kind: "text", bilingual: true },
+    visibility,
+  ],
+  order: [{ column: "start_at", ascending: true }],
+};
+
+CONTENT_TYPES.broadcast_feed = {
+  key: "broadcast_feed", table: "broadcast_feeds", label: "cms.types.broadcast_feed", singular: "cms.single.broadcast_feed",
+  titleColumn: "code", publicPath: "/broadcast",
+  fields: [
+    code,
+    { name: "feed_type", label: "cms.fields.feedType", kind: "select", required: true, options: FEED_TYPES.map((f) => ({ value: f, label: `broadcast.feedTypes.${f}` })) },
+    title,
+    { name: "venue_id", label: "cms.fields.venue", kind: "reference", ref: "venue" },
+    { name: "sport_id", label: "cms.fields.sport", kind: "reference", ref: "sport" },
+    { name: "start_at", label: "cms.fields.startAt", kind: "datetime", required: true },
+    { name: "end_at", label: "cms.fields.endAt", kind: "datetime", required: true },
+    { name: "channel", label: "cms.fields.channel", kind: "text", required: true },
+    { name: "notes", label: "cms.fields.notes", kind: "text", bilingual: true },
+    visibility,
+  ],
+  order: [{ column: "start_at", ascending: true }],
+};
+
+CONTENT_TYPES.distribution_channel = {
+  key: "distribution_channel", table: "distribution_channels", label: "cms.types.distribution_channel", singular: "cms.single.distribution_channel",
+  titleColumn: "title_en", publicPath: "/broadcast?tab=distribution",
+  fields: [
+    {
+      name: "kind", label: "cms.fields.channelKind", kind: "select", required: true,
+      options: ["satellite", "fibre", "streaming", "other"].map((k) => ({ value: k, label: `broadcast.channelKinds.${k}` })),
+    },
+    title,
+    { name: "body", label: "cms.fields.body", kind: "richtext", bilingual: true, required: true },
+    { name: "contact", label: "cms.fields.contactInfo", kind: "richtext", bilingual: true },
+    position, visibility,
+  ],
+  order: [{ column: "position", ascending: true }],
+};
+
+CONTENT_TYPES.tech_parameter = {
+  key: "tech_parameter", table: "tech_parameters", label: "cms.types.tech_parameter", singular: "cms.single.tech_parameter",
+  titleColumn: "title_en", publicPath: "/broadcast?tab=technical",
+  fields: [
+    {
+      name: "grp", label: "cms.fields.group", kind: "select", required: true,
+      options: ["video", "audio", "graphics", "timecode", "other"].map((k) => ({ value: k, label: `broadcast.paramGroups.${k}` })),
+    },
+    { name: "title", label: "cms.fields.parameter", kind: "text", bilingual: true, required: true },
+    { name: "value", label: "cms.fields.value", kind: "text", bilingual: true, required: true },
+    position, visibility,
+  ],
+  order: [{ column: "grp", ascending: true }, { column: "position", ascending: true }],
+};
+
+CONTENT_TYPES.info_block = {
+  key: "info_block", table: "info_blocks", label: "cms.types.info_block", singular: "cms.single.info_block",
+  titleColumn: "title_en", publicPath: "/broadcast?tab=additional",
+  fields: [title, { ...slug, help: "cms.help.infoSlug" }, { name: "body", label: "cms.fields.body", kind: "richtext", bilingual: true, required: true }, visibility],
+  order: [{ column: "slug", ascending: true }],
+};
+
 export const CONTENT_GROUPS: { label: string; types: ContentTypeKey[] }[] = [
   { label: "nav.handbook", types: ["handbook_chapter", "handbook_section"] },
   { label: "cms.groupMedia", types: ["briefing_video", "media_asset"] },
   { label: "cms.groupVenues", types: ["cluster", "venue", "sport", "venue_sport", "camera_plan"] },
+  { label: "cms.groupSchedule", types: ["schedule_session", "broadcast_feed", "distribution_channel", "tech_parameter", "info_block"] },
   { label: "nav.news", types: ["announcement", "deadline"] },
   { label: "nav.faq", types: ["faq_category", "faq"] },
   { label: "nav.glossary", types: ["glossary_term"] },

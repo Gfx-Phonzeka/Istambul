@@ -28,6 +28,13 @@ table with cross-highlighting, counters, overview of all maps with filters, PDF 
 drawing appended) and a ZIP pack of all maps. Backoffice: drag & drop camera editor, copy cameras between maps,
 drawing upload with numbering check before publication, versioned drawings (archive visible to admins).
 
+**Stage 5 (Schedule & broadcast):** competition schedule (list by day / sport / venue and a timeline per day,
+filters, search, Istanbul time or the user's local time, medal sessions highlighted, LA28 "OQ" badge, .ics export
+of the whole schedule or one sport), broadcast & distribution (feed grid by day, EBU distribution channels,
+technical parameters, additional production with a link to service requests), Excel/CSV import with a template
+holding the current data, a preview of new / changed / removed lines and row-level errors.
+Automatic EN→TR translation buttons in the backoffice (Claude API, needs `ANTHROPIC_API_KEY` in Vercel).
+
 ## Stack
 - Next.js 15 (App Router) + TypeScript
 - Supabase (Auth, Postgres with Row Level Security) — migrations in `supabase/migrations`
@@ -43,7 +50,7 @@ drawing upload with numbering check before publication, versioned drawings (arch
 | Database schema & security | `supabase/migrations/*.sql` |
 | Content types & fields (backoffice) | `src/lib/content/registry.ts` |
 | Handbook PDF layout | `src/lib/pdf/handbook.ts` |
-| Example content `[EXEMPLO]` | `supabase/seed/seed.sql`, `seed_stage2_content.sql`, `seed_stage3_media.sql`, `seed_stage4_venues.sql` (files in buckets under `seed/`) |
+| Example content `[EXEMPLO]` | `supabase/seed/seed.sql`, `seed_stage2_content.sql`, `seed_stage3_media.sql`, `seed_stage4_venues.sql`, `seed_stage5_schedule.sql` (files in buckets under `seed/`) |
 | Demo accounts (passwords) | `supabase/seed/demo-accounts.local.sql` — **not in git** (public repository) |
 
 ## Environment variables

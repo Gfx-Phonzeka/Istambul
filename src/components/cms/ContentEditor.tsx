@@ -5,6 +5,7 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { CONTENT_TYPES, type ContentTypeKey, type Field } from "@/lib/content/registry";
 import { deleteContent, discardDraft, publishContent, saveContent, unpublishContent } from "@/lib/actions/content";
+import { translateFields } from "@/lib/actions/translate";
 import { useI18n } from "@/lib/i18n/client";
 import { Badge } from "@/components/ui";
 
@@ -39,6 +40,25 @@ export function ContentEditor({
   const set = (col: string, v: string) => {
     setValues((s) => ({ ...s, [col]: v }));
     setDirty(true);
+  };
+
+  const [translating, setTranslating] = useState<string | null>(null);
+  const bilingual = type.fields.filter((f) => f.bilingual);
+
+  /** Machine-translates the English text of the given fields into the Turkish fields. */
+  const translate = async (names: string[], onlyEmpty: boolean, tag: string) => {
+    const items = names
+      .filter((n) => (values[`${n}_en`] ?? "").trim() !== "" && (!onlyEmpty || (values[`${n}_tr`] ?? "").trim() === ""))
+      .map((n) => ({ key: n, text: values[`${n}_en`], html: type.fields.find((f) => f.name === n)?.kind === "richtext" }));
+    if (!items.length) { setMsg({ tone: "info", text: t("translate.nothing") }); return; }
+    setTranslating(tag);
+    setMsg(null);
+    const r = await translateFields(items);
+    setTranslating(null);
+    if (!r.ok) { setMsg({ tone: "danger", text: t(`translate.errors.${r.error}`) }); return; }
+    setValues((s) => ({ ...s, ...Object.fromEntries(Object.entries(r.translations).map(([k, v]) => [`${k}_tr`, v])) }));
+    setDirty(true);
+    setMsg({ tone: "info", text: t("translate.done") });
   };
 
   const run = (fn: () => Promise<void>) => start(async () => { setMsg(null); setErrField(null); await fn(); });
@@ -120,6 +140,13 @@ export function ContentEditor({
         return <input {...common} className="input" type="number" value={v} onChange={(e) => set(col, e.target.value)} style={{ maxWidth: 140 }} />;
       case "datetime":
         return <input {...common} className="input" type="datetime-local" value={v} onChange={(e) => set(col, e.target.value)} style={{ maxWidth: 260 }} />;
+      case "boolean":
+        return (
+          <label className="checkbox" style={{ marginTop: 4 }}>
+            <input {...common} type="checkbox" checked={v === "true"} onChange={(e) => set(col, e.target.checked ? "true" : "false")} />
+            <span>{t(f.label)}</span>
+          </label>
+        );
       case "date":
         return <input {...common} className="input" type="date" value={v} onChange={(e) => set(col, e.target.value)} style={{ maxWidth: 200 }} />;
       case "email":
@@ -145,12 +172,25 @@ export function ContentEditor({
       </div>
       {msg && <div className={`alert alert-${msg.tone}`} role="status">{msg.text}</div>}
 
+      {bilingual.length > 0 && (
+        <div className="row translate-bar">
+          <span className="small muted">{t("translate.hint")}</span>
+          <button type="button" className="btn btn-sm" disabled={Boolean(translating)} onClick={() => translate(bilingual.map((f) => f.name), true, "all-empty")}>
+            {translating === "all-empty" ? t("translate.working") : t("translate.fillEmpty")}
+          </button>
+          <button type="button" className="btn btn-sm btn-ghost" disabled={Boolean(translating)}
+            onClick={() => confirm(t("translate.overwriteConfirm")) && translate(bilingual.map((f) => f.name), false, "all")}>
+            {translating === "all" ? t("translate.working") : t("translate.overwriteAll")}
+          </button>
+        </div>
+      )}
+
       <div className="card stack">
         {type.fields.map((f) => {
           if (!f.bilingual) {
             return (
               <div key={f.name} className="field">
-                <label htmlFor={`f-${f.name}`}>{t(f.label)}{f.required ? " *" : ""}</label>
+                {f.kind !== "boolean" && <label htmlFor={`f-${f.name}`}>{t(f.label)}{f.required ? " *" : ""}</label>}
                 {input(f, f.name)}
                 {f.help && <span className="hint">{t(f.help)}</span>}
                 {errField === f.name && <span className="field-error">{msg?.text}</span>}
@@ -171,7 +211,14 @@ export function ContentEditor({
                     ))}
                   </div>
                 </div>
-                {lang === "tr" && <span className="hint">{t("cms.trFallback")}</span>}
+                {lang === "tr" && (
+                  <div className="row-between">
+                    <span className="hint">{t("cms.trFallback")}</span>
+                    <button type="button" className="btn btn-sm" disabled={Boolean(translating)} onClick={() => translate([f.name], false, f.name)}>
+                      {translating === f.name ? t("translate.working") : `⇄ ${t("translate.fromEnglish")}`}
+                    </button>
+                  </div>
+                )}
                 <div style={{ display: lang === "en" ? "block" : "none" }}>{input(f, `${f.name}_en`, "en")}</div>
                 <div style={{ display: lang === "tr" ? "block" : "none" }}>{input(f, `${f.name}_tr`, "tr")}</div>
                 {(errField === `${f.name}_en`) && <span className="field-error">{msg?.text}</span>}
@@ -186,7 +233,14 @@ export function ContentEditor({
                     {t(f.label)} ({l.toUpperCase()}){f.required && l === "en" ? " *" : ""}
                   </label>
                   {input(f, `${f.name}_${l}`, l)}
-                  {l === "tr" && <span className="hint">{t("cms.trFallback")}</span>}
+                  {l === "tr" && (
+                    <div className="row-between">
+                      <span className="hint">{t("cms.trFallback")}</span>
+                      <button type="button" className="btn btn-ghost btn-sm" disabled={Boolean(translating)} onClick={() => translate([f.name], false, f.name)}>
+                        {translating === f.name ? t("translate.working") : `⇄ ${t("translate.fromEnglish")}`}
+                      </button>
+                    </div>
+                  )}
                   {errField === `${f.name}_${l}` && <span className="field-error">{msg?.text}</span>}
                 </div>
               ))}

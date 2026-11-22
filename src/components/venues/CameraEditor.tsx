@@ -3,6 +3,7 @@ import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n/client";
 import { getPlanCameras, saveCameras, type CameraInput } from "@/lib/actions/venues";
+import { translateFields } from "@/lib/actions/translate";
 import { CameraMap } from "./CameraMap";
 import { CameraLegend } from "./PlanViewer";
 
@@ -46,6 +47,16 @@ export function CameraEditor({ planId, shape, initial, otherPlans }: {
     setDirty(true);
   };
 
+  const translateFunctions = () => start(async () => {
+    const items = cams.filter((c) => c.function_en.trim() && !c.function_tr.trim()).map((c) => ({ key: c.key, text: c.function_en, html: false }));
+    if (!items.length) { setMsg({ tone: "success", text: t("translate.nothing") }); return; }
+    const r = await translateFields(items);
+    if (!r.ok) { setMsg({ tone: "danger", text: t(`translate.errors.${r.error}`) }); return; }
+    setCams((l) => l.map((c) => (r.translations[c.key] ? { ...c, function_tr: r.translations[c.key] } : c)));
+    setDirty(true);
+    setMsg({ tone: "success", text: t("translate.done") });
+  });
+
   const save = () => start(async () => {
     setMsg(null);
     const r = await saveCameras(planId, cams.map(({ key: _k, ...c }) => c));
@@ -85,6 +96,7 @@ export function CameraEditor({ planId, shape, initial, otherPlans }: {
       <div className="row-between">
         <h2 className="card-title" style={{ margin: 0 }}>{t("cameraMaps.admin.cameras")} ({cams.length})</h2>
         <div className="row">
+          <button type="button" className="btn btn-sm" onClick={translateFunctions} disabled={pending}>⇄ {t("translate.cameraFunctions")}</button>
           <button type="button" className="btn btn-sm" onClick={add}>+ {t("cameraMaps.admin.addCamera")}</button>
           <button type="button" className="btn btn-sm btn-primary" onClick={save} disabled={pending || !dirty}>{t("cameraMaps.admin.saveCameras")}</button>
         </div>

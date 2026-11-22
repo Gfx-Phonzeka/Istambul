@@ -24,6 +24,7 @@ export default async function PortalLayout({ children }: { children: React.React
       items: [
         { key: "admin.overview", href: "/admin", icon: "settings" },
         { key: "cms.title", href: "/admin/content", icon: "file" },
+        { key: "import.title", href: "/admin/import", icon: "download" },
         ...(isAdmin(profile)
           ? [
               { key: "admin.users", href: "/admin/users", icon: "users" },

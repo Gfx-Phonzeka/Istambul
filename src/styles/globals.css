@@ -375,3 +375,27 @@ mark { background: var(--color-warning-soft); color: inherit; padding: 0 1px; bo
 @media (max-width: 800px) { .numbering-check { grid-template-columns: 1fr; } }
 .cam-edit-table .input, .cam-edit-table .select { min-height: 34px; padding: 4px 8px; font-size: var(--text-sm); }
 .cam-edit-table td { padding: 6px; vertical-align: middle; }
+.translate-bar { background: var(--color-info-soft); padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); }
+
+/* ---------- Schedule & broadcast ---------- */
+.schedule-toolbar { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
+.view-toggle button:disabled { opacity: 0.5; cursor: not-allowed; }
+.schedule-table td { vertical-align: middle; }
+.schedule-table tr.is-medal td:first-child { box-shadow: inset 4px 0 0 var(--cam-highlight); }
+.sched-time { white-space: nowrap; width: 120px; font-variant-numeric: tabular-nums; }
+.medal-events { color: var(--color-warning); }
+.timeline { padding: var(--space-3); }
+.tl-scroll { overflow-x: auto; }
+.tl-grid { min-width: 900px; }
+.tl-head, .tl-row { display: grid; grid-template-columns: 170px 1fr; align-items: center; }
+.tl-hours { position: relative; height: 24px; border-bottom: 1px solid var(--color-border); }
+.tl-hours span { position: absolute; top: 2px; font-size: var(--text-xs); color: var(--color-text-muted); transform: translateX(-50%); }
+.tl-row { border-bottom: 1px solid var(--color-border); min-height: 56px; }
+.tl-label { padding: var(--space-2); }
+.tl-track { position: relative; height: 48px; background-image: repeating-linear-gradient(to right, var(--color-border) 0 1px, transparent 1px calc(100% / var(--span))); }
+.tl-block {
+  position: absolute; top: 6px; bottom: 6px; border-radius: var(--radius-sm); background: var(--color-primary-soft); border: 1px solid var(--color-primary);
+  color: var(--color-primary); font-size: var(--text-xs); padding: 2px 6px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; text-decoration: none;
+}
+.tl-block.is-medal { background: var(--color-warning-soft); border-color: var(--color-warning); color: var(--color-warning); }
+.tl-badges { margin-left: 4px; font-weight: var(--weight-bold); }

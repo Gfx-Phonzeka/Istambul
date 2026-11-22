@@ -25,6 +25,7 @@ function parseValues(type: ContentType, raw: Record<string, unknown>): { values:
         s = sanitizeRichText(s);
         if (s.replace(/<[^>]+>/g, "").trim() === "" && !s.includes("<img") && !s.includes("<iframe")) s = "";
       }
+      if (f.kind === "boolean") { values[col] = s === "true" || s === "on"; continue; }
       if (required && s === "") return { error: "cms.errors.required", field: col };
       if (s === "") {
         values[col] = suffix === "_tr" || !required ? null : "";
@@ -66,6 +67,9 @@ function parseValues(type: ContentType, raw: Record<string, unknown>): { values:
           values[col] = s.slice(0, f.kind === "richtext" ? 500_000 : 5000);
       }
     }
+  }
+  if (typeof values.start_at === "string" && typeof values.end_at === "string" && new Date(values.end_at) < new Date(values.start_at)) {
+    return { error: "cms.errors.endBeforeStart", field: "end_at" };
   }
   return { values };
 }
