@@ -698,3 +698,10 @@ html { -webkit-tap-highlight-color: rgba(10, 107, 112, 0.12); }
 .modal-backdrop, .modal, .dropdown-panel, .sidebar { overscroll-behavior: contain; }
 /* Native selects: explicit colours (Windows high-contrast / dark mode) */
 .select { background-color: var(--color-surface); color: var(--color-text); }
+
+/* Games logo in place of the "IST 27" mark: on a white tile so the navy bridge reads on the dark rail */
+.brand-logo { background: #fff; padding: 4px; width: 46px; height: 46px; border-radius: 12px; }
+.brand-logo img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.topbar-brand .brand-logo { width: 40px; height: 40px; border-radius: 10px; }
+.public-brand .brand-logo { width: 56px; height: 56px; border-radius: 14px; padding: 5px; }
+@media (max-width: 900px) { .topbar-brand .brand-mark.brand-logo { width: 40px; height: 40px; } .topbar-brand .brand-logo { box-shadow: inset 0 0 0 1px var(--color-border); } }

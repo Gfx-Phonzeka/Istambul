@@ -19,7 +19,7 @@ export async function PublicFrame({ children, wide = false }: { children: ReactN
       <a href="#main" className="skip-link">{t("common.skipToContent")}</a>
       <aside className="public-panel">
         <Link href="/login" className="brand public-brand">
-          <span className="brand-mark" translate="no">IST<br />27</span>
+          <span className="brand-mark brand-logo"><img src="/brand/istanbul2027-logo.png" alt="" width={214} height={194} /></span>
           <span className="brand-text" translate="no">{t("common.appName")}</span>
         </Link>
         <div className="public-intro">
