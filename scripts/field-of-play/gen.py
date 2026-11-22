@@ -19,9 +19,7 @@ ts, cams, previews = {}, {}, []
 for sno, key in SLIDES.items():
     s = slides[sno]
     pics = [p for p in s["pictures"] if p["box"][2] / 12192000 > 0.2]
-    if sno == 1:  # full-slide stadium image: use the visible slide area
-        l, t, r, b = 0.0, 0.0, 1.0, 1.0
-    else:
+    if True:
         l = min(p["box"][0] for p in pics) / 12192000; t = min(p["box"][1] for p in pics) / 6858000
         r = max((p["box"][0] + p["box"][2]) for p in pics) / 12192000; b = max((p["box"][1] + p["box"][3]) for p in pics) / 6858000
     # picture in slide aspect units
@@ -87,6 +85,5 @@ with open(OUT_TS, "w") as f:
             f.write("    " + json.dumps(it, ensure_ascii=False) + ",\n")
         f.write("  ],\n")
     f.write("};\n")
-cams.pop("athletics", None)  # pptx athletics markers are stacked, not placed: keep current positions
 json.dump(cams, open(os.path.join(HERE, "cams.json"), "w"), indent=0)
 print("layouts", len(ts), "cameras", sum(len(v) for v in cams.values()))

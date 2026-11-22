@@ -64,30 +64,44 @@ def lanes(u0, v0, u1, v1, n, stroke=WHITE, dash=True, horizontal=True):
 LAYOUTS = {}
 
 # ---------- Athletics (stadium) ----------
+# Measured on the slide (1600 x 900 px); the stadium picture spans x -27..1627.
+def _u(x): return (x + 27) / 1654
+def _v(y): return y / 902
+def Rp(x0, y0, x1, y1, *a, **k): return R(_u(x0), _v(y0), _u(x1), _v(y1), *a, **k)
+def Lp(x0, y0, x1, y1, *a, **k): return L(_u(x0), _v(y0), _u(x1), _v(y1), *a, **k)
+def Tp(x, y, *a, **k): return T(_u(x), _v(y), *a, **k)
+def Cp(x, y, r, *a, **k): return C(_u(x), _v(y), r / 1654, *a, **k)
+def Pp(pts, *a, **k): return P([[_u(x), _v(y)] for x, y in pts], *a, **k)
+
 LAYOUTS["athletics"] = [
     # stands
-    R(0.18, 0.03, 0.83, 0.16, ZONE, ZONE_LINE, 2, rx=18), T(0.505, 0.095, "TRIBUNE", 14),
-    R(0.06, 0.16, 0.15, 0.78, ZONE, ZONE_LINE, 2, rx=18), R(0.85, 0.16, 0.94, 0.78, ZONE, ZONE_LINE, 2, rx=18),
-    R(0.23, 0.855, 0.44, 0.93, ZONE, ZONE_LINE, 2, rx=10), R(0.56, 0.855, 0.77, 0.93, ZONE, ZONE_LINE, 2, rx=10),
-    R(0.45, 0.94, 0.55, 0.985, DESK, ZONE_LINE, 2), T(0.5, 0.963, "MIXED ZONE", 10),
-    # track and infield
-    R(0.12, 0.145, 0.88, 0.835, TRACK, "#c98d78", 2, rxh=0.5),
-    R(0.165, 0.755, 0.815, 0.835, TRACK, NONE, 0),
-    *lanes(0.165, 0.755, 0.815, 0.835, 4, WHITE, False),
-    R(0.17, 0.21, 0.83, 0.765, GRASS, "#9cc3a8", 2, rxh=0.5),
-    L(0.7, 0.755, 0.7, 0.835, WHITE, 4), T(0.7, 0.865, "FINISH", 11, RED, 700),
-    # jumps (runways + pits)
-    R(0.36, 0.235, 0.41, 0.265, SAND, AMBER, 2), L(0.41, 0.25, 0.6, 0.25, "#c98d78", 6),
-    R(0.42, 0.28, 0.65, 0.296, TRACK, NONE, 0), R(0.64, 0.272, 0.67, 0.304, "#e58e7c", NONE, 0), T(0.5, 0.33, "JUMPS", 11),
-    R(0.30, 0.72, 0.345, 0.75, SAND, AMBER, 2), L(0.345, 0.735, 0.71, 0.735, "#c98d78", 6), T(0.52, 0.71, "LONG / TRIPLE JUMP", 10),
-    # high jump / pole vault (left), throws
-    L(0.17, 0.5, 0.29, 0.5, "#c98d78", 10), R(0.19, 0.42, 0.215, 0.46, MAT_B, BLUE, 2), R(0.19, 0.54, 0.215, 0.58, MAT_B, BLUE, 2),
-    R(0.265, 0.40, 0.29, 0.45, MAT_B, BLUE, 2), R(0.265, 0.48, 0.29, 0.52, MAT_B, BLUE, 2), T(0.24, 0.37, "THROWS", 10),
-    C(0.22, 0.64, 0.008, DESK, DARK, 2), R(0.70, 0.28, 0.76, 0.33, MAT_B, BLUE, 2), T(0.73, 0.36, "POLE VAULT", 10),
-    R(0.25, 0.25, 0.31, 0.30, MAT_B, BLUE, 2), T(0.28, 0.33, "HIGH JUMP", 10),
-    L(0.71, 0.5, 0.83, 0.5, "#c98d78", 10),
-    L(0.59, 0.64, 0.73, 0.70, DARK, 1), L(0.66, 0.56, 0.73, 0.65, DARK, 2), T(0.62, 0.6, "JAVELIN", 10),
-    A(0.70, 0.55, 0.08, 20, 80, DARK, 3), T(0.79, 0.68, "SHOT PUT", 10),
+    Rp(265, 30, 1345, 120, ZONE, ZONE_LINE, 2, rx=30), Rp(695, 32, 915, 66, WHITE, ZONE_LINE, 2), Tp(805, 92, "MAIN TRIBUNE", 13),
+    Rp(70, 140, 160, 690, ZONE, ZONE_LINE, 2, rx=30), Rp(1450, 140, 1540, 700, ZONE, ZONE_LINE, 2, rx=30),
+    Rp(350, 770, 710, 845, ZONE, ZONE_LINE, 2, rx=12), Rp(890, 770, 1255, 845, ZONE, ZONE_LINE, 2, rx=12),
+    Rp(722, 838, 887, 872, WHITE, ZONE_LINE, 2), Tp(805, 806, "FINISH STRAIGHT", 11),
+    # track (oval + widened home straight) and infield
+    Rp(175, 130, 1430, 750, TRACK, "#c98d78", 2, rxh=0.5),
+    Rp(248, 683, 1322, 750, TRACK, "#c98d78", 2),
+    *lanes(_u(248), _v(690), _u(1322), _v(750), 5, WHITE, False),
+    Rp(245, 200, 1355, 683, GRASS, "#9cc3a8", 2, rxh=0.5),
+    Lp(1133, 683, 1133, 750, WHITE, 4), Tp(1185, 717, "FINISH", 10, RED, 700), Tp(205, 717, "START", 10, TEXT, 700),
+    # jumps: long / triple jump (top and bottom inside)
+    Rp(568, 211, 645, 240, SAND, AMBER, 2), Lp(645, 226, 910, 226, "#c98d78", 7), Rp(910, 215, 960, 237, SAND, AMBER, 2),
+    Lp(668, 260, 990, 260, "#c98d78", 8), Rp(990, 250, 1042, 270, "#e58e7c", NONE, 0), Tp(805, 290, "LONG / TRIPLE JUMP", 10),
+    Rp(475, 651, 543, 675, SAND, AMBER, 2), Lp(543, 662, 1133, 662, "#c98d78", 7), Tp(800, 640, "LONG / TRIPLE JUMP", 10),
+    # left: high jump and pole vault
+    Rp(280, 370, 320, 420, MAT_B, BLUE, 2), Rp(280, 487, 320, 530, MAT_B, BLUE, 2), Rp(413, 352, 453, 405, MAT_B, BLUE, 2),
+    Lp(300, 420, 300, 555, "#c98d78", 8), Tp(515, 380, "HIGH JUMP", 10),
+    Lp(248, 451, 420, 451, "#c98d78", 14), Rp(418, 428, 448, 475, MAT_B, BLUE, 2), Tp(470, 500, "POLE VAULT", 10),
+    Rp(347, 312, 380, 345, DESK, DARK, 2),
+    Cp(333, 573, 12, DESK, DARK, 2), Tp(340, 640, "SHOT PUT", 10),
+    # right: hammer / discus cage, javelin runway, landing sectors
+    Pp([[1177, 258], [1217, 258], [1237, 298], [1217, 338], [1177, 338], [1157, 298]], DESK, DARK, 2), Cp(1197, 298, 10, NONE, DARK, 2),
+    Cp(1263, 323, 6, DESK, DARK, 2), Cp(1190, 362, 6, DESK, DARK, 2), Tp(1197, 235, "HAMMER / DISCUS", 10),
+    Lp(1157, 425, 1157, 480, "#c98d78", 14), Lp(1165, 451, 1352, 451, "#c98d78", 22), Tp(1255, 405, "JAVELIN", 10),
+    Pp([[1065, 500], [1080, 495], [1192, 585], [1185, 592]], "#c7ccd3", DARK, 1), Rp(1145, 628, 1188, 643, "#c7ccd3", DARK, 1),
+    Lp(950, 573, 1180, 630, DARK, 1), A(_u(1205), _v(535), 85 / 1654, 20, 85, "#9aa3ad", 8), Tp(1010, 545, "THROWS SECTOR", 10),
+    Cp(792, 450, 5, DARK, DARK, 1),
 ]
 
 # ---------- Fencing ----------
@@ -283,7 +297,7 @@ LAYOUTS["gym-artistic"] = [
     R(0.012, 0.017, 0.99, 0.963, NONE, DARK, 3),
     R(0.055, 0.054, 0.945, 0.166, DESK, DARK, 2), R(0.166, 0.094, 0.833, 0.129, DARK, DARK, 1), T(0.5, 0.111, "VAULT RUNWAY", 10, WHITE, 700),
     R(0.055, 0.203, 0.3, 0.758, DESK, DARK, 2), T(0.1775, 0.48, "POMMEL HORSE", 11, DARK, 700), T(0.1775, 0.53, "+ RINGS", 11, DARK, 700),
-    R(0.335, 0.203, 0.666, 0.758, DESK, DARK, 2), R(0.351, 0.231, 0.65, 0.73, "#f4dcd8", RED, 2, True), T(0.5, 0.48, "FLOOR", 13, DARK, 700),
+    R(0.335, 0.203, 0.666, 0.758, DESK, DARK, 2), R(0.351, 0.231, 0.65, 0.73, "#f4dcd8", RED, 2, True), T(0.5, 0.62, "FLOOR", 13, DARK, 700),
     R(0.7, 0.203, 0.945, 0.758, DESK, DARK, 2), T(0.8225, 0.48, "PARALLEL BARS", 11, DARK, 700), T(0.8225, 0.53, "+ HIGH / UNEVEN BARS", 10, DARK, 700),
     *stand(0.055, 0.915, 0.945, 0.955, "MAIN TRIBUNE (180° ACTION AXIS)", 11),
 ]
