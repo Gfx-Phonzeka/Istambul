@@ -1,4 +1,6 @@
 "use server";
+import { after } from "next/server";
+import { flushEmails } from "@/lib/email";
 import { revalidatePath } from "next/cache";
 import { requireStaff } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
@@ -25,6 +27,7 @@ export async function saveCameras(planId: string, cameras: CameraInput[]): Promi
   });
   if (error) return { ok: false, error: error.message };
   revalidatePath("/", "layout");
+  after(flushEmails);
   const { data } = await supabase.from("cameras").select("*").eq("plan_id", planId).order("position");
   return { ok: true, cameras: data ?? [] };
 }
@@ -52,6 +55,7 @@ export async function addCameraDrawing(planId: string, d: { file_path: string; f
   const { error } = await supabase.rpc("add_camera_drawing", { p_plan: planId, p: { ...d, file_size: String(d.file_size) } });
   if (error) return { ok: false, error: error.message };
   revalidatePath("/", "layout");
+  after(flushEmails);
   return { ok: true };
 }
 

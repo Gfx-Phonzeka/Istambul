@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { CONTENT_TYPES, columnsOf, isContentType, type ContentType } from "@/lib/content/registry";
 import { sanitizeRichText } from "@/lib/content/sanitize";
 import { regenerateHandbookPdfs } from "@/lib/pdf/handbook";
+import { flushEmails } from "@/lib/email";
 
 export type SaveResult = { ok: true; id: string } | { ok: false; error: string; field?: string };
 
@@ -80,6 +81,7 @@ function revalidate(type: ContentType) {
 }
 
 function afterPublish(type: ContentType) {
+  after(flushEmails); // notifications created by database triggers (urgent notices, followed items)
   if (type.key === "handbook_chapter" || type.key === "handbook_section") {
     after(async () => {
       try {
@@ -113,6 +115,7 @@ export async function saveContent(typeKey: string, id: string | null, raw: Recor
   const { error } = await supabase.from(type.table).update(update).eq("id", id);
   if (error) return { ok: false, error: error.code === "23505" ? "cms.errors.duplicate" : "cms.errors.generic" };
   revalidate(type);
+  after(flushEmails);
   return { ok: true, id };
 }
 

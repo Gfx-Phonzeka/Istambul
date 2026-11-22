@@ -5,6 +5,7 @@ import { getT } from "@/lib/i18n/server";
 import { pick } from "@/lib/i18n";
 import { isPreview } from "@/lib/preview";
 import { getProfile, isStaff } from "@/lib/auth";
+import { FavoriteButton } from "@/components/FavoriteButton";
 import { withDraft, withHeadingAnchors } from "@/lib/content/render";
 import { freshness, signPaths } from "@/lib/media";
 import { dateRange, loadPlans } from "@/lib/venues";
@@ -39,7 +40,10 @@ export default async function VenuePage({ params, searchParams }: { params: Prom
   const docs = (files ?? []).filter((f) => f.kind === "document");
   const signed = await signPaths(supabase, "venues", photos.map((p) => p.file_path));
   const sportName = (id: string) => { const s = (sports ?? []).find((x) => x.id === id); return s ? pick(locale, s.title_en, s.title_tr) : ""; };
-  const staff = isStaff(await getProfile());
+  const me = await getProfile();
+  const staff = isStaff(me);
+  const { data: favs } = await supabase.from("favorites").select("kind,target_id").eq("user_id", me!.id);
+  const fav = (kind: string, id: string) => (favs ?? []).some((f) => f.kind === kind && f.target_id === id);
   const sections = [
     { key: "commentary", icon: "users", html: pick(locale, v.commentary_en, v.commentary_tr) },
     { key: "unilaterals", icon: "camera", html: pick(locale, v.unilaterals_en, v.unilaterals_tr) },
@@ -60,7 +64,10 @@ export default async function VenuePage({ params, searchParams }: { params: Prom
           <h1 style={{ marginBottom: 4 }}>{pick(locale, v.title_en, v.title_tr)}</h1>
           {v.address && <p className="muted" style={{ margin: 0 }}>{v.address}</p>}
         </div>
-        {staff && <Link className="btn btn-sm" href={`/admin/content/venue/${v.id}`}>{t("cms.edit")}</Link>}
+        <div className="row">
+          <FavoriteButton kind="venue" id={v.id} initial={fav("venue", v.id)} />
+          {staff && <Link className="btn btn-sm" href={`/admin/content/venue/${v.id}`}>{t("cms.edit")}</Link>}
+        </div>
       </header>
 
       <div className="grid grid-2">
@@ -69,7 +76,7 @@ export default async function VenuePage({ params, searchParams }: { params: Prom
             <ul className="list">
               {(vs ?? []).map((x) => (
                 <li key={x.id} className="row-between">
-                  <strong>{sportName(x.sport_id)}</strong>
+                  <span className="row" style={{ gap: 4 }}><FavoriteButton kind="sport" id={x.sport_id} initial={fav("sport", x.sport_id)} compact label={sportName(x.sport_id)} /><strong>{sportName(x.sport_id)}</strong></span>
                   <span className="muted small">{dateRange(x.start_date, x.end_date, locale)}</span>
                 </li>
               ))}

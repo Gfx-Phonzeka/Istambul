@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useI18n } from "@/lib/i18n/client";
 import { Badge, EmptyState } from "@/components/ui";
+import { FavoriteButton } from "@/components/FavoriteButton";
 
 export interface SessionRow {
   id: string; code: string; sportId: string; sport: string; venueId: string; venue: string; venueSlug: string;
@@ -11,8 +12,8 @@ export interface SessionRow {
 
 const TRT = "Europe/Istanbul";
 
-export function ScheduleView({ sessions, sports, venues, focus }: {
-  sessions: SessionRow[]; sports: { id: string; title: string }[]; venues: { id: string; title: string }[]; focus?: string | null;
+export function ScheduleView({ sessions, sports, venues, focus, favSports = [] }: {
+  sessions: SessionRow[]; sports: { id: string; title: string }[]; venues: { id: string; title: string }[]; focus?: string | null; favSports?: string[];
 }) {
   const { t, locale } = useI18n();
   const loc = locale === "tr" ? "tr-TR" : "en-GB";
@@ -86,6 +87,7 @@ export function ScheduleView({ sessions, sports, venues, focus }: {
           <option value="all">{t("venues.allSports")}</option>
           {sports.map((s) => <option key={s.id} value={s.id}>{s.title}</option>)}
         </select>
+        {sport !== "all" && <FavoriteButton key={sport} kind="sport" id={sport} initial={favSports.includes(sport)} label={sports.find((x) => x.id === sport)?.title} />}
         <select className="select" style={{ width: "auto" }} value={venue} onChange={(e) => setVenue(e.target.value)} aria-label={t("schedule.venue")}>
           <option value="all">{t("schedule.allVenues")}</option>
           {venues.map((v) => <option key={v.id} value={v.id}>{v.title}</option>)}

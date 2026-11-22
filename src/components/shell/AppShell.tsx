@@ -8,6 +8,7 @@ import { isActive, type NavItem } from "@/lib/nav";
 import { LangSwitch } from "./LangSwitch";
 import { NotificationBell, type NotificationRow } from "./NotificationBell";
 import { UserMenu } from "./UserMenu";
+import { PageViewTracker } from "./PageViewTracker";
 
 export interface ShellNavGroup {
   title: string;
@@ -48,6 +49,7 @@ export function AppShell({
 
   return (
     <>
+      <PageViewTracker />
       <header className="topbar">
         <button type="button" className="icon-btn only-mobile" aria-label={t("common.menu")} aria-expanded={drawer} onClick={() => setDrawer((d) => !d)}>
           <Icon name={drawer ? "close" : "menu"} />

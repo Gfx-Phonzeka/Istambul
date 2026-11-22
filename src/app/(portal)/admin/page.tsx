@@ -23,6 +23,8 @@ export default async function AdminHome() {
   const tiles = admin
     ? [
         { href: "/admin/users", icon: "users", label: t("admin.users") },
+        { href: "/admin/requests", icon: "inbox", label: t("nav.requests") },
+        { href: "/admin/stats", icon: "activity", label: t("stats.title") },
         { href: "/admin/activity", icon: "activity", label: t("admin.activity") },
         { href: "/admin/emails", icon: "mail", label: t("admin.emails") },
         { href: "/admin/settings", icon: "settings", label: t("admin.settings") },

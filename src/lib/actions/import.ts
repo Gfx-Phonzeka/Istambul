@@ -1,5 +1,7 @@
 "use server";
+import { after } from "next/server";
 import { revalidatePath } from "next/cache";
+import { flushEmails } from "@/lib/email";
 import { requireStaff } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { buildPreview, readFile, DATASETS, type Dataset, type ImportPreview } from "@/lib/import";
@@ -33,6 +35,13 @@ export async function applyImport(form: FormData): Promise<{ ok: true; result: {
   if (r.preview.errors.length) return { ok: false, error: "has_errors" };
   const { data, error } = await r.supabase.rpc("apply_import", { p_dataset: r.dataset, p_rows: r.rows, p_delete_missing: form.get("deleteMissing") === "on" });
   if (error) return { ok: false, error: error.message };
+  if (r.dataset === "sessions") {
+    // One notification per sport whose sessions were added or changed (to users following that sport).
+    const changed = new Set(r.preview.items.filter((i) => i.status !== "unchanged").map((i) => i.code));
+    const sports = [...new Set(r.rows.filter((x) => changed.has(String(x.code))).map((x) => String(x.sport_id)))];
+    if (sports.length) await r.supabase.rpc("notify_schedule_import", { p_sports: sports });
+  }
+  after(flushEmails);
   revalidatePath("/", "layout");
   return { ok: true, result: data as { inserted: number; updated: number; deleted: number } };
 }

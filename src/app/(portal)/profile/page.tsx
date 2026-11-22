@@ -2,6 +2,7 @@ import { requireApproved } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { pick } from "@/lib/i18n";
 import Link from "next/link";
+import { FavoriteButton } from "@/components/FavoriteButton";
 import { getT } from "@/lib/i18n/server";
 import { formatDate, formatDateTime } from "@/lib/format";
 import { Badge, Card, EmptyState, PageHeader } from "@/components/ui";
@@ -22,6 +23,18 @@ export default async function ProfilePage() {
   type Dl = { id: number; created_at: string; via: string; asset_id: string | null;
     media_assets: { title_en: string; title_tr: string | null } | null; media_versions: { version_number: number; file_name: string } | null };
   const rows = (downloads ?? []) as unknown as Dl[];
+  const { data: favs } = await supabase.from("favorites").select("kind,target_id").eq("user_id", profile.id);
+  const ids = (k: string) => (favs ?? []).filter((f) => f.kind === k).map((f) => f.target_id);
+  const [{ data: fv }, { data: fs }, { data: fm }] = await Promise.all([
+    supabase.from("venues").select("id,slug,title_en,title_tr").in("id", ids("venue").length ? ids("venue") : ["00000000-0000-0000-0000-000000000000"]),
+    supabase.from("sports").select("id,title_en,title_tr").in("id", ids("sport").length ? ids("sport") : ["00000000-0000-0000-0000-000000000000"]),
+    supabase.from("media_assets").select("id,title_en,title_tr").in("id", ids("media_asset").length ? ids("media_asset") : ["00000000-0000-0000-0000-000000000000"]),
+  ]);
+  const favItems = [
+    ...(fv ?? []).map((x) => ({ kind: "venue" as const, id: x.id, label: pick(locale, x.title_en, x.title_tr), href: `/venues/${x.slug}` })),
+    ...(fs ?? []).map((x) => ({ kind: "sport" as const, id: x.id, label: pick(locale, x.title_en, x.title_tr), href: `/schedule` })),
+    ...(fm ?? []).map((x) => ({ kind: "media_asset" as const, id: x.id, label: pick(locale, x.title_en, x.title_tr), href: `/media-hub?item=${x.id}` })),
+  ];
   return (
     <div className="stack">
       <PageHeader title={t("profile.title")} subtitle={profile.email} actions={<Badge tone="primary">{t(`admin.roles.${profile.role}`)}</Badge>} />
@@ -30,6 +43,19 @@ export default async function ProfilePage() {
       </Card>
       <Card title={t("profile.changePassword")}>
         <PasswordForm />
+      </Card>
+      <Card title={t("favorites.title")}>
+        <p className="small muted">{t("favorites.intro")}</p>
+        {favItems.length === 0 ? <p className="small muted" style={{ margin: 0 }}>{t("favorites.none")}</p> : (
+          <ul className="list">
+            {favItems.map((f) => (
+              <li key={`${f.kind}-${f.id}`} className="row-between">
+                <span><span className="badge">{t(`favorites.kinds.${f.kind}`)}</span> <Link href={f.href}>{f.label}</Link></span>
+                <FavoriteButton kind={f.kind} id={f.id} initial compact label={f.label} />
+              </li>
+            ))}
+          </ul>
+        )}
       </Card>
       <Card title={t("profile.downloads")}>
         {rows.length === 0 ? (

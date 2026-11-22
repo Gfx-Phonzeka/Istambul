@@ -16,10 +16,11 @@ export default async function SchedulePage({ searchParams }: { searchParams: Pro
   const supabase = await createClient();
   let q = supabase.from("schedule_sessions").select("*").order("start_at");
   if (!preview) q = q.eq("status", "published");
-  const [{ data }, { data: sports }, { data: venues }] = await Promise.all([
+  const [{ data }, { data: sports }, { data: venues }, { data: favs }] = await Promise.all([
     q,
     supabase.from("sports").select("id,title_en,title_tr,position").order("position"),
     supabase.from("venues").select("id,slug,title_en,title_tr").order("title_en"),
+    supabase.from("favorites").select("target_id").eq("kind", "sport"),
   ]);
   const S = new Map((sports ?? []).map((s) => [s.id, pick(locale, s.title_en, s.title_tr)]));
   const V = new Map((venues ?? []).map((v) => [v.id, { title: pick(locale, v.title_en, v.title_tr), slug: v.slug }]));
@@ -42,6 +43,7 @@ export default async function SchedulePage({ searchParams }: { searchParams: Pro
         <ScheduleView
           sessions={rows}
           focus={sp.session ?? null}
+          favSports={(favs ?? []).map((f) => f.target_id)}
           sports={(sports ?? []).filter((s) => usedSports.has(s.id)).map((s) => ({ id: s.id, title: S.get(s.id)! }))}
           venues={(venues ?? []).filter((v) => usedVenues.has(v.id)).map((v) => ({ id: v.id, title: V.get(v.id)!.title }))}
         />

@@ -5,11 +5,12 @@ import { useI18n } from "@/lib/i18n/client";
 import { Badge, EmptyState, Icon } from "@/components/ui";
 import { Modal } from "@/components/ui/Modal";
 import { acceptMaterialTerms } from "@/lib/actions/media";
-import { fmtBytes } from "./ResumableUpload";
+import { fmtBytes } from "@/lib/bytes";
+import { FavoriteButton } from "@/components/FavoriteButton";
 
 export interface HubItem {
   id: string; category: string; subtype: string | null; title: string; description: string;
-  previewUrl: string | null; previewKind: string | null; draft: boolean; visibility: string; badge: "new" | "updated" | null;
+  previewUrl: string | null; previewKind: string | null; draft: boolean; visibility: string; badge: "new" | "updated" | null; favorite: boolean;
   version: null | {
     number: number; fileName: string; size: number | null; format: string | null; codec: string | null; resolution: string | null;
     frameRate: string | null; duration: string | null; date: string;
@@ -144,7 +145,10 @@ export function MediaHub({ items, termsAccepted, termsTitle, termsHtml, focusIte
                 )}
               </div>
               <div className="stack-sm" style={{ flex: 1 }}>
-                <div className="muted small">{t(`mediaHub.categories.${i.category}`)}{i.subtype ? ` · ${i.subtype}` : ""}</div>
+                <div className="row-between">
+                  <span className="muted small">{t(`mediaHub.categories.${i.category}`)}{i.subtype ? ` · ${i.subtype}` : ""}</span>
+                  <FavoriteButton kind="media_asset" id={i.id} initial={i.favorite} compact label={i.title} />
+                </div>
                 <strong>{i.title}</strong>
                 {i.description && <p className="small muted" style={{ margin: 0 }}>{i.description}</p>}
                 {i.version ? (

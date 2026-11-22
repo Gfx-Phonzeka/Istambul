@@ -399,3 +399,25 @@ mark { background: var(--color-warning-soft); color: inherit; padding: 0 1px; bo
 }
 .tl-block.is-medal { background: var(--color-warning-soft); border-color: var(--color-warning); color: var(--color-warning); }
 .tl-badges { margin-left: 4px; font-weight: var(--weight-bold); }
+
+/* ---------- Requests, favourites, statistics ---------- */
+.request-timeline { margin: 0; padding-left: 18px; color: var(--color-text-muted); }
+.request-timeline li { margin-bottom: 4px; }
+.request-timeline strong { color: var(--color-text); }
+.fav-btn { color: var(--color-text-muted); }
+.fav-btn.is-on { color: var(--color-warning); border-color: var(--color-warning); }
+.fav-btn.btn-ghost { min-height: 28px; padding: 0 6px; font-size: var(--text-lg); line-height: 1; }
+.stat-tile { padding: var(--space-4); }
+.stat-value { font-size: var(--text-3xl); font-weight: var(--weight-bold); color: var(--color-text); font-variant-numeric: tabular-nums; line-height: 1.1; }
+.barlist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-3); }
+.barlist-label { display: flex; justify-content: space-between; gap: var(--space-3); font-size: var(--text-sm); margin-bottom: 4px; }
+.barlist-label span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.barlist-label strong { font-variant-numeric: tabular-nums; }
+.barlist-track { height: 8px; background: var(--color-surface-muted); border-radius: 4px; overflow: hidden; }
+.barlist-track span { display: block; height: 100%; background: var(--color-primary); border-radius: 0 4px 4px 0; min-width: 2px; }
+.barlist li:hover .barlist-track span { filter: brightness(1.25); }
+.columns-plot { display: flex; align-items: flex-end; gap: 2px; height: 160px; border-bottom: 1px solid var(--color-border); }
+.columns-col { flex: 1; height: 100%; display: flex; align-items: flex-end; cursor: default; }
+.columns-col span { width: 100%; background: var(--color-primary); border-radius: 4px 4px 0 0; min-height: 2px; }
+.columns-col:hover span { filter: brightness(1.25); }
+.columns-axis { display: flex; justify-content: space-between; font-size: var(--text-xs); margin-top: 4px; }

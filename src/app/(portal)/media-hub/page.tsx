@@ -20,12 +20,14 @@ export default async function MediaHubPage({ searchParams }: { searchParams: Pro
   const supabase = await createClient();
   let aq = supabase.from("media_assets").select("*").order("category").order("position").order("title_en");
   if (!preview) aq = aq.eq("status", "published");
-  const [{ data: assets }, { data: versions }, { data: terms }, { data: legal }] = await Promise.all([
+  const [{ data: assets }, { data: versions }, { data: terms }, { data: legal }, { data: favs }] = await Promise.all([
     aq,
     supabase.from("media_versions").select("*").eq("is_current", true),
     supabase.from("material_terms_acceptances").select("accepted_at").eq("user_id", me.id).maybeSingle(),
     supabase.from("legal_pages").select("title_en,title_tr,body_en,body_tr").eq("slug", "material").maybeSingle(),
+    supabase.from("favorites").select("target_id").eq("user_id", me.id).eq("kind", "media_asset"),
   ]);
+  const favSet = new Set((favs ?? []).map((f) => f.target_id));
   const previews = await signPaths(supabase, "media-previews", (assets ?? []).map((a) => a.preview_path));
   const byAsset = new Map((versions ?? []).map((v) => [v.asset_id, v]));
   const items: HubItem[] = (assets ?? []).map((raw) => {
@@ -42,6 +44,7 @@ export default async function MediaHubPage({ searchParams }: { searchParams: Pro
       draft: a.status !== "published",
       visibility: a.visibility,
       badge: a.status === "published" ? freshness(a.published_at, a.content_updated_at) : null,
+      favorite: favSet.has(a.id),
       version: v ? {
         number: v.version_number, fileName: v.file_name, size: v.file_size, format: v.format, codec: v.codec, resolution: v.resolution,
         frameRate: v.frame_rate, duration: v.duration_seconds != null ? formatDuration(v.duration_seconds) : null, date: formatDate(v.created_at, locale),

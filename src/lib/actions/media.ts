@@ -1,4 +1,6 @@
 "use server";
+import { after } from "next/server";
+import { flushEmails } from "@/lib/email";
 import { revalidatePath } from "next/cache";
 import { getProfile, requireStaff } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
@@ -22,6 +24,7 @@ export async function addMediaVersion(assetId: string, v: VersionInput): Promise
   });
   if (error) return { ok: false, error: error.message };
   revalidatePath("/", "layout");
+  after(flushEmails);
   return { ok: true };
 }
 

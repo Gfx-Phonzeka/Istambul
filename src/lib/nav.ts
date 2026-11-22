@@ -39,11 +39,6 @@ export const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
 
 export const ALL_NAV: NavItem[] = NAV_GROUPS.flatMap((g) => g.items);
 
-/** Sections still under construction, with the stage they arrive in. */
-export const PLACEHOLDER_SECTIONS: Record<string, string> = {
-  requests: "requests",
-};
-
 export function isActive(pathname: string, href: string) {
   return href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(href + "/");
 }
