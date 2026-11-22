@@ -2,7 +2,7 @@
 import { useActionState, useRef } from "react";
 import { changePassword, requestDeletion, updateProfile } from "@/lib/actions/profile";
 import { useI18n } from "@/lib/i18n/client";
-import { FormError } from "@/components/FormMessage";
+import { FieldError, FormError } from "@/components/FormMessage";
 import { COUNTRIES } from "@/lib/countries";
 import { ConfirmButton } from "@/components/ui/ConfirmButton";
 
@@ -11,13 +11,15 @@ interface P {
   preferred_language: string; notify_email: boolean;
 }
 
+const AUTOCOMPLETE: Record<string, string> = {"first_name": "given-name", "last_name": "family-name", "organization": "organization", "job_title": "organization-title", "phone": "tel"};
+
 export function DetailsForm({ profile }: { profile: P }) {
   const { t } = useI18n();
   const [state, action, pending] = useActionState(updateProfile, undefined);
   const input = (name: keyof P, label: string, type = "text") => (
     <div className="field">
       <label htmlFor={name}>{label}</label>
-      <input id={name} name={name} type={type} className="input" defaultValue={String(profile[name])} required />
+      <input id={name} name={name} type={type} className="input" autoComplete={AUTOCOMPLETE[name as string] ?? "off"} defaultValue={String(profile[name])} required />
     </div>
   );
   return (
@@ -30,7 +32,7 @@ export function DetailsForm({ profile }: { profile: P }) {
         {input("organization", t("auth.organization"))}
         <div className="field">
           <label htmlFor="country">{t("auth.country")}</label>
-          <select id="country" name="country" className="select" defaultValue={profile.country}>
+          <select id="country" name="country" className="select" autoComplete="country-name" defaultValue={profile.country}>
             {!COUNTRIES.includes(profile.country) && <option value={profile.country}>{profile.country}</option>}
             {COUNTRIES.map((c) => <option key={c} value={c}>{c}</option>)}
           </select>
@@ -52,7 +54,7 @@ export function DetailsForm({ profile }: { profile: P }) {
         <input type="checkbox" name="notify_email" defaultChecked={profile.notify_email} />
         <span>{t("profile.notifyEmail")}</span>
       </label>
-      <div><button className="btn btn-primary" disabled={pending}>{pending ? t("common.loading") : t("common.save")}</button></div>
+      <div><button className="btn btn-primary" disabled={pending}>{pending ? t("common.saving") : t("common.save")}</button></div>
     </form>
   );
 }
@@ -70,13 +72,15 @@ export function PasswordForm() {
           <input id="new_password" name="password" type="password" className="input" autoComplete="new-password" required minLength={10}
             pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{10,}" title={t("auth.passwordRules")} />
           <span className="hint">{t("auth.passwordRules")}</span>
+          <FieldError state={state} name="new_password" />
         </div>
         <div className="field">
           <label htmlFor="new_password_confirm">{t("auth.confirmPassword")}</label>
           <input id="new_password_confirm" name="password_confirm" type="password" className="input" autoComplete="new-password" required />
+          <FieldError state={state} name="new_password_confirm" />
         </div>
       </div>
-      <div><button className="btn" disabled={pending}>{t("profile.changePassword")}</button></div>
+      <div><button className="btn" disabled={pending}>{pending ? t("common.saving") : t("profile.changePassword")}</button></div>
     </form>
   );
 }

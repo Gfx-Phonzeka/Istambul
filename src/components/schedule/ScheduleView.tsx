@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useI18n } from "@/lib/i18n/client";
 import { Badge, EmptyState } from "@/components/ui";
 import { FavoriteButton } from "@/components/FavoriteButton";
+import { useUrlState, useUrlFlag } from "@/lib/hooks/useUrlState";
 
 export interface SessionRow {
   id: string; code: string; sportId: string; sport: string; venueId: string; venue: string; venueSlug: string;
@@ -17,26 +18,29 @@ export function ScheduleView({ sessions, sports, venues, focus, favSports = [] }
 }) {
   const { t, locale } = useI18n();
   const loc = locale === "tr" ? "tr-TR" : "en-GB";
-  const [tzMode, setTzMode] = useState<"trt" | "local">("trt");
+  const [tzModeRaw, setTzMode] = useUrlState("tz", "trt");
+  const tzMode = tzModeRaw === "local" ? "local" : "trt";
   const [localTz, setLocalTz] = useState<string | null>(null);
   useEffect(() => { setLocalTz(Intl.DateTimeFormat().resolvedOptions().timeZone); }, []);
   const tz = tzMode === "trt" || !localTz ? TRT : localTz;
 
-  const [view, setView] = useState<"list" | "timeline">("list");
-  const [group, setGroup] = useState<"day" | "sport" | "venue">("day");
-  const [sport, setSport] = useState("all");
-  const [venue, setVenue] = useState("all");
-  const [medal, setMedal] = useState(false);
-  const [oq, setOq] = useState(false);
-  const [q, setQ] = useState("");
+  const [viewRaw, setView] = useUrlState("view", "list");
+  const view = viewRaw === "timeline" ? "timeline" : "list";
+  const [groupRaw, setGroup] = useUrlState("group", "day");
+  const group = (["day", "sport", "venue"].includes(groupRaw) ? groupRaw : "day") as "day" | "sport" | "venue";
+  const [sport, setSport] = useUrlState("sport", "all");
+  const [venue, setVenue] = useUrlState("venue", "all");
+  const [medal, setMedal] = useUrlFlag("medal");
+  const [oq, setOq] = useUrlFlag("oq");
+  const [q, setQ] = useUrlState("q", "");
 
   const dayKey = (iso: string) => new Intl.DateTimeFormat("en-CA", { timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(iso));
   const dayLabel = (key: string) => new Intl.DateTimeFormat(loc, { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" }).format(new Date(`${key}T12:00:00Z`));
   const time = (iso: string) => new Intl.DateTimeFormat(loc, { hour: "2-digit", minute: "2-digit", timeZone: tz }).format(new Date(iso));
 
   const days = useMemo(() => [...new Set(sessions.map((s) => dayKey(s.start)))].sort(), [sessions, tz]); // eslint-disable-line react-hooks/exhaustive-deps
-  const [day, setDay] = useState<string>("all");
-  const [chosenTimelineDay, setTimelineDay] = useState<string>(days[0] ?? "");
+  const [day, setDay] = useUrlState("day", "all");
+  const [chosenTimelineDay, setTimelineDay] = useUrlState("tday", days[0] ?? "");
   const timelineDay = days.includes(chosenTimelineDay) ? chosenTimelineDay : (days[0] ?? "");
 
   const clearFilters = () => { setSport("all"); setVenue("all"); setMedal(false); setOq(false); setQ(""); setDay("all"); };
@@ -83,7 +87,7 @@ export function ScheduleView({ sessions, sports, venues, focus, favSports = [] }
       </div>
 
       <div className="row">
-        <input type="search" className="input" style={{ flex: 1, minWidth: 180 }} placeholder={t("schedule.searchPlaceholder")} value={q} onChange={(e) => setQ(e.target.value)} aria-label={t("common.search")} />
+        <input type="search" className="input" autoComplete="off" style={{ flex: 1, minWidth: 180 }} placeholder={t("schedule.searchPlaceholder")} value={q} onChange={(e) => setQ(e.target.value)} aria-label={t("common.search")} />
         <select className="select" style={{ width: "auto" }} value={sport} onChange={(e) => setSport(e.target.value)} aria-label={t("venues.sport")}>
           <option value="all">{t("venues.allSports")}</option>
           {sports.map((s) => <option key={s.id} value={s.id}>{s.title}</option>)}

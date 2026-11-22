@@ -16,7 +16,7 @@ function FileRow({ f }: { f: VenueFileRow }) {
   const [pending, start] = useTransition();
   return (
     <li className="row">
-      {f.kind === "photo" && f.url && <img src={f.url} alt="" style={{ width: 80, height: 45, objectFit: "cover", borderRadius: 4 }} />}
+      {f.kind === "photo" && f.url && <img src={f.url} alt="" width={80} height={45} loading="lazy" style={{ width: 80, height: 45, objectFit: "cover", borderRadius: 4 }} />}
       <input className="input" style={{ flex: 1, minWidth: 140 }} value={en} onChange={(e) => setEn(e.target.value)} placeholder={`${t("cms.fields.title")} (EN)`} />
       <input className="input" style={{ flex: 1, minWidth: 140 }} value={tr} onChange={(e) => setTr(e.target.value)} placeholder={`${t("cms.fields.title")} (TR)`} />
       <span className="muted small">{f.file_name}</span>

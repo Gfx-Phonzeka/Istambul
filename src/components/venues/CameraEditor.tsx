@@ -6,6 +6,7 @@ import { getPlanCameras, saveCameras, type CameraInput } from "@/lib/actions/ven
 import { translateFields } from "@/lib/actions/translate";
 import { CameraMap } from "./CameraMap";
 import { CameraLegend } from "./PlanViewer";
+import { useUnsavedGuard } from "@/lib/hooks/useUnsavedGuard";
 
 export const CAMERA_TYPES = ["hard", "handheld", "rf", "crane", "polecam", "rail", "aerial", "beauty", "steadicam", "minicam", "underwater", "ptz", "other"];
 
@@ -22,6 +23,7 @@ export function CameraEditor({ planId, shape, initial, otherPlans }: {
   const [cams, setCams] = useState<Cam[]>(initial);
   const [selected, setSelected] = useState<string | null>(null);
   const [dirty, setDirty] = useState(false);
+  useUnsavedGuard(dirty);
   const [msg, setMsg] = useState<{ tone: "success" | "danger"; text: string } | null>(null);
   const [copyFrom, setCopyFrom] = useState("");
   const [pending, start] = useTransition();

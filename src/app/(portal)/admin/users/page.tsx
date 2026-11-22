@@ -38,7 +38,7 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
       <Tabs items={TABS.map((s) => ({ href: `/admin/users?status=${s}`, label: `${t(`admin.tabs.${s}`)} (${count(s)})`, active: s === current }))} />
       <form className="row" role="search">
         <input type="hidden" name="status" value={current} />
-        <input name="q" type="search" className="input" defaultValue={q} placeholder={t("common.search")} style={{ flex: 1, minWidth: 0 }} />
+        <input name="q" type="search" className="input" aria-label={t("common.search")} autoComplete="off" defaultValue={q} placeholder={`${t("common.search")}…`} style={{ flex: 1, minWidth: 0 }} />
         <button className="btn">{t("common.search")}</button>
       </form>
       {users.length === 0 ? (

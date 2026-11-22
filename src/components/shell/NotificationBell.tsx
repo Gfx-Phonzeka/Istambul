@@ -58,7 +58,7 @@ export function NotificationBell({ items }: { items: NotificationRow[] }) {
                   <>
                     <div>{pick(locale, n.title_en, n.title_tr)}</div>
                     <div className="muted" style={{ fontSize: "var(--text-xs)" }}>
-                      {new Date(n.created_at).toLocaleString(locale === "tr" ? "tr-TR" : "en-GB", { dateStyle: "medium", timeStyle: "short" })}
+                      {new Date(n.created_at).toLocaleString(locale === "tr" ? "tr-TR" : "en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Europe/Istanbul" })}
                     </div>
                   </>
                 );

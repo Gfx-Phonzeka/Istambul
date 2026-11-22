@@ -5,6 +5,7 @@ import { downloadZip } from "client-zip";
 import { useI18n } from "@/lib/i18n/client";
 import { Badge, EmptyState } from "@/components/ui";
 import { CameraMap, type CameraPoint } from "./CameraMap";
+import { useUrlState } from "@/lib/hooks/useUrlState";
 
 export interface OverviewPlan {
   id: string; title: string; venueTitle: string; venueSlug: string; sportId: string; sportTitle: string; cluster: string; clusterTitle: string;
@@ -17,9 +18,9 @@ export function CameraMapsOverview({ plans, clusters, sports }: {
   plans: OverviewPlan[]; clusters: { slug: string; title: string }[]; sports: { id: string; title: string }[];
 }) {
   const { t, locale } = useI18n();
-  const [cluster, setCluster] = useState("all");
-  const [sport, setSport] = useState("all");
-  const [level, setLevel] = useState("all");
+  const [cluster, setCluster] = useUrlState("cluster", "all");
+  const [sport, setSport] = useUrlState("sport", "all");
+  const [level, setLevel] = useUrlState("level", "all");
   const [pack, setPack] = useState<{ done: number; total: number } | null>(null);
   const [packError, setPackError] = useState(false);
   const shown = plans.filter((p) => (cluster === "all" || p.cluster === cluster) && (sport === "all" || p.sportId === sport) && (level === "all" || p.level === level));

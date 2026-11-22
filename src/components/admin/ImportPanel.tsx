@@ -60,7 +60,7 @@ export function ImportPanel({ dataset }: { dataset: "sessions" | "feeds" }) {
         <li>{t("import.step1")}</li><li>{t("import.step2")}</li><li>{t("import.step3")}</li>
       </ol>
       <div className="row">
-        <input ref={input} type="file" accept=".xlsx,.csv,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden
+        <input ref={input} type="file" aria-label="File" tabIndex={-1} accept=".xlsx,.csv,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden
           onChange={(e) => { const f = e.target.files?.[0]; if (f) onFile(f); e.target.value = ""; }} />
         <button type="button" className="btn btn-primary" disabled={pending} onClick={() => input.current?.click()}>{t("import.choose")}</button>
         {file && <span className="small muted">{file.name}</span>}

@@ -37,11 +37,11 @@ export function RequestForm({ venues, sports, contact }: {
         </div>
         <div className="field">
           <label htmlFor="start_date">{t("requests.from")}</label>
-          <input id="start_date" name="start_date" type="date" className="input" />
+          <input id="start_date" name="start_date" type="date" className="input" autoComplete="off" />
         </div>
         <div className="field">
           <label htmlFor="end_date">{t("requests.to")}</label>
-          <input id="end_date" name="end_date" type="date" className="input" />
+          <input id="end_date" name="end_date" type="date" className="input" autoComplete="off" />
         </div>
       </div>
       <div className="field">
@@ -50,11 +50,11 @@ export function RequestForm({ venues, sports, contact }: {
       </div>
       <h3 style={{ margin: 0 }}>{t("requests.contact")}</h3>
       <div className="form-grid">
-        <div className="field"><label htmlFor="contact_name">{t("cms.fields.name")} *</label><input id="contact_name" name="contact_name" className="input" required defaultValue={contact.name} /></div>
-        <div className="field"><label htmlFor="contact_email">{t("common.email")} *</label><input id="contact_email" name="contact_email" type="email" className="input" required defaultValue={contact.email} /></div>
-        <div className="field"><label htmlFor="contact_phone">{t("auth.phone")}</label><input id="contact_phone" name="contact_phone" type="tel" className="input" defaultValue={contact.phone} /></div>
+        <div className="field"><label htmlFor="contact_name">{t("cms.fields.name")} *</label><input id="contact_name" name="contact_name" className="input" autoComplete="name" required defaultValue={contact.name} /></div>
+        <div className="field"><label htmlFor="contact_email">{t("common.email")} *</label><input id="contact_email" name="contact_email" type="email" className="input" autoComplete="email" spellCheck={false} required defaultValue={contact.email} /></div>
+        <div className="field"><label htmlFor="contact_phone">{t("auth.phone")}</label><input id="contact_phone" name="contact_phone" type="tel" className="input" autoComplete="tel" defaultValue={contact.phone} /></div>
       </div>
-      <div><button className="btn btn-primary" disabled={pending}>{pending ? t("common.loading") : t("requests.submit")}</button></div>
+      <div><button className="btn btn-primary" disabled={pending}>{pending ? t("common.sending") : t("requests.submit")}</button></div>
     </form>
   );
 }

@@ -49,7 +49,7 @@ export function MediaVersionsPanel({ assetId, versions, previewUrl, previewKind,
   const [msg, setMsg] = useState<string | null>(null);
   const current = versions.find((v) => v.is_current);
   const archived = versions.filter((v) => !v.is_current);
-  const date = (d: string) => new Date(d).toLocaleString(locale === "tr" ? "tr-TR" : "en-GB", { dateStyle: "medium", timeStyle: "short" });
+  const date = (d: string) => new Date(d).toLocaleString(locale === "tr" ? "tr-TR" : "en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Europe/Istanbul" });
 
   const saveNew = (s: Specs) => start(async () => {
     if (!uploaded) return;
@@ -114,7 +114,7 @@ export function MediaVersionsPanel({ assetId, versions, previewUrl, previewKind,
         <p className="hint" style={{ margin: 0 }}>{t("mediaHub.admin.previewHelp")}</p>
         {previewUrl && (previewKind === "video"
           ? <video src={previewUrl} muted loop autoPlay playsInline style={{ maxWidth: 320, borderRadius: 8 }} />
-          : <img src={previewUrl} alt="" style={{ maxWidth: 320, borderRadius: 8 }} />)}
+          : <img src={previewUrl} alt="" width={320} height={180} decoding="async" style={{ maxWidth: 320, width: "100%", height: "auto", borderRadius: 8 }} />)}
         <div className="row">
           <ResumableUpload bucket="media-previews" prefix={`assets/${assetId}`} accept="image/png,image/jpeg,image/webp,video/mp4,video/webm"
             label={previewUrl ? t("mediaHub.admin.replacePreview") : t("mediaHub.admin.uploadPreview")}

@@ -46,8 +46,18 @@ export function CameraMap({
             onSelect?.(c.id);
             if (onMove) { dragging.current = c.id; (e.target as Element).setPointerCapture?.(e.pointerId); }
           }}
-          tabIndex={onSelect ? 0 : undefined}
-          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onSelect?.(c.id); }}
+          tabIndex={onSelect || onMove ? 0 : undefined}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onSelect?.(c.id); return; }
+            // Keyboard alternative to dragging: arrow keys move the camera (Shift = bigger step).
+            const step = e.shiftKey ? 0.05 : 0.01;
+            const d = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step] }[e.key];
+            if (d && onMove) {
+              e.preventDefault();
+              onSelect?.(c.id);
+              onMove(c.id, Math.min(1, Math.max(0, c.x + d[0])), Math.min(1, Math.max(0, c.y + d[1])));
+            }
+          }}
           aria-label={`Camera ${c.number}`}
         >
           <CameraMarker c={c} selected={selectedId === c.id} pal={camPal} />

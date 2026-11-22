@@ -37,8 +37,8 @@ export async function updateProfile(_: FormState, form: FormData): Promise<FormS
 
 export async function changePassword(_: FormState, form: FormData): Promise<FormState> {
   const password = String(form.get("password") ?? "");
-  if (password !== String(form.get("password_confirm") ?? "")) return { error: "auth.errors.password_mismatch" };
-  if (!PASSWORD_RE.test(password)) return { error: "auth.errors.weak_password" };
+  if (password !== String(form.get("password_confirm") ?? "")) return { error: "auth.errors.password_mismatch", field: "new_password_confirm" };
+  if (!PASSWORD_RE.test(password)) return { error: "auth.errors.weak_password", field: "new_password" };
   const supabase = await createClient();
   const { error } = await supabase.auth.updateUser({ password });
   if (error) return { error: "auth.errors.generic" };

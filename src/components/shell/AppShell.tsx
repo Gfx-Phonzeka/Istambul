@@ -49,8 +49,8 @@ export function AppShell({
   const navBody = (onNavigate?: () => void) => (
     <>
       <Link href="/" className="brand rail-brand" onClick={onNavigate}>
-        <span className="brand-mark">IST<br />27</span>
-        <span className="brand-text">{t("common.appName")}</span>
+        <span className="brand-mark" translate="no">IST<br />27</span>
+        <span className="brand-text" translate="no">{t("common.appName")}</span>
       </Link>
       {groups.map((g) => (
         <div key={g.title} className="nav-group">
@@ -68,6 +68,7 @@ export function AppShell({
 
   return (
     <>
+      <a href="#main" className="skip-link">{t("common.skipToContent")}</a>
       <PageViewTracker />
       <div className="shell">
         <nav className="sidebar sidebar-rail" aria-label={t("common.menu")}>
@@ -88,8 +89,8 @@ export function AppShell({
               <Icon name="menu" />
             </button>
             <Link href="/" className="brand topbar-brand">
-              <span className="brand-mark">IST<br />27</span>
-              <span className="brand-text">{t("common.appName")}</span>
+              <span className="brand-mark" translate="no">IST<br />27</span>
+              <span className="brand-text" translate="no">{t("common.appName")}</span>
             </Link>
             <form
               className="topbar-search"
@@ -101,7 +102,7 @@ export function AppShell({
             >
               <Icon name="search" className="topbar-search-icon" />
               <label className="sr-only" htmlFor="global-search">{t("common.search")}</label>
-              <input id="global-search" className="input" type="search" placeholder={t("common.searchPlaceholder")} value={q} onChange={(e) => setQ(e.target.value)} />
+              <input id="global-search" className="input" type="search" autoComplete="off" placeholder={t("common.searchPlaceholder")} value={q} onChange={(e) => setQ(e.target.value)} />
             </form>
             <div className="topbar-actions">
               <Link href="/search" className="icon-btn only-mobile" aria-label={t("common.search")}><Icon name="search" /></Link>
@@ -110,7 +111,7 @@ export function AppShell({
               <UserMenu name={userName} roleLabel={roleLabel} staff={staff} signOut={signOut} />
             </div>
           </header>
-          <main className="main" id="main">
+          <main className="main" id="main" tabIndex={-1}>
             <div className="main-inner">{children}</div>
           </main>
         </div>

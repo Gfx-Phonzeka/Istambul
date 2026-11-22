@@ -21,7 +21,7 @@ export function DrawingPanel({ planId, drawings, cameras, isAdmin }: {
   const [pending, start] = useTransition();
   const current = drawings.find((d) => d.is_current);
   const archived = drawings.filter((d) => !d.is_current);
-  const date = (d: string) => new Date(d).toLocaleString(locale === "tr" ? "tr-TR" : "en-GB", { dateStyle: "medium", timeStyle: "short" });
+  const date = (d: string) => new Date(d).toLocaleString(locale === "tr" ? "tr-TR" : "en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Europe/Istanbul" });
 
   return (
     <section className="card stack">

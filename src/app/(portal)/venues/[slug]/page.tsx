@@ -99,7 +99,7 @@ export default async function VenuePage({ params, searchParams }: { params: Prom
           <div className="media-grid">
             {photos.map((p) => signed[p.file_path] && (
               <figure key={p.id} className="card" style={{ margin: 0, padding: "var(--space-2)" }}>
-                <a href={signed[p.file_path]} target="_blank" rel="noreferrer"><img src={signed[p.file_path]} alt={pick(locale, p.title_en, p.title_tr)} style={{ width: "100%", borderRadius: 8 }} /></a>
+                <a href={signed[p.file_path]} target="_blank" rel="noreferrer" aria-label={`${t("common.openPhoto")}: ${pick(locale, p.title_en, p.title_tr) || pick(locale, v.title_en, v.title_tr)}`}><img src={signed[p.file_path]} alt={pick(locale, p.title_en, p.title_tr)} width={1280} height={720} loading="lazy" decoding="async" style={{ width: "100%", height: "auto", borderRadius: 8 }} /></a>
                 {pick(locale, p.title_en, p.title_tr) && <figcaption className="small muted">{pick(locale, p.title_en, p.title_tr)}</figcaption>}
               </figure>
             ))}

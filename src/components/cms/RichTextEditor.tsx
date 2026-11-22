@@ -68,7 +68,7 @@ function Toolbar({ editor }: { editor: Editor }) {
         🔗
       </Btn>
       <Btn label={t("cms.editor.image")} on={() => fileRef.current?.click()} disabled={uploading}>{uploading ? "…" : "🖼"}</Btn>
-      <input ref={fileRef} type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden
+      <input ref={fileRef} type="file" aria-label="Image file" tabIndex={-1} accept="image/png,image/jpeg,image/webp,image/gif" hidden
         onChange={(e) => { const f = e.target.files?.[0]; if (f) upload(f); e.target.value = ""; }} />
       <Btn
         label={t("cms.editor.video")}

@@ -33,11 +33,11 @@ export default async function AdminRequests({ searchParams }: { searchParams: Pr
         ...REQUEST_STATUSES.map((s) => ({ href: href({ status: s }), label: `${t(`requests.status.${s}`)} (${count(s)})`, active: sp.status === s }))]} />
       <form className="row">
         {sp.status && <input type="hidden" name="status" value={sp.status} />}
-        <select name="type" className="select" style={{ width: "auto" }} defaultValue={sp.type ?? ""}>
+        <select name="type" className="select" aria-label={t("requests.allTypes")} style={{ width: "auto" }} defaultValue={sp.type ?? ""}>
           <option value="">{t("requests.allTypes")}</option>
           {["unilateral", "additional_production", "other"].map((x) => <option key={x} value={x}>{t(`requests.types.${x}`)}</option>)}
         </select>
-        <select name="venue" className="select" style={{ width: "auto" }} defaultValue={sp.venue ?? ""}>
+        <select name="venue" className="select" aria-label={t("schedule.allVenues")} style={{ width: "auto" }} defaultValue={sp.venue ?? ""}>
           <option value="">{t("schedule.allVenues")}</option>
           {[...V.entries()].map(([id, title]) => <option key={id} value={id}>{title}</option>)}
         </select>

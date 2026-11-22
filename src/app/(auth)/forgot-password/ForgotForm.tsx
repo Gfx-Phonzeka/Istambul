@@ -19,9 +19,9 @@ export function ForgotForm() {
         <>
           <div className="field">
             <label htmlFor="email">{t("auth.email")}</label>
-            <input id="email" name="email" type="email" className="input" autoComplete="email" required />
+            <input id="email" name="email" type="email" className="input" autoComplete="email" required spellCheck={false} />
           </div>
-          <button className="btn btn-primary btn-block" disabled={pending}>{pending ? t("common.loading") : t("auth.sendLink")}</button>
+          <button className="btn btn-primary btn-block" disabled={pending}>{pending ? t("common.sending") : t("auth.sendLink")}</button>
         </>
       )}
       <Link href="/login" className="small">← {t("auth.signIn")}</Link>

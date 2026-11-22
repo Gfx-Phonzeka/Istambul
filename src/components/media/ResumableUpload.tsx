@@ -115,7 +115,7 @@ export function ResumableUpload({ bucket, prefix, accept, label, onUploaded }: {
   const pct = progress.total ? Math.floor((progress.sent / progress.total) * 100) : 0;
   return (
     <div className="upload">
-      <input ref={inputRef} type="file" accept={accept} hidden onChange={(e) => { const f = e.target.files?.[0]; if (f) void start(f); e.target.value = ""; }} />
+      <input ref={inputRef} type="file" aria-label="File" tabIndex={-1} accept={accept} hidden onChange={(e) => { const f = e.target.files?.[0]; if (f) void start(f); e.target.value = ""; }} />
       {(state === "idle" || state === "done" || state === "error") && (
         <button type="button" className="btn btn-sm" onClick={() => inputRef.current?.click()}>{label}</button>
       )}

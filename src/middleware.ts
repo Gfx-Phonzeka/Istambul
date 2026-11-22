@@ -6,5 +6,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|pdf.worker.min.mjs|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"],
+  matcher: ["/((?!_next/static|pdf.worker.min.mjs|fonts/|.*\\.(?:svg|png|jpg|jpeg|gif|webp|woff2|txt)$).*)"],
 };

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useI18n } from "@/lib/i18n/client";
 import { Badge, EmptyState } from "@/components/ui";
 import { VenueMap, type MapVenue } from "./VenueMap";
+import { useUrlState } from "@/lib/hooks/useUrlState";
 
 export interface VenueCard extends MapVenue {
   clusterTitle: string; address: string | null; level: string | null; capacity: number | null; photo: string | null;
@@ -14,8 +15,8 @@ export function VenuesExplorer({ venues, clusters, sports }: {
   venues: VenueCard[]; clusters: { slug: string; title: string }[]; sports: { id: string; title: string }[];
 }) {
   const { t } = useI18n();
-  const [cluster, setCluster] = useState("all");
-  const [sport, setSport] = useState("all");
+  const [cluster, setCluster] = useUrlState("cluster", "all");
+  const [sport, setSport] = useUrlState("sport", "all");
   const [hover, setHover] = useState<string | null>(null);
   const shown = venues.filter((v) => (cluster === "all" || v.cluster === cluster) && (sport === "all" || v.sports.some((s) => s.id === sport)));
   return (
@@ -44,7 +45,7 @@ export function VenuesExplorer({ venues, clusters, sports }: {
             <Link key={v.id} href={`/venues/${v.slug}`} className={`card card-link media-card${hover === v.id ? " is-selected" : ""}`}
               onMouseEnter={() => setHover(v.id)} onMouseLeave={() => setHover(null)}>
               <div className="media-preview">
-                {v.photo ? <img src={v.photo} alt="" loading="lazy" /> : <span className="venue-num">{v.n}</span>}
+                {v.photo ? <img src={v.photo} alt="" width={640} height={360} loading="lazy" decoding="async" /> : <span className="venue-num">{v.n}</span>}
                 <div className="media-badges">
                   <Badge tone="primary">{v.n}</Badge>
                   {v.level && <Badge>{t(`venues.levels.${v.level}`)}</Badge>}

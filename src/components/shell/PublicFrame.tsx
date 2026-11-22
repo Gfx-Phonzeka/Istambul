@@ -16,14 +16,15 @@ export async function PublicFrame({ children, wide = false }: { children: ReactN
   const { t } = await getT();
   return (
     <div className="public">
+      <a href="#main" className="skip-link">{t("common.skipToContent")}</a>
       <aside className="public-panel">
         <Link href="/login" className="brand public-brand">
-          <span className="brand-mark">IST<br />27</span>
-          <span className="brand-text">{t("common.appName")}</span>
+          <span className="brand-mark" translate="no">IST<br />27</span>
+          <span className="brand-text" translate="no">{t("common.appName")}</span>
         </Link>
         <div className="public-intro">
           <p className="public-games">{t("common.games").split(" · ").map((part) => <span key={part}>{part}</span>)}</p>
-          <p className="public-host">{t("common.hostBroadcaster")}</p>
+          <p className="public-host" translate="no">{t("common.hostBroadcaster")}</p>
         </div>
         <div className="public-inside">
           <h2>{t("common.insidePortal")}</h2>
@@ -40,7 +41,7 @@ export async function PublicFrame({ children, wide = false }: { children: ReactN
           </ul>
         </div>
       </aside>
-      <main className="public-main">
+      <main className="public-main" id="main" tabIndex={-1}>
         <div className="public-top"><LangSwitch /></div>
         <div className={`public-content${wide ? " wide" : ""}`}><div className="card">{children}</div></div>
       </main>

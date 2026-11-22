@@ -2,6 +2,7 @@
 import { useMemo, useState } from "react";
 import { useI18n } from "@/lib/i18n/client";
 import { Badge, EmptyState } from "@/components/ui";
+import { useUrlState } from "@/lib/hooks/useUrlState";
 
 export interface FeedRow {
   id: string; code: string; type: string; title: string; venue: string; venueSlug: string | null; sport: string;
@@ -19,9 +20,9 @@ export function FeedGrid({ feeds }: { feeds: FeedRow[] }) {
   const time = (iso: string) => new Intl.DateTimeFormat(loc, { hour: "2-digit", minute: "2-digit", timeZone: TRT }).format(new Date(iso));
   const days = useMemo(() => [...new Set(feeds.map((f) => dayKey(f.start)))].sort(), [feeds]); // eslint-disable-line react-hooks/exhaustive-deps
   const channels = useMemo(() => [...new Set(feeds.map((f) => f.channel))].sort(), [feeds]);
-  const [day, setDay] = useState(days[0] ?? "all");
-  const [type, setType] = useState("all");
-  const [channel, setChannel] = useState("all");
+  const [day, setDay] = useUrlState("fday", days[0] ?? "all");
+  const [type, setType] = useUrlState("ftype", "all");
+  const [channel, setChannel] = useUrlState("channel", "all");
   const shown = feeds.filter((f) => (day === "all" || dayKey(f.start) === day) && (type === "all" || f.type === type) && (channel === "all" || f.channel === channel));
   const byDay = new Map<string, FeedRow[]>();
   shown.forEach((f) => { const k = dayKey(f.start); if (!byDay.has(k)) byDay.set(k, []); byDay.get(k)!.push(f); });

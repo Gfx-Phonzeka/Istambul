@@ -9,6 +9,7 @@ import { translateFields } from "@/lib/actions/translate";
 import { useI18n } from "@/lib/i18n/client";
 import { Badge } from "@/components/ui";
 import { ConfirmButton } from "@/components/ui/ConfirmButton";
+import { useUnsavedGuard } from "@/lib/hooks/useUnsavedGuard";
 
 const RichTextEditor = dynamic(() => import("./RichTextEditor").then((m) => m.RichTextEditor), {
   ssr: false,
@@ -33,6 +34,7 @@ export function ContentEditor({
   const type = CONTENT_TYPES[typeKey];
   const [values, setValues] = useState<Values>(initial);
   const [dirty, setDirty] = useState(false);
+  useUnsavedGuard(dirty);
   const [msg, setMsg] = useState<{ tone: "success" | "danger" | "info"; text: string; at?: "translate" } | null>(null);
   const [errField, setErrField] = useState<string | null>(null);
   const [pending, start] = useTransition();
@@ -69,7 +71,7 @@ export function ContentEditor({
     if (!res.ok) {
       setMsg({ tone: "danger", text: t(res.error) });
       setErrField(res.field ?? null);
-      if (res.field) document.getElementById(`f-${res.field}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+      if (res.field) { const el = document.getElementById(`f-${res.field}`); el?.scrollIntoView({ behavior: "smooth", block: "center" }); (el?.querySelector("[contenteditable]") as HTMLElement | null ?? el)?.focus({ preventScroll: true }); }
       return null;
     }
     setDirty(false);
@@ -117,7 +119,7 @@ export function ContentEditor({
   const input = (f: Field, col: string, lang?: "en" | "tr") => {
     const v = values[col] ?? "";
     const invalid = errField === col;
-    const common = { id: `f-${col}`, "aria-invalid": invalid || undefined };
+    const common = { id: `f-${col}`, name: col, autoComplete: "off", "aria-invalid": invalid || undefined };
     switch (f.kind) {
       case "richtext":
         return <RichTextEditor id={`f-${col}`} value={v} onChange={(h) => set(col, h)} />;
@@ -150,7 +152,7 @@ export function ContentEditor({
       case "date":
         return <input {...common} className="input" type="date" value={v} onChange={(e) => set(col, e.target.value)} style={{ maxWidth: 200 }} />;
       case "email":
-        return <input {...common} className="input" type="email" value={v} onChange={(e) => set(col, e.target.value)} />;
+        return <input {...common} className="input" type="email" spellCheck={false} value={v} onChange={(e) => set(col, e.target.value)} />;
       default:
         return <input {...common} className="input" type="text" value={v} onChange={(e) => set(col, e.target.value)} lang={lang} />;
     }

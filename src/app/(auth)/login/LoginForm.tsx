@@ -19,13 +19,13 @@ export function LoginForm({ next, notice }: { next?: string; notice?: string }) 
       <input type="hidden" name="next" value={next ?? "/"} />
       <div className="field">
         <label htmlFor="email">{t("auth.email")}</label>
-        <input id="email" name="email" type="email" className="input" autoComplete="email" required />
+        <input id="email" name="email" type="email" className="input" autoComplete="email" required spellCheck={false} />
       </div>
       <div className="field">
         <label htmlFor="password">{t("auth.password")}</label>
         <input id="password" name="password" type="password" className="input" autoComplete="current-password" required />
       </div>
-      <button className="btn btn-primary btn-block" disabled={pending}>{pending ? t("common.loading") : t("auth.signIn")}</button>
+      <button className="btn btn-primary btn-block" disabled={pending}>{pending ? t("common.signingIn") : t("auth.signIn")}</button>
       <div className="row-between small">
         <Link href="/forgot-password">{t("auth.forgot")}</Link>
         <span>

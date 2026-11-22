@@ -32,15 +32,15 @@ export default async function SettingsPage() {
             <div className="form-grid">
               <div className="field">
                 <label htmlFor={`${key}-at`}>{t("admin.dateTime")}</label>
-                <input id={`${key}-at`} name="at" type="datetime-local" className="input" defaultValue={toIstanbulLocal(v.at)} required />
+                <input id={`${key}-at`} name="at" type="datetime-local" className="input" autoComplete="off" defaultValue={toIstanbulLocal(v.at)} required />
               </div>
               <div className="field">
                 <label htmlFor={`${key}-label_en`}>{t("admin.labelEn")}</label>
-                <input id={`${key}-label_en`} name="label_en" className="input" defaultValue={v.label_en ?? ""} />
+                <input id={`${key}-label_en`} name="label_en" className="input" autoComplete="off" defaultValue={v.label_en ?? ""} />
               </div>
               <div className="field">
                 <label htmlFor={`${key}-label_tr`}>{t("admin.labelTr")}</label>
-                <input id={`${key}-label_tr`} name="label_tr" className="input" defaultValue={v.label_tr ?? ""} />
+                <input id={`${key}-label_tr`} name="label_tr" className="input" autoComplete="off" defaultValue={v.label_tr ?? ""} />
               </div>
             </div>
             <div><button className="btn btn-primary">{t("common.save")}</button></div>

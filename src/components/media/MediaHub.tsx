@@ -7,6 +7,7 @@ import { Modal } from "@/components/ui/Modal";
 import { acceptMaterialTerms } from "@/lib/actions/media";
 import { fmtBytes } from "@/lib/bytes";
 import { FavoriteButton } from "@/components/FavoriteButton";
+import { useUrlState } from "@/lib/hooks/useUrlState";
 
 export interface HubItem {
   id: string; category: string; subtype: string | null; title: string; description: string;
@@ -25,9 +26,10 @@ export function MediaHub({ items, termsAccepted, termsTitle, termsHtml, focusIte
   items: HubItem[]; termsAccepted: boolean; termsTitle: string; termsHtml: string; focusItem: string | null; openTerms: boolean; initialCategory: string;
 }) {
   const { t } = useI18n();
-  const [category, setCategory] = useState(CATEGORIES.includes(initialCategory) ? initialCategory : "all");
-  const [format, setFormat] = useState("all");
-  const [q, setQ] = useState("");
+  const [categoryRaw, setCategory] = useUrlState("category", "all");
+  const category = CATEGORIES.includes(categoryRaw) ? categoryRaw : (CATEGORIES.includes(initialCategory) ? initialCategory : "all");
+  const [format, setFormat] = useUrlState("format", "all");
+  const [q, setQ] = useUrlState("q", "");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [accepted, setAccepted] = useState(termsAccepted);
   const [termsOpen, setTermsOpen] = useState(openTerms && !termsAccepted);
@@ -108,7 +110,7 @@ export function MediaHub({ items, termsAccepted, termsTitle, termsHtml, focusIte
         ))}
       </div>
       <div className="row">
-        <input type="search" className="input" style={{ flex: 1, minWidth: 200 }} placeholder={t("mediaHub.searchPlaceholder")} value={q} onChange={(e) => setQ(e.target.value)} aria-label={t("mediaHub.searchPlaceholder")} />
+        <input type="search" className="input" autoComplete="off" style={{ flex: 1, minWidth: 200 }} placeholder={t("mediaHub.searchPlaceholder")} value={q} onChange={(e) => setQ(e.target.value)} aria-label={t("mediaHub.searchPlaceholder")} />
         <select className="select" style={{ width: "auto" }} value={format} onChange={(e) => setFormat(e.target.value)} aria-label={t("mediaHub.format")}>
           <option value="all">{t("mediaHub.allFormats")}</option>
           {formats.map((f) => <option key={f} value={f}>{f}</option>)}
@@ -129,8 +131,8 @@ export function MediaHub({ items, termsAccepted, termsTitle, termsHtml, focusIte
               <div className="media-preview">
                 {i.previewUrl ? (
                   i.previewKind === "video"
-                    ? <video src={i.previewUrl} muted loop playsInline preload="metadata" onMouseEnter={(e) => void e.currentTarget.play()} onMouseLeave={(e) => e.currentTarget.pause()} onFocus={(e) => void e.currentTarget.play()} tabIndex={0} />
-                    : <img src={i.previewUrl} alt="" loading="lazy" />
+                    ? <video src={i.previewUrl} muted loop playsInline preload="metadata" aria-hidden="true" tabIndex={-1} onMouseEnter={(e) => { if (!matchMedia("(prefers-reduced-motion: reduce)").matches) void e.currentTarget.play(); }} onMouseLeave={(e) => e.currentTarget.pause()} />
+                    : <img src={i.previewUrl} alt="" width={640} height={360} loading="lazy" decoding="async" />
                 ) : <Icon name="file" size={40} />}
                 <div className="media-badges">
                   {i.badge === "new" && <Badge tone="success">{t("mediaHub.badgeNew")}</Badge>}

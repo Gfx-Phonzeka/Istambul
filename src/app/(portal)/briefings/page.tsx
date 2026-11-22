@@ -53,7 +53,7 @@ export default async function BriefingsPage({ searchParams }: { searchParams: Pr
                 {videos.filter((v) => v.category === c).map((v) => (
                   <Link key={v.id} href={`/briefings/${v.id}${preview ? "?preview=1" : ""}`} className="card card-link media-card">
                     <div className="media-preview">
-                      {v.poster_path && posters[v.poster_path] ? <img src={posters[v.poster_path]} alt="" loading="lazy" /> : <Icon name="play" size={40} />}
+                      {v.poster_path && posters[v.poster_path] ? <img src={posters[v.poster_path]} alt="" width={640} height={360} loading="lazy" decoding="async" /> : <Icon name="play" size={40} />}
                       <span className="play-icon"><Icon name="play" size={28} /></span>
                       {v.duration_seconds ? <span className="duration">{formatDuration(v.duration_seconds)}</span> : null}
                       <div className="media-badges">

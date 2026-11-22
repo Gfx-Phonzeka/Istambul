@@ -5,7 +5,10 @@ import { createClient } from "@/lib/supabase/server";
 import { flushEmails } from "@/lib/email";
 import { LOCALE_COOKIE, normalizeLocale } from "@/lib/i18n";
 
-export type FormState = { error?: string; errorVars?: Record<string, string | number>; ok?: boolean } | undefined;
+export type FormState = { error?: string; errorVars?: Record<string, string | number>; ok?: boolean; field?: string } | undefined;
+
+/** Field (input id) an RPC error belongs to, so it can be shown and focused next to that field. */
+const ERROR_FIELD: Record<string, string> = { weak_password: "password", email_exists: "email", invalid_email: "email", terms_required: "terms" };
 
 function safeNext(next: unknown): string {
   const v = typeof next === "string" ? next : "";
@@ -52,7 +55,7 @@ export async function signOut() {
 export async function register(_: FormState, form: FormData): Promise<FormState> {
   const get = (k: string) => String(form.get(k) ?? "").trim();
   const password = String(form.get("password") ?? "");
-  if (password !== String(form.get("password_confirm") ?? "")) return { error: "auth.errors.password_mismatch" };
+  if (password !== String(form.get("password_confirm") ?? "")) return { error: "auth.errors.password_mismatch", field: "password_confirm" };
   const store = await cookies();
   const lang = normalizeLocale(store.get(LOCALE_COOKIE)?.value);
 
@@ -74,7 +77,7 @@ export async function register(_: FormState, form: FormData): Promise<FormState>
   });
   if (error) return { error: "auth.errors.generic" };
   const res = data as { ok: boolean; error?: string };
-  if (!res.ok) return { error: `auth.errors.${res.error ?? "generic"}` };
+  if (!res.ok) return { error: `auth.errors.${res.error ?? "generic"}`, field: ERROR_FIELD[res.error ?? ""] };
 
   await flushEmails();
   // Sign the new user in so they land on the "under review" page.
@@ -91,12 +94,12 @@ export async function requestPasswordReset(_: FormState, form: FormData): Promis
 
 export async function completePasswordReset(_: FormState, form: FormData): Promise<FormState> {
   const password = String(form.get("password") ?? "");
-  if (password !== String(form.get("password_confirm") ?? "")) return { error: "auth.errors.password_mismatch" };
+  if (password !== String(form.get("password_confirm") ?? "")) return { error: "auth.errors.password_mismatch", field: "password_confirm" };
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("complete_password_reset", { p_token: String(form.get("token") ?? ""), p_password: password });
   if (error) return { error: "auth.errors.generic" };
   const res = data as { ok: boolean; error?: string };
-  if (!res.ok) return { error: `auth.errors.${res.error ?? "generic"}` };
+  if (!res.ok) return { error: `auth.errors.${res.error ?? "generic"}`, field: ERROR_FIELD[res.error ?? ""] };
   return { ok: true };
 }
 

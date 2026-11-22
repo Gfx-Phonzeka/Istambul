@@ -4,6 +4,7 @@ import { getT } from "@/lib/i18n/server";
 import { pick } from "@/lib/i18n";
 import { ALL_NAV } from "@/lib/nav";
 import { Badge, Card, EmptyState, PageHeader, Icon } from "@/components/ui";
+import { AutofocusDesktop } from "@/components/AutofocusDesktop";
 
 export const metadata = { title: "Search" };
 
@@ -55,7 +56,8 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
     <div className="stack">
       <PageHeader title={t("search.title")} subtitle={q ? t("search.resultsFor", { q }) : undefined} />
       <form className="row" role="search">
-        <input name="q" type="search" className="input" defaultValue={q} placeholder={t("common.searchPlaceholder")} style={{ flex: 1, minWidth: 0 }} autoFocus />
+        <input name="q" type="search" className="input" aria-label={t("common.search")} autoComplete="off" defaultValue={q} placeholder={t("common.searchPlaceholder")} style={{ flex: 1, minWidth: 0 }} data-autofocus-desktop />
+        <AutofocusDesktop />
         <button className="btn btn-primary">{t("common.search")}</button>
       </form>
       <p className="muted small" style={{ margin: 0 }}>{t("search.stageNote")}</p>

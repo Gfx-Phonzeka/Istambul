@@ -671,3 +671,30 @@ mark { background: var(--color-warning-soft); color: inherit; padding: 0 1px; bo
 .skeleton-title { height: 2rem; width: min(320px, 60%); }
 .skeleton-line { height: 0.9rem; width: min(520px, 90%); margin-top: var(--space-2); }
 .skeleton-card { height: 180px; border-radius: var(--radius-lg); background: var(--color-surface); }
+
+/* ---------- Web Interface Guidelines: a11y & interaction baseline ---------- */
+.skip-link {
+  position: fixed; top: var(--space-2); left: var(--space-2); z-index: var(--z-modal);
+  padding: var(--space-2) var(--space-4); border-radius: var(--radius-md); background: var(--color-ink); color: #fff;
+  font-weight: var(--weight-bold); text-decoration: none; transform: translateY(-200%);
+}
+.skip-link:focus-visible { transform: none; outline: 2px solid var(--color-focus); outline-offset: 2px; color: #fff; }
+main:focus { outline: none; }
+/* Keep focused elements clear of the sticky top bar and the bottom bars */
+html { scroll-padding-top: calc(var(--topbar-height) + var(--space-3)); }
+@media (max-width: 900px) { html { scroll-padding-bottom: calc(var(--bottomnav-height) + 88px + env(safe-area-inset-bottom)); } html:has(.editor-actions) { scroll-padding-bottom: calc(var(--bottomnav-height) + 200px + env(safe-area-inset-bottom)); } }
+/* Visible keyboard focus everywhere, including custom controls */
+.input:focus-visible, .select:focus-visible, .textarea:focus-visible { border-color: var(--color-primary); box-shadow: 0 0 0 3px var(--color-primary-soft); outline: 2px solid var(--color-primary); outline-offset: 0; }
+/* Compound native controls (date pickers, video controls): focus moves into their internal parts, so ring the whole control */
+.input[type="date"]:focus, .input[type="time"]:focus, .input[type="datetime-local"]:focus, .input[type="date"]:focus-within, .input[type="datetime-local"]:focus-within { outline: 2px solid var(--color-primary); outline-offset: 0; border-color: var(--color-primary); }
+.player:focus, .player:focus-within, video[controls]:focus { outline: 3px solid var(--color-focus); outline-offset: 2px; }
+.camera-map g:focus { outline: none; }
+.camera-map g:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+.rte:focus-within { box-shadow: 0 0 0 3px var(--color-primary-soft); }
+/* Touch */
+a, button, input, select, textarea, label, summary, [role="button"] { touch-action: manipulation; }
+html { -webkit-tap-highlight-color: rgba(10, 107, 112, 0.12); }
+@media (pointer: fine) { html { overscroll-behavior: none; } }
+.modal-backdrop, .modal, .dropdown-panel, .sidebar { overscroll-behavior: contain; }
+/* Native selects: explicit colours (Windows high-contrast / dark mode) */
+.select { background-color: var(--color-surface); color: var(--color-text); }
