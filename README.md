@@ -12,6 +12,13 @@ Backoffice → Content: one generic editor for every content type with draft →
 (edits to published items wait as a draft until published) and a rich-text editor (headings, lists, links,
 images, tables, YouTube/Vimeo videos).
 
+**Stage 3 (Media):** Briefings (video library by category, in-site player with EN/TR WebVTT subtitles,
+watched / not watched per user) and Media Hub (categories, previews, technical specs, NEW / UPDATED badges,
+filters and search, material terms accepted before the first download, signed links, every download logged,
+"download selection" as a ZIP built in the browser, versions with archive visible to administrators only).
+Uploads from the backoffice are resumable (TUS, 6 MB parts) and go straight from the browser to Supabase Storage.
+Note: the Supabase Free plan limits each file to 50 MB; broadcast files of several GB need the Pro plan.
+
 ## Stack
 - Next.js 15 (App Router) + TypeScript
 - Supabase (Auth, Postgres with Row Level Security) — migrations in `supabase/migrations`
@@ -27,7 +34,7 @@ images, tables, YouTube/Vimeo videos).
 | Database schema & security | `supabase/migrations/*.sql` |
 | Content types & fields (backoffice) | `src/lib/content/registry.ts` |
 | Handbook PDF layout | `src/lib/pdf/handbook.ts` |
-| Example content `[EXEMPLO]` | `supabase/seed/seed.sql`, `supabase/seed/seed_stage2_content.sql` |
+| Example content `[EXEMPLO]` | `supabase/seed/seed.sql`, `seed_stage2_content.sql`, `seed_stage3_media.sql` (files in buckets under `seed/`) |
 | Demo accounts (passwords) | `supabase/seed/demo-accounts.local.sql` — **not in git** (public repository) |
 
 ## Environment variables

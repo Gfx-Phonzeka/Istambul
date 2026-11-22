@@ -1,7 +1,7 @@
 // Content types managed in the backoffice. One generic editor drives all of them.
 // Labels are i18n keys. A "bilingual" field maps to two columns: <name>_en and <name>_tr.
 
-export type FieldKind = "text" | "textarea" | "richtext" | "select" | "number" | "datetime" | "reference" | "slug" | "email";
+export type FieldKind = "text" | "textarea" | "richtext" | "select" | "number" | "datetime" | "date" | "reference" | "slug" | "email";
 
 export interface Field {
   name: string;
@@ -28,7 +28,10 @@ export interface ContentType {
 
 export type ContentTypeKey =
   | "handbook_chapter" | "handbook_section" | "announcement" | "deadline" | "faq_category" | "faq"
-  | "glossary_term" | "contact_area" | "contact" | "legal_page";
+  | "glossary_term" | "contact_area" | "contact" | "legal_page" | "briefing_video" | "media_asset";
+
+export const BRIEFING_CATEGORIES = ["welcome", "ibc", "signal", "graphics", "operations", "venues"] as const;
+export const MEDIA_CATEGORIES = ["graphics", "bumpers", "curtains", "promos", "music"] as const;
 
 const visibility: Field = {
   name: "visibility",
@@ -45,7 +48,7 @@ const position: Field = { name: "position", label: "cms.fields.position", kind: 
 const title: Field = { name: "title", label: "cms.fields.title", kind: "text", bilingual: true, required: true };
 const slug: Field = { name: "slug", label: "cms.fields.slug", kind: "slug", required: true, help: "cms.help.slug" };
 
-export const CONTENT_TYPES: Record<ContentTypeKey, ContentType> = {
+export const CONTENT_TYPES = {
   handbook_chapter: {
     key: "handbook_chapter", table: "handbook_chapters", label: "cms.types.handbook_chapter", singular: "cms.single.handbook_chapter",
     titleColumn: "title_en", publicPath: "/handbook",
@@ -134,10 +137,43 @@ export const CONTENT_TYPES: Record<ContentTypeKey, ContentType> = {
     fields: [title, slug, position, { name: "body", label: "cms.fields.body", kind: "richtext", bilingual: true, required: true }],
     order: [{ column: "position", ascending: true }],
   },
+} as Record<ContentTypeKey, ContentType>;
+
+CONTENT_TYPES.briefing_video = {
+  key: "briefing_video", table: "briefing_videos", label: "cms.types.briefing_video", singular: "cms.single.briefing_video",
+  titleColumn: "title_en", publicPath: "/briefings",
+  fields: [
+    {
+      name: "category", label: "cms.fields.category", kind: "select", required: true,
+      options: BRIEFING_CATEGORIES.map((c) => ({ value: c, label: `briefings.categories.${c}` })),
+    },
+    title,
+    { name: "description", label: "cms.fields.description", kind: "textarea", bilingual: true },
+    { name: "recorded_on", label: "cms.fields.recordedOn", kind: "date" },
+    position, visibility,
+  ],
+  order: [{ column: "category", ascending: true }, { column: "position", ascending: true }],
+};
+
+CONTENT_TYPES.media_asset = {
+  key: "media_asset", table: "media_assets", label: "cms.types.media_asset", singular: "cms.single.media_asset",
+  titleColumn: "title_en", publicPath: "/media-hub",
+  fields: [
+    {
+      name: "category", label: "cms.fields.category", kind: "select", required: true,
+      options: MEDIA_CATEGORIES.map((c) => ({ value: c, label: `mediaHub.categories.${c}` })),
+    },
+    { name: "subtype", label: "cms.fields.subtype", kind: "text", help: "cms.help.subtype" },
+    title,
+    { name: "description", label: "cms.fields.description", kind: "textarea", bilingual: true },
+    position, visibility,
+  ],
+  order: [{ column: "category", ascending: true }, { column: "position", ascending: true }],
 };
 
 export const CONTENT_GROUPS: { label: string; types: ContentTypeKey[] }[] = [
   { label: "nav.handbook", types: ["handbook_chapter", "handbook_section"] },
+  { label: "cms.groupMedia", types: ["briefing_video", "media_asset"] },
   { label: "nav.news", types: ["announcement", "deadline"] },
   { label: "nav.faq", types: ["faq_category", "faq"] },
   { label: "nav.glossary", types: ["glossary_term"] },

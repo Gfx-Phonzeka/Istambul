@@ -120,6 +120,8 @@ export function ContentEditor({
         return <input {...common} className="input" type="number" value={v} onChange={(e) => set(col, e.target.value)} style={{ maxWidth: 140 }} />;
       case "datetime":
         return <input {...common} className="input" type="datetime-local" value={v} onChange={(e) => set(col, e.target.value)} style={{ maxWidth: 260 }} />;
+      case "date":
+        return <input {...common} className="input" type="date" value={v} onChange={(e) => set(col, e.target.value)} style={{ maxWidth: 200 }} />;
       case "email":
         return <input {...common} className="input" type="email" value={v} onChange={(e) => set(col, e.target.value)} />;
       default:

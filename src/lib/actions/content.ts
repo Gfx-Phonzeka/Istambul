@@ -38,6 +38,10 @@ function parseValues(type: ContentType, raw: Record<string, unknown>): { values:
           values[col] = n;
           break;
         }
+        case "date":
+          if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return { error: "cms.errors.date", field: col };
+          values[col] = s;
+          break;
         case "datetime":
           if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(s)) return { error: "cms.errors.date", field: col };
           values[col] = `${s}:00+03:00`; // entered in Istanbul time
