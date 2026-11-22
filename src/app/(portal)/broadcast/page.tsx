@@ -39,14 +39,14 @@ export default async function BroadcastPage({ searchParams }: { searchParams: Pr
         notes: pick(locale, f.notes_en, f.notes_tr), draft: f.status !== "published",
       };
     });
-    content = feeds.length ? <FeedGrid feeds={feeds} /> : <Card><EmptyState icon="broadcast">{t("broadcast.noFeeds")}</EmptyState></Card>;
+    content = feeds.length ? <FeedGrid feeds={feeds} /> : <Card><EmptyState icon="broadcast" action={{ label: t("common.contactHost"), href: "/contacts" }}>{t("broadcast.noFeeds")}</EmptyState></Card>;
   } else if (tab === "distribution") {
     const { data } = await pub(supabase.from("distribution_channels").select("*").order("position"));
     const rows = (data ?? []).map((r) => withDraft(r, preview));
     content = (
       <div className="stack">
         <div className="alert alert-info">{t("broadcast.ebuNote")}</div>
-        {rows.length === 0 ? <Card><EmptyState icon="broadcast">—</EmptyState></Card> : (
+        {rows.length === 0 ? <Card><EmptyState icon="broadcast" action={{ label: t("common.contactHost"), href: "/contacts" }}>—</EmptyState></Card> : (
           <div className="grid grid-3">
             {rows.map((c) => (
               <Card key={c.id} title={<span className="row" style={{ gap: 8 }}><Badge tone="primary">{t(`broadcast.channelKinds.${c.kind}`)}</Badge> {pick(locale, c.title_en, c.title_tr)}</span>}>
@@ -67,7 +67,7 @@ export default async function BroadcastPage({ searchParams }: { searchParams: Pr
     const { data } = await pub(supabase.from("tech_parameters").select("*").order("grp").order("position"));
     const rows = (data ?? []).map((r) => withDraft(r, preview));
     const groups = ["video", "audio", "graphics", "timecode", "other"].filter((g) => rows.some((r) => r.grp === g));
-    content = rows.length === 0 ? <Card><EmptyState icon="settings">—</EmptyState></Card> : (
+    content = rows.length === 0 ? <Card><EmptyState icon="settings" action={{ label: t("common.contactHost"), href: "/contacts" }}>—</EmptyState></Card> : (
       <div className="grid grid-2">
         {groups.map((g) => (
           <Card key={g} title={t(`broadcast.paramGroups.${g}`)}>

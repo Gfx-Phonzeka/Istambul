@@ -140,7 +140,7 @@ export function CameraEditor({ planId, shape, initial, otherPlans }: {
                   <button type="button" className="btn btn-ghost btn-sm" onClick={() => move(c.key, -1)} disabled={i === 0} aria-label="Up">↑</button>
                   <button type="button" className="btn btn-ghost btn-sm" onClick={() => move(c.key, 1)} disabled={i === cams.length - 1} aria-label="Down">↓</button>
                   <button type="button" className="btn btn-ghost btn-sm" onClick={() => duplicate(c)} title={t("cameraMaps.admin.duplicate")}>⧉</button>
-                  <button type="button" className="btn btn-ghost btn-sm" onClick={() => remove(c.key)} title={t("cms.delete")} style={{ color: "var(--color-danger)" }}>✕</button>
+                  <button type="button" className="btn btn-ghost btn-sm" onClick={() => remove(c.key)} title={t("cms.delete")} aria-label={t("cms.delete")} style={{ color: "var(--color-danger)" }}>✕</button>
                 </td>
               </tr>
             ))}

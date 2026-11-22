@@ -42,7 +42,7 @@ export function FeedGrid({ feeds }: { feeds: FeedRow[] }) {
         </select>
         <span className="muted small" style={{ marginLeft: "auto" }}>{t("schedule.trtNote")}</span>
       </div>
-      {shown.length === 0 ? <div className="card"><EmptyState icon="broadcast">{t("broadcast.noFeeds")}</EmptyState></div> : (
+      {shown.length === 0 ? <div className="card"><EmptyState icon="broadcast" action={{ label: t("common.clearFilters"), onClick: () => { setDay("all"); setType("all"); setChannel("all"); } }}>{t("broadcast.noFeeds")}</EmptyState></div> : (
         [...byDay.entries()].map(([k, list]) => (
           <section key={k} className="stack-sm">
             <h2>{dayLabel(k)}</h2>

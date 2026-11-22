@@ -121,7 +121,7 @@ export function ResumableUpload({ bucket, prefix, accept, label, onUploaded }: {
       )}
       {(state === "uploading" || state === "paused") && (
         <div className="stack-sm">
-          <div className="progress" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}><span style={{ width: `${pct}%` }} /></div>
+          <div className="progress" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}><span style={{ transform: `scaleX(${pct / 100})` }} /></div>
           <div className="row small">
             <span>{pct}% · {fmtBytes(progress.sent)} / {fmtBytes(progress.total)}</span>
             {resumed && <span className="badge badge-info">{t("media.upload.resumed")}</span>}

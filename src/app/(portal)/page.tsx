@@ -61,7 +61,7 @@ export default async function Dashboard() {
       <div className="grid grid-2">
         <Card title={t("dashboard.announcements")} actions={<Link href="/news" className="small">{t("common.viewAll")}</Link>}>
           {normal.length === 0 ? (
-            <EmptyState icon="megaphone">{t("dashboard.noAnnouncements")}</EmptyState>
+            <EmptyState icon="megaphone" action={{ label: t("common.viewNotices"), href: "/news" }}>{t("dashboard.noAnnouncements")}</EmptyState>
           ) : (
             <ul className="list">
               {normal.map((a) => (
@@ -81,7 +81,7 @@ export default async function Dashboard() {
         <div className="stack">
           <Card title={t("dashboard.deadlines")}>
             {(deadlines ?? []).length === 0 ? (
-              <EmptyState icon="calendar">{t("dashboard.noDeadlines")}</EmptyState>
+              <EmptyState icon="calendar" action={{ label: t("common.viewSchedule"), href: "/schedule" }}>{t("dashboard.noDeadlines")}</EmptyState>
             ) : (
               <ul className="list">
                 {(deadlines as Deadline[]).map((d) => {

@@ -37,7 +37,7 @@ export default async function BriefingsPage({ searchParams }: { searchParams: Pr
       <PageHeader title={t("nav.briefings")} subtitle={t("briefings.subtitle")}
         actions={videos.length > 0 && <Badge tone="primary">{t("briefings.progress", { n: watchedCount, total: videos.length })}</Badge>} />
       {videos.length === 0 ? (
-        <Card><EmptyState icon="play">{t("briefings.empty")}</EmptyState></Card>
+        <Card><EmptyState icon="play" action={{ label: t("common.contactHost"), href: "/contacts" }}>{t("briefings.empty")}</EmptyState></Card>
       ) : (
         <>
           <div className="chips">

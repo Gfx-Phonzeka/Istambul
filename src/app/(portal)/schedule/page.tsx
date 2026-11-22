@@ -39,7 +39,7 @@ export default async function SchedulePage({ searchParams }: { searchParams: Pro
     <div className="stack">
       {preview && <PreviewBanner exitHref="/schedule" />}
       <PageHeader title={t("nav.schedule")} subtitle={t("schedule.subtitle")} />
-      {rows.length === 0 ? <Card><EmptyState icon="calendar">{t("schedule.empty")}</EmptyState></Card> : (
+      {rows.length === 0 ? <Card><EmptyState icon="calendar" action={{ label: t("common.contactHost"), href: "/contacts" }}>{t("schedule.empty")}</EmptyState></Card> : (
         <ScheduleView
           sessions={rows}
           focus={sp.session ?? null}

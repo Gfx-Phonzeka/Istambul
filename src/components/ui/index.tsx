@@ -10,9 +10,9 @@ export function Badge({ tone = "neutral", children }: { tone?: Tone; children: R
   return <span className={`badge${tone === "neutral" ? "" : ` badge-${tone}`}`}>{children}</span>;
 }
 
-export function Card({ title, actions, children, className = "" }: { title?: ReactNode; actions?: ReactNode; children: ReactNode; className?: string }) {
+export function Card({ title, actions, children, className = "", id }: { title?: ReactNode; actions?: ReactNode; children: ReactNode; className?: string; id?: string }) {
   return (
-    <section className={`card ${className}`}>
+    <section className={`card ${className}`} id={id}>
       {(title || actions) && (
         <div className="row-between" style={{ marginBottom: "var(--space-3)" }}>
           {title && <h2 className="card-title" style={{ margin: 0 }}>{title}</h2>}
@@ -40,11 +40,17 @@ export function Alert({ tone = "info", children }: { tone?: "info" | "success" |
   return <div className={`alert alert-${tone}`} role={tone === "danger" ? "alert" : "status"}>{children}</div>;
 }
 
-export function EmptyState({ icon = "inbox", children }: { icon?: string; children: ReactNode }) {
+export type EmptyAction = { label: ReactNode; href: string } | { label: ReactNode; onClick: () => void };
+
+/** Empty state with one clear next action. */
+export function EmptyState({ icon = "inbox", children, action }: { icon?: string; children: ReactNode; action?: EmptyAction }) {
   return (
     <div className="empty">
       <div className="empty-icon"><Icon name={icon} size={32} /></div>
-      {children}
+      <p className="empty-text">{children}</p>
+      {action && ("href" in action
+        ? <Link href={action.href} className="btn btn-sm">{action.label}</Link>
+        : <button type="button" className="btn btn-sm" onClick={action.onClick}>{action.label}</button>)}
     </div>
   );
 }

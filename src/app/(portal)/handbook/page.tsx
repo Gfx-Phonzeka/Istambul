@@ -30,7 +30,7 @@ export default async function HandbookIndex({ searchParams }: { searchParams: Pr
         }
       />
       {chapters.length === 0 ? (
-        <Card><EmptyState icon="book">{t("handbook.empty")}</EmptyState></Card>
+        <Card><EmptyState icon="book" action={{ label: t("common.contactHost"), href: "/contacts" }}>{t("handbook.empty")}</EmptyState></Card>
       ) : (
         <div className="grid grid-2">
           {chapters.map((c, ci) => (

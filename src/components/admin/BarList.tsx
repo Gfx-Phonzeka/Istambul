@@ -20,6 +20,7 @@ export function ColumnChart({ rows, label }: { rows: { day: string; n: number }[
   return (
     <div className="columns" role="img" aria-label="Sign-ins per day">
       <div className="columns-plot">
+        {[25, 50, 75].map((y) => <span key={y} className="columns-gridline" style={{ bottom: `${y}%` }} aria-hidden="true" />)}
         {rows.map((r) => (
           <div key={r.day} className="columns-col" title={`${label(r.day)}: ${r.n}`}>
             <span style={{ height: `${(r.n / max) * 100}%` }} />

@@ -1,9 +1,10 @@
 "use client";
-import { useActionState } from "react";
+import { useActionState, useRef } from "react";
 import { changePassword, requestDeletion, updateProfile } from "@/lib/actions/profile";
 import { useI18n } from "@/lib/i18n/client";
 import { FormError } from "@/components/FormMessage";
 import { COUNTRIES } from "@/lib/countries";
+import { ConfirmButton } from "@/components/ui/ConfirmButton";
 
 interface P {
   first_name: string; last_name: string; organization: string; country: string; job_title: string; phone: string;
@@ -82,9 +83,12 @@ export function PasswordForm() {
 
 export function DeletionButton() {
   const { t } = useI18n();
+  const formRef = useRef<HTMLFormElement>(null);
   return (
-    <form action={requestDeletion} onSubmit={(e) => { if (!confirm(t("profile.deleteConfirm"))) e.preventDefault(); }}>
-      <button className="btn btn-danger">{t("profile.deleteRequest")}</button>
+    <form ref={formRef} action={requestDeletion}>
+      <ConfirmButton className="btn btn-danger" message={t("profile.deleteConfirm")} onConfirm={() => formRef.current?.requestSubmit()}>
+        {t("profile.deleteRequest")}
+      </ConfirmButton>
     </form>
   );
 }

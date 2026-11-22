@@ -36,7 +36,7 @@ export default async function ContentList({ params }: { params: Promise<{ type: 
       />
       <Link href="/admin/content" className="small">← {t("cms.title")}</Link>
       {rows.length === 0 ? (
-        <div className="card"><EmptyState icon="file">{t("cms.noItems")}</EmptyState></div>
+        <div className="card"><EmptyState icon="file" action={{ label: t("common.createNew"), href: `/admin/content/${key}/new` }}>{t("cms.noItems")}</EmptyState></div>
       ) : (
         <div className="table-wrap">
           <table className="table">

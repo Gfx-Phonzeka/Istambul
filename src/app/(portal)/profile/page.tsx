@@ -59,7 +59,7 @@ export default async function ProfilePage() {
       </Card>
       <Card title={t("profile.downloads")}>
         {rows.length === 0 ? (
-          <EmptyState icon="download">{t("profile.noDownloads")}</EmptyState>
+          <EmptyState icon="download" action={{ label: t("common.openMediaHub"), href: "/media-hub" }}>{t("profile.noDownloads")}</EmptyState>
         ) : (
           <div className="table-wrap">
             <table className="table">

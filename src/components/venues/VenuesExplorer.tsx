@@ -37,7 +37,7 @@ export function VenuesExplorer({ venues, clusters, sports }: {
         <p className="hint" style={{ margin: "var(--space-2) 0 0" }}>{t("venues.mapNote")}</p>
       </div>
       {shown.length === 0 ? (
-        <div className="card"><EmptyState icon="pin">{t("venues.noMatch")}</EmptyState></div>
+        <div className="card"><EmptyState icon="pin" action={{ label: t("common.clearFilters"), onClick: () => { setCluster("all"); setSport("all"); } }}>{t("venues.noMatch")}</EmptyState></div>
       ) : (
         <div className="media-grid">
           {shown.map((v) => (

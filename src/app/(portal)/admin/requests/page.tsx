@@ -43,7 +43,7 @@ export default async function AdminRequests({ searchParams }: { searchParams: Pr
         </select>
         <button className="btn btn-sm">{t("common.search")}</button>
       </form>
-      {(data ?? []).length === 0 ? <div className="card"><EmptyState icon="inbox">{t("requests.none")}</EmptyState></div> : (
+      {(data ?? []).length === 0 ? <div className="card"><EmptyState icon="inbox" action={{ label: t("common.backToBackoffice"), href: "/admin" }}>{t("requests.none")}</EmptyState></div> : (
         <div className="table-wrap">
           <table className="table">
             <thead><tr><th>{t("requests.reference")}</th><th>{t("requests.requester")}</th><th>{t("requests.type")}</th><th>{t("schedule.venue")}</th><th>{t("requests.dates")}</th><th>{t("common.status")}</th></tr></thead>

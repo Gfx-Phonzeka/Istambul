@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { setLocale } from "@/lib/actions/locale";
 import { useI18n } from "@/lib/i18n/client";
@@ -8,11 +8,12 @@ export function LangSwitch() {
   const { locale, t } = useI18n();
   const router = useRouter();
   const [pending, start] = useTransition();
-  const [current, setCurrent] = useState(locale);
-  useEffect(() => setCurrent(locale), [locale]);
+  // Optimistic choice while the new locale is saved; falls back to the server locale.
+  const [chosen, setChosen] = useState<"en" | "tr" | null>(null);
+  const current = pending && chosen ? chosen : locale;
   const choose = (l: "en" | "tr") => {
     if (l === current) return;
-    setCurrent(l);
+    setChosen(l);
     start(async () => {
       await setLocale(l);
       router.refresh();

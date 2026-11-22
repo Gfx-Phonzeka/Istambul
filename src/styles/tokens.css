@@ -79,7 +79,7 @@
   --radius-pill: 999px;
   /* Shadows only for things that float above the page */
   --shadow-sm: none;
-  --shadow-md: 0 12px 32px rgba(22, 32, 46, 0.14), 0 2px 6px rgba(22, 32, 46, 0.06);
+  --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); /* Tailwind shadow-lg */
 
   /* Layout */
   --topbar-height: 72px;
@@ -88,6 +88,14 @@
   --bottomnav-height: 64px;
   --content-max: 1240px;
   --transition: 160ms ease;
+
+  /* Fixed z-index scale (no arbitrary values) */
+  --z-sticky: 10;      /* sticky toolbars inside content */
+  --z-floating: 20;    /* sticky action bars */
+  --z-header: 30;      /* top bar, bottom navigation */
+  --z-rail: 40;        /* navigation rail */
+  --z-overlay: 50;     /* drawer, popovers, menus */
+  --z-modal: 60;       /* dialogs */
 }
 
 /* Camera maps & schematic venue map */

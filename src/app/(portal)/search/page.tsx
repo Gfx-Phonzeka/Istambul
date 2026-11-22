@@ -62,7 +62,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
       {q && (
         <Card>
           {total === 0 ? (
-            <EmptyState icon="search">{t("search.noResults")}</EmptyState>
+            <EmptyState icon="search" action={{ label: t("common.browseFaq"), href: "/faq" }}>{t("search.noResults")}</EmptyState>
           ) : (
             <ul className="list">
               {sections.map((n) => (

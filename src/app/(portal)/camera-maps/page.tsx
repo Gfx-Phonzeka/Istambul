@@ -26,7 +26,7 @@ export default async function CameraMapsPage({ searchParams }: { searchParams: P
       {preview && <PreviewBanner exitHref="/camera-maps" />}
       <PageHeader title={t("nav.cameraMaps")} subtitle={t("cameraMaps.subtitle")} />
       {plans.length === 0 ? (
-        <Card><EmptyState icon="camera">{t("cameraMaps.empty")}</EmptyState></Card>
+        <Card><EmptyState icon="camera" action={{ label: t("common.contactHost"), href: "/contacts" }}>{t("cameraMaps.empty")}</EmptyState></Card>
       ) : (
         <CameraMapsOverview
           clusters={(clusters ?? []).map((c) => ({ slug: c.slug, title: pick(locale, c.title_en, c.title_tr) }))}

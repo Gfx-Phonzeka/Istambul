@@ -50,7 +50,7 @@ export default async function VenuesPage({ searchParams }: { searchParams: Promi
       {preview && <PreviewBanner exitHref="/venues" />}
       <PageHeader title={t("nav.venues")} subtitle={t("venues.subtitle")} />
       {cards.length === 0 ? (
-        <Card><EmptyState icon="pin">{t("venues.empty")}</EmptyState></Card>
+        <Card><EmptyState icon="pin" action={{ label: t("common.contactHost"), href: "/contacts" }}>{t("venues.empty")}</EmptyState></Card>
       ) : (
         <VenuesExplorer venues={cards} clusters={clusterList.map(({ slug, title }) => ({ slug, title }))}
           sports={(sports ?? []).map((s) => ({ id: s.id, title: pick(locale, s.title_en, s.title_tr) }))} />

@@ -121,7 +121,7 @@ export function MediaHub({ items, termsAccepted, termsTitle, termsHtml, focusIte
       </div>
 
       {visible.length === 0 ? (
-        <div className="card"><EmptyState icon="download">{items.length ? t("mediaHub.noMatch") : t("mediaHub.empty")}</EmptyState></div>
+        <div className="card"><EmptyState icon="download" action={items.length ? { label: t("common.clearFilters"), onClick: () => { setCategory("all"); setFormat("all"); setQ(""); } } : { label: t("common.contactHost"), href: "/contacts" }}>{items.length ? t("mediaHub.noMatch") : t("mediaHub.empty")}</EmptyState></div>
       ) : (
         <div className="media-grid">
           {visible.map((i) => (

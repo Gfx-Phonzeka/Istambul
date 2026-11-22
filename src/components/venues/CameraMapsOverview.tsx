@@ -92,7 +92,7 @@ export function CameraMapsOverview({ plans, clusters, sports }: {
       </div>
       {packError && <div className="alert alert-danger">{t("mediaHub.zipError")}</div>}
       {shown.length === 0 ? (
-        <div className="card"><EmptyState icon="camera">{t("cameraMaps.noMatch")}</EmptyState></div>
+        <div className="card"><EmptyState icon="camera" action={{ label: t("common.clearFilters"), onClick: () => { setCluster("all"); setSport("all"); setLevel("all"); } }}>{t("cameraMaps.noMatch")}</EmptyState></div>
       ) : (
         <div className="media-grid">
           {shown.map((p) => (

@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { Modal } from "@/components/ui/Modal";
 import { deleteUser, reviewUser, setUserPassword, setUserRole, setUserStatus } from "@/lib/actions/admin";
 import { useI18n } from "@/lib/i18n/client";
+import { ConfirmButton } from "@/components/ui/ConfirmButton";
 
 export interface AdminUserRow {
   id: string; email: string; first_name: string; last_name: string; organization: string; country: string;
@@ -111,10 +112,10 @@ export function UserActions({ user, isSelf }: { user: AdminUserRow; isSelf: bool
             <div className="row" style={{ borderTop: "1px solid var(--color-border)", paddingTop: "var(--space-3)" }}>
               <a className="btn btn-sm" href={`/api/admin/users/${user.id}/export`}>{t("admin.exportData")}</a>
               {!isSelf && (
-                <button className="btn btn-sm btn-danger" disabled={pending}
-                  onClick={() => confirm(t("admin.deleteConfirm")) && act(() => deleteUser(user.id))}>
+                <ConfirmButton className="btn btn-sm btn-danger" disabled={pending} message={t("admin.deleteConfirm")}
+                  onConfirm={() => act(() => deleteUser(user.id))}>
                   {t("admin.deleteUser")}
-                </button>
+                </ConfirmButton>
               )}
             </div>
           </div>

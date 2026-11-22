@@ -8,6 +8,7 @@ import { deleteContent, discardDraft, publishContent, saveContent, unpublishCont
 import { translateFields } from "@/lib/actions/translate";
 import { useI18n } from "@/lib/i18n/client";
 import { Badge } from "@/components/ui";
+import { ConfirmButton } from "@/components/ui/ConfirmButton";
 
 const RichTextEditor = dynamic(() => import("./RichTextEditor").then((m) => m.RichTextEditor), {
   ssr: false,
@@ -32,7 +33,7 @@ export function ContentEditor({
   const type = CONTENT_TYPES[typeKey];
   const [values, setValues] = useState<Values>(initial);
   const [dirty, setDirty] = useState(false);
-  const [msg, setMsg] = useState<{ tone: "success" | "danger" | "info"; text: string } | null>(null);
+  const [msg, setMsg] = useState<{ tone: "success" | "danger" | "info"; text: string; at?: "translate" } | null>(null);
   const [errField, setErrField] = useState<string | null>(null);
   const [pending, start] = useTransition();
   const [tab, setTab] = useState<Record<string, "en" | "tr">>({});
@@ -50,15 +51,15 @@ export function ContentEditor({
     const items = names
       .filter((n) => (values[`${n}_en`] ?? "").trim() !== "" && (!onlyEmpty || (values[`${n}_tr`] ?? "").trim() === ""))
       .map((n) => ({ key: n, text: values[`${n}_en`], html: type.fields.find((f) => f.name === n)?.kind === "richtext" }));
-    if (!items.length) { setMsg({ tone: "info", text: t("translate.nothing") }); return; }
+    if (!items.length) { setMsg({ at: "translate", tone: "info", text: t("translate.nothing") }); return; }
     setTranslating(tag);
     setMsg(null);
     const r = await translateFields(items);
     setTranslating(null);
-    if (!r.ok) { setMsg({ tone: "danger", text: t(`translate.errors.${r.error}`) }); return; }
+    if (!r.ok) { setMsg({ at: "translate", tone: "danger", text: t(`translate.errors.${r.error}`) }); return; }
     setValues((s) => ({ ...s, ...Object.fromEntries(Object.entries(r.translations).map(([k, v]) => [`${k}_tr`, v])) }));
     setDirty(true);
-    setMsg({ tone: "info", text: t("translate.done") });
+    setMsg({ at: "translate", tone: "info", text: t("translate.done") });
   };
 
   const run = (fn: () => Promise<void>) => start(async () => { setMsg(null); setErrField(null); await fn(); });
@@ -106,7 +107,6 @@ export function ContentEditor({
   });
 
   const onDelete = () => {
-    if (!confirm(t("cms.deleteConfirm"))) return;
     run(async () => {
       const res = await deleteContent(typeKey, id!);
       if (res.ok) router.replace(`/admin/content/${typeKey}`);
@@ -170,7 +170,7 @@ export function ContentEditor({
           </a>
         )}
       </div>
-      {msg && <div className={`alert alert-${msg.tone}`} role="status">{msg.text}</div>}
+      {msg?.at === "translate" && <div className={`alert alert-${msg.tone}`} role="status">{msg.text}</div>}
 
       {bilingual.length > 0 && (
         <div className="row translate-bar">
@@ -178,10 +178,10 @@ export function ContentEditor({
           <button type="button" className="btn btn-sm" disabled={Boolean(translating)} onClick={() => translate(bilingual.map((f) => f.name), true, "all-empty")}>
             {translating === "all-empty" ? t("translate.working") : t("translate.fillEmpty")}
           </button>
-          <button type="button" className="btn btn-sm btn-ghost" disabled={Boolean(translating)}
-            onClick={() => confirm(t("translate.overwriteConfirm")) && translate(bilingual.map((f) => f.name), false, "all")}>
+          <ConfirmButton className="btn btn-sm btn-ghost" disabled={Boolean(translating)} danger={false}
+            message={t("translate.overwriteConfirm")} onConfirm={() => translate(bilingual.map((f) => f.name), false, "all")}>
             {translating === "all" ? t("translate.working") : t("translate.overwriteAll")}
-          </button>
+          </ConfirmButton>
         </div>
       )}
 
@@ -251,8 +251,9 @@ export function ContentEditor({
 
       <div className="editor-actions">
         <Link href={`/admin/content/${typeKey}`} className="btn btn-ghost">← {t("cms.backToList")}</Link>
+        {msg && msg.at !== "translate" && <div className={`alert alert-${msg.tone} editor-msg`} role="status">{msg.text}</div>}
         <div className="row">
-          {id && <button type="button" className="btn btn-ghost" onClick={onDelete} disabled={pending} style={{ color: "var(--color-danger)" }}>{t("cms.delete")}</button>}
+          {id && <ConfirmButton className="btn btn-ghost" onConfirm={onDelete} disabled={pending} style={{ color: "var(--color-danger)" }} message={t("cms.deleteConfirm")}>{t("cms.delete")}</ConfirmButton>}
           {id && hasDraft && <button type="button" className="btn" onClick={onDiscard} disabled={pending}>{t("cms.discardDraft")}</button>}
           {id && status === "published" && <button type="button" className="btn" onClick={onUnpublish} disabled={pending}>{t("cms.unpublish")}</button>}
           <button type="button" className="btn" onClick={onSave} disabled={pending}>{status === "published" ? t("cms.saveDraft") : t("cms.save")}</button>

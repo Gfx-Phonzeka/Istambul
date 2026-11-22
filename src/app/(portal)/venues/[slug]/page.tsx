@@ -130,7 +130,7 @@ export default async function VenuePage({ params, searchParams }: { params: Prom
 
       <section className="stack-sm" id="camera-maps">
         <h2>{t("nav.cameraMaps")}</h2>
-        {myPlans.length === 0 ? <Card><EmptyState icon="camera">{t("cameraMaps.noneForVenue")}</EmptyState></Card> : (
+        {myPlans.length === 0 ? <Card><EmptyState icon="camera" action={{ label: t("common.viewCameraMaps"), href: "/camera-maps" }}>{t("cameraMaps.noneForVenue")}</EmptyState></Card> : (
           <div className="media-grid">
             {myPlans.map((p) => (
               <PlanCard key={p.id} plan={p} showVenue={false} preview={preview}

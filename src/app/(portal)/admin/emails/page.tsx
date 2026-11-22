@@ -20,7 +20,7 @@ export default async function EmailsPage() {
       <PageHeader title={t("admin.emails")} actions={<form action={retryEmails}><button className="btn btn-sm">↻</button></form>} />
       {!configured && <Alert tone="warning">{t("admin.emailNotConfigured")}</Alert>}
       {rows.length === 0 ? (
-        <div className="card"><EmptyState icon="mail">—</EmptyState></div>
+        <div className="card"><EmptyState icon="mail" action={{ label: t("common.backToBackoffice"), href: "/admin" }}>—</EmptyState></div>
       ) : (
         <div className="stack-sm">
           {rows.map((r) => (

@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
+import * as Popover from "@radix-ui/react-popover";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Icon } from "@/components/ui/Icon";
@@ -21,23 +22,16 @@ export function NotificationBell({ items }: { items: NotificationRow[] }) {
   const [open, setOpen] = useState(false);
   const [, start] = useTransition();
   const router = useRouter();
-  const ref = useRef<HTMLDivElement>(null);
   const unread = items.filter((n) => !n.read_at).length;
 
-  useEffect(() => {
-    const close = (e: MouseEvent) => ref.current && !ref.current.contains(e.target as Node) && setOpen(false);
-    document.addEventListener("mousedown", close);
-    return () => document.removeEventListener("mousedown", close);
-  }, []);
-
   return (
-    <div className="dropdown" ref={ref}>
-      <button type="button" className="icon-btn" aria-label={t("common.notifications")} aria-expanded={open} onClick={() => setOpen((o) => !o)}>
+    <Popover.Root open={open} onOpenChange={setOpen}>
+      <Popover.Trigger className="icon-btn" aria-label={unread > 0 ? `${t("common.notifications")} (${unread})` : t("common.notifications")}>
         <Icon name="bell" />
-        {unread > 0 && <span className="dot">{unread > 9 ? "9+" : unread}</span>}
-      </button>
-      {open && (
-        <div className="dropdown-panel">
+        {unread > 0 && <span className="dot" aria-hidden="true">{unread > 9 ? "9+" : unread}</span>}
+      </Popover.Trigger>
+      <Popover.Portal>
+        <Popover.Content className="dropdown-panel" align="end" sideOffset={8} aria-label={t("common.notifications")}>
           <div className="row-between" style={{ padding: "var(--space-2) var(--space-3)" }}>
             <strong className="small">{t("common.notifications")}</strong>
             {unread > 0 && (
@@ -78,8 +72,8 @@ export function NotificationBell({ items }: { items: NotificationRow[] }) {
               })}
             </div>
           )}
-        </div>
-      )}
-    </div>
+        </Popover.Content>
+      </Popover.Portal>
+    </Popover.Root>
   );
 }

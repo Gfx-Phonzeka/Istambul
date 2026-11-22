@@ -42,7 +42,7 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
         <button className="btn">{t("common.search")}</button>
       </form>
       {users.length === 0 ? (
-        <div className="card"><EmptyState icon="users">{t("admin.noUsers")}</EmptyState></div>
+        <div className="card"><EmptyState icon="users" action={{ label: t("common.showAll"), href: "/admin/users?tab=all" }}>{t("admin.noUsers")}</EmptyState></div>
       ) : (
         <div className="table-wrap">
           <table className="table">

@@ -1,25 +1,26 @@
 "use client";
-import { useEffect, type ReactNode } from "react";
+import type { ReactNode } from "react";
+import * as Dialog from "@radix-ui/react-dialog";
 import { Icon } from "./Icon";
 
+/** Dialog built on Radix (focus trap, Esc, focus return, scroll lock). Rendered while mounted. */
 export function Modal({ title, onClose, children, footer }: { title: ReactNode; onClose: () => void; children: ReactNode; footer?: ReactNode }) {
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
   return (
-    <div className="modal-backdrop" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="modal" role="dialog" aria-modal="true">
-        <div className="modal-header">
-          <h2>{title}</h2>
-          <button type="button" className="icon-btn" onClick={onClose} aria-label="Close">
-            <Icon name="close" />
-          </button>
-        </div>
-        {children}
-        {footer && <div className="modal-footer">{footer}</div>}
-      </div>
-    </div>
+    <Dialog.Root open onOpenChange={(open) => !open && onClose()}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="modal-backdrop">
+          <Dialog.Content className="modal" aria-describedby={undefined}>
+            <div className="modal-header">
+              <Dialog.Title asChild><h2>{title}</h2></Dialog.Title>
+              <Dialog.Close className="icon-btn" aria-label="Close">
+                <Icon name="close" />
+              </Dialog.Close>
+            </div>
+            {children}
+            {footer && <div className="modal-footer">{footer}</div>}
+          </Dialog.Content>
+        </Dialog.Overlay>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }

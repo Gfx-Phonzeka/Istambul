@@ -31,7 +31,7 @@ export default async function ActivityPage({ searchParams }: { searchParams: Pro
         ))}
       </div>
       {rows.length === 0 ? (
-        <div className="card"><EmptyState icon="activity">—</EmptyState></div>
+        <div className="card"><EmptyState icon="activity" action={{ label: t("common.backToBackoffice"), href: "/admin" }}>—</EmptyState></div>
       ) : (
         <div className="table-wrap">
           <table className="table">

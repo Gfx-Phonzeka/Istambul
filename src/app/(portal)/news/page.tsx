@@ -27,7 +27,7 @@ export default async function NewsPage({ searchParams }: { searchParams: Promise
         { href: "/news?filter=urgent", label: t("news.urgentOnly"), active: sp.filter === "urgent" },
       ]} />
       {rows.length === 0 ? (
-        <Card><EmptyState icon="megaphone">{t("news.empty")}</EmptyState></Card>
+        <Card><EmptyState icon="megaphone" action={{ label: t("common.contactHost"), href: "/contacts" }}>{t("news.empty")}</EmptyState></Card>
       ) : (
         <div className="stack-sm">
           {rows.map((a) => (

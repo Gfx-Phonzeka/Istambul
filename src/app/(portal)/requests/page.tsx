@@ -23,7 +23,7 @@ export default async function RequestsPage() {
   return (
     <div className="stack">
       <PageHeader title={t("nav.requests")} subtitle={t("requests.subtitle")} />
-      <Card title={t("requests.new")}>
+      <Card title={t("requests.new")} className="anchor-target" id="new-request">
         <RequestForm
           venues={[...V.entries()].map(([id, title]) => ({ id, title }))}
           sports={[...S.entries()].map(([id, title]) => ({ id, title }))}
@@ -32,7 +32,7 @@ export default async function RequestsPage() {
       </Card>
       <section className="stack-sm">
         <h2>{t("requests.mine")}</h2>
-        {(requests ?? []).length === 0 ? <Card><EmptyState icon="inbox">{t("requests.none")}</EmptyState></Card> : (
+        {(requests ?? []).length === 0 ? <Card><EmptyState icon="inbox" action={{ label: t("common.fillRequestForm"), href: "#new-request" }}>{t("requests.none")}</EmptyState></Card> : (
           (requests ?? []).map((r) => (
             <article key={r.id} id={r.reference} className="card stack-sm">
               <div className="row-between">

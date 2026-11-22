@@ -36,9 +36,10 @@ export function ScheduleView({ sessions, sports, venues, focus, favSports = [] }
 
   const days = useMemo(() => [...new Set(sessions.map((s) => dayKey(s.start)))].sort(), [sessions, tz]); // eslint-disable-line react-hooks/exhaustive-deps
   const [day, setDay] = useState<string>("all");
-  const [timelineDay, setTimelineDay] = useState<string>(days[0] ?? "");
-  useEffect(() => { if (!days.includes(timelineDay)) setTimelineDay(days[0] ?? ""); }, [days, timelineDay]);
+  const [chosenTimelineDay, setTimelineDay] = useState<string>(days[0] ?? "");
+  const timelineDay = days.includes(chosenTimelineDay) ? chosenTimelineDay : (days[0] ?? "");
 
+  const clearFilters = () => { setSport("all"); setVenue("all"); setMedal(false); setOq(false); setQ(""); setDay("all"); };
   const term = q.trim().toLocaleLowerCase();
   const filtered = sessions.filter((s) =>
     (sport === "all" || s.sportId === sport) && (venue === "all" || s.venueId === venue) && (!medal || s.isMedal) && (!oq || s.isOq) &&
@@ -109,7 +110,7 @@ export function ScheduleView({ sessions, sports, venues, focus, favSports = [] }
               <option value="venue">{t("schedule.byVenue")}</option>
             </select>
           </div>
-          {groups.length === 0 ? <div className="card"><EmptyState icon="calendar">{t("schedule.noMatch")}</EmptyState></div> : groups.map(([key, g]) => (
+          {groups.length === 0 ? <div className="card"><EmptyState icon="calendar" action={{ label: t("common.clearFilters"), onClick: clearFilters }}>{t("schedule.noMatch")}</EmptyState></div> : groups.map(([key, g]) => (
             <section key={key} className="stack-sm">
               <h2>{g.title}</h2>
               <div className="table-wrap">
@@ -141,14 +142,15 @@ export function ScheduleView({ sessions, sports, venues, focus, favSports = [] }
           ))}
         </>
       ) : (
-        <Timeline sessions={filtered} day={timelineDay} days={days} setDay={setTimelineDay} dayKey={dayKey} dayLabel={dayLabel} time={time} tz={tz} />
+        <Timeline sessions={filtered} day={timelineDay} days={days} setDay={setTimelineDay} dayKey={dayKey} dayLabel={dayLabel} time={time} tz={tz} clearFilters={clearFilters} />
       )}
       <p className="hint">{t("schedule.oqHelp")} {tzMode === "trt" ? t("schedule.trtNote") : ""}</p>
     </div>
   );
 }
 
-function Timeline({ sessions, day, days, setDay, dayKey, dayLabel, time, tz }: {
+function Timeline({ sessions, day, days, setDay, dayKey, dayLabel, time, tz, clearFilters }: {
+  clearFilters: () => void;
   sessions: SessionRow[]; day: string; days: string[]; setDay: (d: string) => void; dayKey: (iso: string) => string;
   dayLabel: (k: string) => string; time: (iso: string) => string; tz: string;
 }) {
@@ -167,7 +169,7 @@ function Timeline({ sessions, day, days, setDay, dayKey, dayLabel, time, tz }: {
       <div className="chips">
         {days.map((d) => <button key={d} type="button" className={`chip${day === d ? " is-active" : ""}`} onClick={() => setDay(d)}>{dayLabel(d)}</button>)}
       </div>
-      {items.length === 0 ? <div className="card"><EmptyState icon="calendar">{t("schedule.noMatch")}</EmptyState></div> : (
+      {items.length === 0 ? <div className="card"><EmptyState icon="calendar" action={{ label: t("common.clearFilters"), onClick: clearFilters }}>{t("schedule.noMatch")}</EmptyState></div> : (
         <div className="timeline card">
           <div className="tl-scroll">
             <div className="tl-grid" style={{ ["--span" as string]: span }}>
@@ -181,6 +183,7 @@ function Timeline({ sessions, day, days, setDay, dayKey, dayLabel, time, tz }: {
                 <div key={vid} className="tl-row">
                   <div className="tl-label small"><strong>{vname}</strong></div>
                   <div className="tl-track">
+                    {Array.from({ length: span }, (_, i) => <span key={`h${i}`} className="tl-hourline" style={{ left: `${(i / span) * 100}%` }} aria-hidden="true" />)}
                     {items.filter((s) => s.venueId === vid).map((s) => {
                       const a = hourOf(s.start), b0 = hourOf(s.end), b = b0 < a ? 24 : b0;
                       return (
