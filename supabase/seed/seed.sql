@@ -6,7 +6,11 @@ insert into public.settings (key, value) values
   ('opening_ceremony', jsonb_build_object(
      'at', '2027-06-25T20:00:00+03:00',
      'label_en', 'Opening Ceremony [EXEMPLO]',
-     'label_tr', 'Açılış Töreni [EXEMPLO]'))
+     'label_tr', 'Açılış Töreni [EXEMPLO]')),
+  ('closing_ceremony', jsonb_build_object(
+     'at', '2027-07-04T20:00:00+03:00',
+     'label_en', 'Closing Ceremony [EXEMPLO]',
+     'label_tr', 'Kapanış Töreni [EXEMPLO]'))
 on conflict (key) do update set value = excluded.value, updated_at = now();
 
 insert into public.announcements (title_en, title_tr, body_en, body_tr, priority, visibility, status, published_at) values

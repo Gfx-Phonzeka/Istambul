@@ -5,7 +5,7 @@ import { getT } from "@/lib/i18n/server";
 import { pick } from "@/lib/i18n";
 import { formatDate, formatDateTime } from "@/lib/format";
 import { Badge, Card, EmptyState, Icon, PageHeader } from "@/components/ui";
-import { Countdown } from "@/components/Countdown";
+import { CeremonyCountdown, type Ceremony } from "@/components/CeremonyCountdown";
 import { ALL_NAV } from "@/lib/nav";
 import { excerpt } from "@/lib/content/render";
 
@@ -24,13 +24,13 @@ export default async function Dashboard() {
 
   const since = profile.previous_login_at ?? new Date(Date.now() - 14 * 86400000).toISOString();
   const [{ data: opening }, { data: announcements }, { data: deadlines }, { data: changes }] = await Promise.all([
-    supabase.from("settings").select("value").eq("key", "opening_ceremony").maybeSingle(),
+    supabase.from("settings").select("key,value").in("key", ["opening_ceremony", "closing_ceremony"]),
     supabase.from("announcements").select("*").eq("status", "published").order("published_at", { ascending: false }).limit(6),
     supabase.from("deadlines").select("*").eq("status", "published").gte("due_at", new Date(Date.now() - 86400000).toISOString()).order("due_at").limit(5),
     supabase.from("content_index").select("kind,id,title_en,title_tr,href,published_at,content_updated_at")
       .gt("content_updated_at", since).order("content_updated_at", { ascending: false }).limit(8),
   ]);
-  const ceremony = opening?.value as { at: string; label_en: string; label_tr?: string } | undefined;
+  const ceremonies = (opening ?? []).map((r) => r.value as Ceremony).filter((c) => c?.at);
   const list = (announcements ?? []) as Announcement[];
   const urgent = list.filter((a) => a.priority === "urgent");
   const normal = list.filter((a) => a.priority !== "urgent");
@@ -56,15 +56,7 @@ export default async function Dashboard() {
         </div>
       ))}
 
-      {ceremony && (
-        <section className="onair" aria-label={t("dashboard.countdownTo")}>
-          <div>
-            <h2 className="onair-title">{`${t("dashboard.countdownTo")} ${pick(locale, ceremony.label_en, ceremony.label_tr)}`}</h2>
-            <p className="onair-meta">{formatDateTime(ceremony.at, locale)} (TRT, UTC+3)</p>
-          </div>
-          <Countdown target={ceremony.at} />
-        </section>
-      )}
+      {ceremonies.length > 0 && <CeremonyCountdown ceremonies={ceremonies} />}
 
       <div className="grid grid-2">
         <Card title={t("dashboard.announcements")} actions={<Link href="/news" className="small">{t("common.viewAll")}</Link>}>

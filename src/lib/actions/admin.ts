@@ -33,16 +33,21 @@ export async function deleteUser(userId: string) {
   return run("admin_delete_user", { p_user: userId });
 }
 
-export async function saveOpeningCeremony(form: FormData) {
+const CEREMONIES = { opening_ceremony: "Opening Ceremony", closing_ceremony: "Closing Ceremony" } as const;
+
+/** Saves the date and labels of the opening or closing ceremony (dashboard countdown). */
+export async function saveCeremony(form: FormData) {
   await requireAdmin();
+  const key = String(form.get("key") ?? "") as keyof typeof CEREMONIES;
+  if (!(key in CEREMONIES)) return;
   const local = String(form.get("at") ?? ""); // "YYYY-MM-DDTHH:mm" in Istanbul time
   if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(local)) return;
   const supabase = await createClient();
   await supabase.from("settings").upsert({
-    key: "opening_ceremony",
+    key,
     value: {
       at: `${local}:00+03:00`,
-      label_en: String(form.get("label_en") ?? "").trim() || "Opening Ceremony",
+      label_en: String(form.get("label_en") ?? "").trim() || CEREMONIES[key],
       label_tr: String(form.get("label_tr") ?? "").trim(),
     },
     updated_at: new Date().toISOString(),
