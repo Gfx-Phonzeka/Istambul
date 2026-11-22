@@ -24,11 +24,11 @@ export function CameraMarker({ c, selected, pal, font = "Helvetica, Arial, sans-
       )}
       {selected && <circle cx={cx} cy={cy} r={R + 7} fill="none" stroke={pal.highlight} strokeWidth={5} />}
       {c.is_special ? (
-        <rect x={cx - R * 0.72} y={cy - R * 0.72} width={R * 1.44} height={R * 1.44} transform={`rotate(45 ${cx} ${cy})`} fill={color} stroke={pal.special} strokeWidth={3} />
+        <rect x={cx - R * 0.85} y={cy - R * 0.85} width={R * 1.7} height={R * 1.7} transform={`rotate(45 ${cx} ${cy})`} fill={color} stroke={pal.special} strokeWidth={3} />
       ) : (
         <circle cx={cx} cy={cy} r={R} fill={color} stroke="#fff" strokeWidth={2} />
       )}
-      <text x={cx} y={cy + 3.5} textAnchor="middle" fontSize={c.number.length > 2 ? 8 : 10} fontWeight={700} fill={pal.text} fontFamily={font}>
+      <text x={cx} y={cy + 4} textAnchor="middle" fontSize={c.number.length > 2 ? 9 : 12} fontWeight={700} fill={pal.text} fontFamily={font}>
         {c.number}
       </text>
     </g>
