@@ -56,7 +56,7 @@ export function VenuesExplorer({ venues, clusters, sports }: {
               <strong>{v.title}</strong>
               {v.address && <span className="small muted">{v.address}</span>}
               <ul className="small" style={{ margin: 0, paddingLeft: 18 }}>
-                {v.sports.map((s) => <li key={s.id}>{s.title} <span className="muted">· {s.dates}</span></li>)}
+                {v.sports.map((s) => <li key={s.id}>{s.title}{s.dates ? <span className="muted"> · {s.dates}</span> : null}</li>)}
               </ul>
               {v.plans > 0 && <span className="small">📷 {t("venues.cameraMapsCount", { n: v.plans })}</span>}
             </Link>
