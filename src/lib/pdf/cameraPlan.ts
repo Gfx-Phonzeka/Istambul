@@ -33,16 +33,16 @@ export async function buildCameraPlanPdf(supabase: SupabaseClient, planId: strin
 
   const legend: Content = {
     columns: [
-      { text: [{ text: "● ", color: "#1f3a5f" }, t("cameraMaps.level", { n: 1 })], width: "auto" },
-      { text: [{ text: "● ", color: "#1e7a46" }, t("cameraMaps.level", { n: 2 })], width: "auto" },
-      { text: [{ text: "● ", color: "#8a5a00" }, t("cameraMaps.level", { n: 3 })], width: "auto" },
-      { text: [{ text: "■ ", color: "#b3261e" }, t("cameraMaps.special")], width: "auto" },
+      { text: [{ text: "● ", color: "#16202e" }, t("cameraMaps.level", { n: 1 })], width: "auto" },
+      { text: [{ text: "● ", color: "#0a6b70" }, t("cameraMaps.level", { n: 2 })], width: "auto" },
+      { text: [{ text: "● ", color: "#a15c00" }, t("cameraMaps.level", { n: 3 })], width: "auto" },
+      { text: [{ text: "■ ", color: "#d7372a" }, t("cameraMaps.special")], width: "auto" },
     ],
     columnGap: 16, fontSize: 8, margin: [0, 4, 0, 0],
   };
 
   const header = [t("cameraMaps.cols.number"), t("cameraMaps.cols.type"), t("cameraMaps.cols.lens"), t("cameraMaps.cols.function"), t("cameraMaps.cols.level"), t("cameraMaps.cols.special")]
-    .map((h) => ({ text: h, bold: true, fillColor: "#eef0f3" }));
+    .map((h) => ({ text: h, bold: true, fillColor: "#eceef1" }));
   const rows = cameras.map((c) => [
     { text: c.number, bold: true }, t(`cameraTypes.${c.type}`), c.lens ?? "", pick(locale, c.function_en, c.function_tr), c.level, c.is_special ? "●" : "",
   ]);
@@ -52,24 +52,24 @@ export async function buildCameraPlanPdf(supabase: SupabaseClient, planId: strin
     pageOrientation: "landscape",
     pageMargins: [36, 44, 36, 40],
     info: { title: `${plan.venueTitle} – ${plan.sportTitle} – ${plan.title}`, author: "Medialuso – Host Broadcaster" },
-    defaultStyle: { font: "Roboto", fontSize: 9, color: "#1b1f24" },
-    header: { text: `Istanbul 2027 · ${t("nav.cameraMaps")}`, fontSize: 8, color: "#5b636e", margin: [36, 18, 36, 0] },
+    defaultStyle: { font: "Roboto", fontSize: 9, color: "#16202e" },
+    header: { text: `Istanbul 2027 · ${t("nav.cameraMaps")}`, fontSize: 8, color: "#5b6676", margin: [36, 18, 36, 0] },
     footer: (page: number, pages: number) => ({
       columns: [
-        { text: `${t("common.hostBroadcaster")} · ${generated}`, fontSize: 7, color: "#5b636e" },
-        { text: t("handbook.pageOf", { n: page, total: pages }), alignment: "right", fontSize: 7, color: "#5b636e" },
+        { text: `${t("common.hostBroadcaster")} · ${generated}`, fontSize: 7, color: "#5b6676" },
+        { text: t("handbook.pageOf", { n: page, total: pages }), alignment: "right", fontSize: 7, color: "#5b6676" },
       ],
       margin: [36, 14, 36, 0],
     }),
     content: [
-      { text: `${plan.venueTitle} · ${plan.sportTitle}`, fontSize: 16, bold: true, color: "#1f3a5f" },
-      { text: `${plan.title} · ${plan.clusterTitle}${plan.level ? " · " + t(`venues.levels.${plan.level}`) : ""}`, fontSize: 10, color: "#5b636e", margin: [0, 2, 0, 6] },
+      { text: `${plan.venueTitle} · ${plan.sportTitle}`, fontSize: 16, bold: true, color: "#0a6b70" },
+      { text: `${plan.title} · ${plan.clusterTitle}${plan.level ? " · " + t(`venues.levels.${plan.level}`) : ""}`, fontSize: 10, color: "#5b6676", margin: [0, 2, 0, 6] },
       { text: `${t("cameraMaps.total", { n: plan.total })} · ${t("cameraMaps.specialsCount", { n: plan.specials })}`, fontSize: 9, margin: [0, 0, 0, 6] },
       { svg, width: 620, alignment: "center" },
       legend,
       { text: t("cameraMaps.cameraList"), fontSize: 12, bold: true, margin: [0, 10, 0, 6], pageBreak: "before" },
       { table: { headerRows: 1, widths: [30, 70, 70, "*", 35, 40], body: [header, ...rows] }, layout: "lightHorizontalLines" },
-      ...(drawing ? [{ text: t("cameraMaps.drawingAttached", { v: drawing.version_number }), fontSize: 8, color: "#5b636e", margin: [0, 10, 0, 0] } as Content] : []),
+      ...(drawing ? [{ text: t("cameraMaps.drawingAttached", { v: drawing.version_number }), fontSize: 8, color: "#5b6676", margin: [0, 10, 0, 0] } as Content] : []),
     ],
   };
 

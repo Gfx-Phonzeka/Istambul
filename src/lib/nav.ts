@@ -40,5 +40,5 @@ export const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
 export const ALL_NAV: NavItem[] = NAV_GROUPS.flatMap((g) => g.items);
 
 export function isActive(pathname: string, href: string) {
-  return href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(href + "/");
+  return href === "/" || href === "/admin" ? pathname === href : pathname === href || pathname.startsWith(href + "/");
 }

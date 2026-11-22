@@ -54,12 +54,13 @@ export default async function Dashboard() {
       ))}
 
       {ceremony && (
-        <Card title={`${t("dashboard.countdownTo")} ${pick(locale, ceremony.label_en, ceremony.label_tr)}`}>
+        <section className="onair" aria-label={t("dashboard.countdownTo")}>
+          <div>
+            <h2 className="onair-title">{`${t("dashboard.countdownTo")} ${pick(locale, ceremony.label_en, ceremony.label_tr)}`}</h2>
+            <p className="onair-meta">{formatDateTime(ceremony.at, locale)} (TRT, UTC+3)</p>
+          </div>
           <Countdown target={ceremony.at} />
-          <p className="muted small" style={{ marginTop: "var(--space-3)", marginBottom: 0 }}>
-            {formatDateTime(ceremony.at, locale)} (TRT, UTC+3)
-          </p>
-        </Card>
+        </section>
       )}
 
       <div className="grid grid-2">

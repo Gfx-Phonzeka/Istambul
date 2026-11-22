@@ -9,7 +9,7 @@ export interface CameraPalette { l1: string; l2: string; l3: string; special: st
 export const SCREEN_CAMS: CameraPalette = {
   l1: "var(--cam-l1)", l2: "var(--cam-l2)", l3: "var(--cam-l3)", special: "var(--cam-special)", highlight: "var(--cam-highlight)", text: "#fff",
 };
-export const PRINT_CAMS: CameraPalette = { l1: "#1f3a5f", l2: "#1e7a46", l3: "#8a5a00", special: "#b3261e", highlight: "#f5b301", text: "#fff" };
+export const PRINT_CAMS: CameraPalette = { l1: "#16202e", l2: "#0a6b70", l3: "#a15c00", special: "#d7372a", highlight: "#f2b200", text: "#fff" };
 
 export const W = 1000, H = 600, R = 19;
 

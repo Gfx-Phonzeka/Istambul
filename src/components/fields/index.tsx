@@ -7,7 +7,7 @@ export interface FieldPalette { bg: string; fill: string; line: string; water: s
 export const SCREEN_PALETTE: FieldPalette = {
   bg: "var(--field-bg)", fill: "var(--field-fill)", line: "var(--field-line)", water: "var(--field-water)",
 };
-export const PRINT_PALETTE: FieldPalette = { bg: "#f4f7f2", fill: "#dfeadb", line: "#6b7f68", water: "#d6e9f5" };
+export const PRINT_PALETTE: FieldPalette = { bg: "#f2f5f3", fill: "#dde9e2", line: "#6a8075", water: "#d3e8ee" };
 
 type P = { p: FieldPalette };
 const stroke = (p: FieldPalette, w = 4) => ({ stroke: p.line, strokeWidth: w, fill: "none" });

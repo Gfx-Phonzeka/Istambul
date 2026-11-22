@@ -60,8 +60,8 @@ async function htmlToContent(html: string): Promise<Content> {
       h2: { fontSize: 14, bold: true, marginBottom: 4, marginTop: 10 },
       h3: { fontSize: 12, bold: true, marginBottom: 4, marginTop: 8 },
       p: { margin: [0, 3, 0, 6] },
-      a: { color: "#1f3a5f", decoration: "underline" },
-      th: { bold: true, fillColor: "#eef0f3" },
+      a: { color: "#0a6b70", decoration: "underline" },
+      th: { bold: true, fillColor: "#eceef1" },
       table: { marginBottom: 8 },
     },
   });
@@ -107,16 +107,16 @@ export async function buildHandbookPdf(
     info: { title: `${docTitle} – Istanbul 2027`, author: "Medialuso – Host Broadcaster", creator: "Istanbul 2027 RHB Portal" },
     pageSize: "A4",
     pageMargins: [50, 60, 50, 60],
-    defaultStyle: { font: "Roboto", fontSize: 10, lineHeight: 1.25, color: "#1b1f24" },
+    defaultStyle: { font: "Roboto", fontSize: 10, lineHeight: 1.25, color: "#16202e" },
     styles: {
-      coverKicker: { fontSize: 11, color: "#5b636e", characterSpacing: 1 },
-      coverTitle: { fontSize: 30, bold: true, color: "#1f3a5f", margin: [0, 8, 0, 8] },
-      coverSub: { fontSize: 13, color: "#1b1f24" },
-      coverMeta: { fontSize: 9, color: "#5b636e" },
-      toc: { fontSize: 18, bold: true, color: "#1f3a5f", margin: [0, 0, 0, 12] },
-      chapter: { fontSize: 20, bold: true, color: "#1f3a5f", margin: [0, 0, 0, 10] },
-      summary: { fontSize: 11, italics: true, color: "#5b636e", margin: [0, 0, 0, 12] },
-      section: { fontSize: 14, bold: true, color: "#1b1f24", margin: [0, 14, 0, 6] },
+      coverKicker: { fontSize: 11, color: "#5b6676", characterSpacing: 1 },
+      coverTitle: { fontSize: 30, bold: true, color: "#0a6b70", margin: [0, 8, 0, 8] },
+      coverSub: { fontSize: 13, color: "#16202e" },
+      coverMeta: { fontSize: 9, color: "#5b6676" },
+      toc: { fontSize: 18, bold: true, color: "#0a6b70", margin: [0, 0, 0, 12] },
+      chapter: { fontSize: 20, bold: true, color: "#0a6b70", margin: [0, 0, 0, 10] },
+      summary: { fontSize: 11, italics: true, color: "#5b6676", margin: [0, 0, 0, 12] },
+      section: { fontSize: 14, bold: true, color: "#16202e", margin: [0, 14, 0, 6] },
     },
     content: [
       { text: t("common.games").toUpperCase(), style: "coverKicker", margin: [0, 180, 0, 0] },
@@ -125,18 +125,18 @@ export async function buildHandbookPdf(
       { text: `${scopeLabel} · ${locale.toUpperCase()}`, style: "coverSub", margin: [0, 4, 0, 0] },
       { text: t("handbook.pdfGenerated", { date: generated }), style: "coverMeta", margin: [0, 40, 0, 0] },
       { text: t("handbook.pdfConfidential"), style: "coverMeta", margin: [0, 4, 0, 0] },
-      { toc: { title: { text: t("handbook.contents"), style: "toc" }, numberStyle: { color: "#5b636e" } }, pageBreak: "before" },
+      { toc: { title: { text: t("handbook.contents"), style: "toc" }, numberStyle: { color: "#5b6676" } }, pageBreak: "before" },
       ...body,
     ],
     header: (page: number) =>
-      page === 1 ? null : { text: `Istanbul 2027 · ${docTitle}`, fontSize: 8, color: "#5b636e", margin: [50, 30, 50, 0] },
+      page === 1 ? null : { text: `Istanbul 2027 · ${docTitle}`, fontSize: 8, color: "#5b6676", margin: [50, 30, 50, 0] },
     footer: (page: number, pages: number) =>
       page === 1
         ? null
         : {
             columns: [
-              { text: t("common.hostBroadcaster"), fontSize: 8, color: "#5b636e" },
-              { text: t("handbook.pageOf", { n: page, total: pages }), alignment: "right", fontSize: 8, color: "#5b636e" },
+              { text: t("common.hostBroadcaster"), fontSize: 8, color: "#5b6676" },
+              { text: t("handbook.pageOf", { n: page, total: pages }), alignment: "right", fontSize: 8, color: "#5b6676" },
             ],
             margin: [50, 20, 50, 0],
           },

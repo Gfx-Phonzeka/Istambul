@@ -15,12 +15,14 @@ export function UserMenu({ name, roleLabel, staff, signOut }: { name: string; ro
   }, []);
   return (
     <div className="dropdown" ref={ref}>
-      <button type="button" className="icon-btn" aria-label={t("common.profile")} aria-expanded={open} onClick={() => setOpen((o) => !o)}>
-        <Icon name="user" />
+      <button type="button" className="account-pill" aria-label={t("common.profile")} aria-expanded={open} onClick={() => setOpen((o) => !o)}>
+        <span className="avatar" aria-hidden="true">{initials(name)}</span>
+        <span className="account-name">{name}</span>
+        <Icon name="chevron-down" size={16} className="account-chevron" />
       </button>
       {open && (
         <div className="dropdown-panel" style={{ width: 260 }}>
-          <div style={{ padding: "var(--space-2) var(--space-3)" }}>
+          <div className="dropdown-head">
             <div style={{ fontWeight: 600 }}>{name}</div>
             <div className="muted small">{roleLabel}</div>
           </div>
@@ -33,4 +35,9 @@ export function UserMenu({ name, roleLabel, staff, signOut }: { name: string; ro
       )}
     </div>
   );
+}
+
+function initials(name: string) {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  return ((parts[0]?.[0] ?? "") + (parts.length > 1 ? parts[parts.length - 1][0] : "")).toUpperCase() || "?";
 }

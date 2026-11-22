@@ -1,48 +1,66 @@
 /*
  * DESIGN TOKENS — the single place to change the look of the portal.
- * Phase 2 (design system) only needs to edit the values below.
+ *
+ * Palette (phase 2):
+ *   Studio grey  #ECEEF1  canvas
+ *   Paper        #FFFFFF  cards
+ *   Gallery ink  #16202E  text + dark navigation rail (control-room dark)
+ *   Bosphorus    #0A6B70  the one accent: actions, active state, charts
+ *   Tally red    #D7372A  urgent / live / unread only (camera tally light)
+ *   Slate        #5B6676  secondary text
+ *
+ * Type: Instrument Sans (self-hosted, Latin + Latin-ext for Turkish).
+ *   Body at 100% width; display type and big numbers at 82% width.
  */
 :root {
   /* Colour palette */
-  --color-bg: #f5f6f8;
+  --color-bg: #eceef1;
   --color-surface: #ffffff;
-  --color-surface-muted: #eef0f3;
-  --color-border: #dcdfe4;
-  --color-border-strong: #b9bec7;
-  --color-text: #1b1f24;
-  --color-text-muted: #5b636e;
+  --color-surface-muted: #f3f4f6;
+  --color-border: #e1e4e9;
+  --color-border-strong: #c5cad3;
+  --color-text: #16202e;
+  --color-text-muted: #5b6676;
   --color-text-inverse: #ffffff;
 
-  --color-primary: #1f3a5f;
-  --color-primary-hover: #17304f;
-  --color-primary-soft: #e4eaf2;
+  --color-primary: #0a6b70;
+  --color-primary-hover: #08585c;
+  --color-primary-soft: #dcedec;
   --color-primary-contrast: #ffffff;
 
-  --color-accent: #b3261e;
-  --color-success: #1e7a46;
-  --color-success-soft: #e2f3e9;
-  --color-warning: #8a5a00;
-  --color-warning-soft: #fdf1d8;
-  --color-danger: #b3261e;
-  --color-danger-soft: #fbe5e3;
-  --color-info: #1f5f99;
-  --color-info-soft: #e2eef9;
-  --color-focus: #3b82f6;
+  --color-ink: #16202e;
+  --color-ink-2: #222e40;
+  --color-ink-text: #c9d1dc;
+  --color-ink-muted: #8793a4;
+
+  --color-accent: #d7372a;
+  --color-success: #19754a;
+  --color-success-soft: #e0f1e7;
+  --color-warning: #8f5600;
+  --color-warning-soft: #fbefd9;
+  --color-danger: #c42f23;
+  --color-danger-soft: #fbe6e3;
+  --color-info: #2a5aa8;
+  --color-info-soft: #e4ecf8;
+  --color-focus: #0a6b70;
 
   /* Typography */
-  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-sans: "Instrument Sans Variable", "Instrument Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --stretch-display: 82%;
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
   --text-md: 1rem;
   --text-lg: 1.125rem;
   --text-xl: 1.375rem;
-  --text-2xl: 1.75rem;
-  --text-3xl: 2.25rem;
+  --text-2xl: 2rem;
+  --text-3xl: 2.5rem;
+  --text-4xl: 4rem;
   --weight-normal: 400;
   --weight-medium: 500;
-  --weight-bold: 650;
-  --leading: 1.5;
+  --weight-bold: 600;
+  --weight-heavy: 700;
+  --leading: 1.55;
 
   /* Spacing scale */
   --space-1: 0.25rem;
@@ -53,34 +71,37 @@
   --space-6: 2rem;
   --space-7: 3rem;
 
-  /* Radii & elevation */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
+  /* Radii by hierarchy: frame > card > control > chip */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
   --radius-pill: 999px;
-  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06);
-  --shadow-md: 0 4px 16px rgba(16, 24, 40, 0.1);
+  /* Shadows only for things that float above the page */
+  --shadow-sm: none;
+  --shadow-md: 0 12px 32px rgba(22, 32, 46, 0.14), 0 2px 6px rgba(22, 32, 46, 0.06);
 
   /* Layout */
-  --topbar-height: 60px;
-  --sidebar-width: 248px;
+  --topbar-height: 72px;
+  --sidebar-width: 252px;
+  --rail-inset: 12px;
   --bottomnav-height: 64px;
-  --content-max: 1200px;
-  --transition: 150ms ease;
+  --content-max: 1240px;
+  --transition: 160ms ease;
 }
 
-/* Camera maps & schematic venue map (phase 2 will redesign the drawings) */
+/* Camera maps & schematic venue map */
 :root {
-  --field-bg: #f4f7f2;
-  --field-fill: #dfeadb;
-  --field-line: #6b7f68;
-  --field-water: #d6e9f5;
-  --cam-l1: #1f3a5f;
-  --cam-l2: #1e7a46;
-  --cam-l3: #8a5a00;
-  --cam-special: #b3261e;
-  --cam-highlight: #f5b301;
-  --map-europe: #e8eef6;
-  --map-anatolia: #f3ede4;
-  --map-water: #cfe3f2;
+  --field-bg: #f2f5f3;
+  --field-fill: #dde9e2;
+  --field-line: #6a8075;
+  --field-water: #d3e8ee;
+  --cam-l1: #16202e;
+  --cam-l2: #0a6b70;
+  --cam-l3: #a15c00;
+  --cam-special: #d7372a;
+  --cam-highlight: #f2b200;
+  --map-europe: #e3ebee;
+  --map-anatolia: #efebe3;
+  --map-water: #cfe2ea;
 }

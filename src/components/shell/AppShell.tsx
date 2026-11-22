@@ -50,35 +50,12 @@ export function AppShell({
   return (
     <>
       <PageViewTracker />
-      <header className="topbar">
-        <button type="button" className="icon-btn only-mobile" aria-label={t("common.menu")} aria-expanded={drawer} onClick={() => setDrawer((d) => !d)}>
-          <Icon name={drawer ? "close" : "menu"} />
-        </button>
-        <Link href="/" className="brand">
-          <span className="brand-mark">IST<br />27</span>
-          <span className="brand-text">{t("common.appName")}</span>
-        </Link>
-        <form
-          className="topbar-search"
-          role="search"
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (q.trim()) router.push(`/search?q=${encodeURIComponent(q.trim())}`);
-          }}
-        >
-          <label className="sr-only" htmlFor="global-search">{t("common.search")}</label>
-          <input id="global-search" className="input" type="search" placeholder={t("common.searchPlaceholder")} value={q} onChange={(e) => setQ(e.target.value)} />
-        </form>
-        <div className="topbar-actions">
-          <Link href="/search" className="icon-btn only-mobile" aria-label={t("common.search")}><Icon name="search" /></Link>
-          <LangSwitch />
-          <NotificationBell items={notifications} />
-          <UserMenu name={userName} roleLabel={roleLabel} staff={staff} signOut={signOut} />
-        </div>
-      </header>
-
       <div className="shell">
         <nav className={`sidebar${drawer ? " open" : ""}`} aria-label={t("common.menu")}>
+          <Link href="/" className="brand rail-brand">
+            <span className="brand-mark">IST<br />27</span>
+            <span className="brand-text">{t("common.appName")}</span>
+          </Link>
           {groups.map((g) => (
             <div key={g.title} className="nav-group">
               <div className="nav-group-title">{t(g.title)}</div>
@@ -92,9 +69,38 @@ export function AppShell({
           ))}
         </nav>
         <div className={`drawer-backdrop${drawer ? " open" : ""}`} onClick={() => setDrawer(false)} />
-        <main className="main" id="main">
-          <div className="main-inner">{children}</div>
-        </main>
+        <div className="shell-main">
+          <header className="topbar">
+            <button type="button" className="icon-btn only-mobile" aria-label={t("common.menu")} aria-expanded={drawer} onClick={() => setDrawer((d) => !d)}>
+              <Icon name={drawer ? "close" : "menu"} />
+            </button>
+            <Link href="/" className="brand topbar-brand">
+              <span className="brand-mark">IST<br />27</span>
+              <span className="brand-text">{t("common.appName")}</span>
+            </Link>
+            <form
+              className="topbar-search"
+              role="search"
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (q.trim()) router.push(`/search?q=${encodeURIComponent(q.trim())}`);
+              }}
+            >
+              <Icon name="search" className="topbar-search-icon" />
+              <label className="sr-only" htmlFor="global-search">{t("common.search")}</label>
+              <input id="global-search" className="input" type="search" placeholder={t("common.searchPlaceholder")} value={q} onChange={(e) => setQ(e.target.value)} />
+            </form>
+            <div className="topbar-actions">
+              <Link href="/search" className="icon-btn only-mobile" aria-label={t("common.search")}><Icon name="search" /></Link>
+              <LangSwitch />
+              <NotificationBell items={notifications} />
+              <UserMenu name={userName} roleLabel={roleLabel} staff={staff} signOut={signOut} />
+            </div>
+          </header>
+          <main className="main" id="main">
+            <div className="main-inner">{children}</div>
+          </main>
+        </div>
       </div>
 
       <nav className="bottomnav" aria-label="Quick navigation">
