@@ -19,6 +19,15 @@ filters and search, material terms accepted before the first download, signed li
 Uploads from the backoffice are resumable (TUS, 6 MB parts) and go straight from the browser to Supabase Storage.
 Note: the Supabase Free plan limits each file to 50 MB; broadcast files of several GB need the Pro plan.
 
+**Stage 4 (Venues & camera maps):** venue list with a schematic map of the three clusters (Europe North,
+Europe South, Anatolian), filters by cluster and sport, venue sheets (sports and dates, level, capacity, photos,
+commentary positions, unilateral facilities, access & OB vans, contacts, documents). Camera maps per venue + sport
++ configuration: conceptual SVG map generated from the camera data (field drawings in `src/components/fields`,
+one replaceable component per shape) side by side with the architecture PDF (pdf.js viewer with zoom), camera
+table with cross-highlighting, counters, overview of all maps with filters, PDF export per map (map + table +
+drawing appended) and a ZIP pack of all maps. Backoffice: drag & drop camera editor, copy cameras between maps,
+drawing upload with numbering check before publication, versioned drawings (archive visible to admins).
+
 ## Stack
 - Next.js 15 (App Router) + TypeScript
 - Supabase (Auth, Postgres with Row Level Security) — migrations in `supabase/migrations`
@@ -34,7 +43,7 @@ Note: the Supabase Free plan limits each file to 50 MB; broadcast files of sever
 | Database schema & security | `supabase/migrations/*.sql` |
 | Content types & fields (backoffice) | `src/lib/content/registry.ts` |
 | Handbook PDF layout | `src/lib/pdf/handbook.ts` |
-| Example content `[EXEMPLO]` | `supabase/seed/seed.sql`, `seed_stage2_content.sql`, `seed_stage3_media.sql` (files in buckets under `seed/`) |
+| Example content `[EXEMPLO]` | `supabase/seed/seed.sql`, `seed_stage2_content.sql`, `seed_stage3_media.sql`, `seed_stage4_venues.sql` (files in buckets under `seed/`) |
 | Demo accounts (passwords) | `supabase/seed/demo-accounts.local.sql` — **not in git** (public repository) |
 
 ## Environment variables

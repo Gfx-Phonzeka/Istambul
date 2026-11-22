@@ -68,3 +68,19 @@
   --content-max: 1200px;
   --transition: 150ms ease;
 }
+
+/* Camera maps & schematic venue map (phase 2 will redesign the drawings) */
+:root {
+  --field-bg: #f4f7f2;
+  --field-fill: #dfeadb;
+  --field-line: #6b7f68;
+  --field-water: #d6e9f5;
+  --cam-l1: #1f3a5f;
+  --cam-l2: #1e7a46;
+  --cam-l3: #8a5a00;
+  --cam-special: #b3261e;
+  --cam-highlight: #f5b301;
+  --map-europe: #e8eef6;
+  --map-anatolia: #f3ede4;
+  --map-water: #cfe3f2;
+}

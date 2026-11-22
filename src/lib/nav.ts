@@ -41,8 +41,6 @@ export const ALL_NAV: NavItem[] = NAV_GROUPS.flatMap((g) => g.items);
 
 /** Sections still under construction, with the stage they arrive in. */
 export const PLACEHOLDER_SECTIONS: Record<string, string> = {
-  venues: "venues",
-  "camera-maps": "cameraMaps",
   schedule: "schedule",
   broadcast: "broadcast",
   requests: "requests",

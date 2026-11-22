@@ -3,6 +3,9 @@ import { requireStaff, isAdmin } from "@/lib/auth";
 import { signPaths } from "@/lib/media";
 import { MediaVersionsPanel, type VersionRow } from "@/components/media/MediaVersionsPanel";
 import { BriefingFilesPanel } from "@/components/media/BriefingFilesPanel";
+import { CameraEditor } from "@/components/venues/CameraEditor";
+import { DrawingPanel, type DrawingRow } from "@/components/venues/DrawingPanel";
+import { VenueFilesPanel, type VenueFileRow } from "@/components/venues/VenueFilesPanel";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
 import { CONTENT_TYPES, columnsOf, isContentType, type ContentType } from "@/lib/content/registry";
@@ -84,6 +87,9 @@ export default async function EditContent({ params, searchParams }: { params: Pr
       case "deadline": previewUrl = null; break;
       case "media_asset": previewUrl = `/media-hub?preview=1&item=${row.id}`; break;
       case "briefing_video": previewUrl = `/briefings/${row.id}?preview=1`; break;
+      case "venue": previewUrl = `/venues/${row.slug}?preview=1`; break;
+      case "camera_plan": previewUrl = `/camera-maps/${row.id}?preview=1`; break;
+      case "cluster": case "sport": case "venue_sport": previewUrl = `/venues?preview=1`; break;
       default: previewUrl = `${type.publicPath}?preview=1`;
     }
   }
@@ -103,6 +109,40 @@ export default async function EditContent({ params, searchParams }: { params: Pr
     }} />;
   }
 
+  if (row && key === "venue") {
+    const { data: files } = await supabase.from("venue_files").select("*").eq("venue_id", row.id).order("kind").order("position");
+    const signed = await signPaths(supabase, "venues", (files ?? []).filter((f) => f.kind === "photo").map((f) => f.file_path));
+    extra = <VenueFilesPanel venueId={String(row.id)} files={(files ?? []).map((f) => ({ ...f, url: signed[f.file_path] ?? null })) as VenueFileRow[]} />;
+  }
+  if (row && key === "camera_plan") {
+    const [{ data: cams }, { data: drawings }, { data: sport }, { data: others }, { data: venues }, { data: sports }] = await Promise.all([
+      supabase.from("cameras").select("*").eq("plan_id", row.id).order("position"),
+      supabase.from("camera_drawings").select("*").eq("plan_id", row.id).order("version_number", { ascending: false }),
+      supabase.from("sports").select("field_shape").eq("id", row.sport_id as string).maybeSingle(),
+      supabase.from("camera_plans").select("id,title_en,venue_id,sport_id").neq("id", row.id as string),
+      supabase.from("venues").select("id,title_en"),
+      supabase.from("sports").select("id,title_en"),
+    ]);
+    const vn = new Map((venues ?? []).map((v) => [v.id, v.title_en]));
+    const sn = new Map((sports ?? []).map((v) => [v.id, v.title_en]));
+    const shape = (row.field_shape as string) || sport?.field_shape || "generic";
+    extra = (
+      <>
+        <CameraEditor
+          key={String(row.id)}
+          planId={String(row.id)}
+          shape={shape}
+          initial={(cams ?? []).map((c) => ({
+            key: c.id, id: c.id, number: c.number, type: c.type, lens: c.lens ?? "", function_en: c.function_en ?? "", function_tr: c.function_tr ?? "",
+            level: c.level, is_special: c.is_special, x: Number(c.x), y: Number(c.y), angle: c.angle == null ? "" : String(c.angle),
+          }))}
+          otherPlans={(others ?? []).map((p) => ({ id: p.id, label: `${vn.get(p.venue_id) ?? ""} · ${sn.get(p.sport_id) ?? ""} · ${p.title_en}` }))}
+        />
+        <DrawingPanel planId={String(row.id)} drawings={(drawings ?? []) as DrawingRow[]} cameras={(cams ?? []).map((c) => ({ number: c.number, type: c.type }))} isAdmin={isAdmin(me)} />
+      </>
+    );
+  }
+
   const title = row ? String(row[type.titleColumn] ?? "") : `${t("cms.new")} ${t(type.singular)}`;
   return (
     <div className="stack">
@@ -120,7 +160,7 @@ export default async function EditContent({ params, searchParams }: { params: Pr
         previewUrl={previewUrl}
       />
       {extra}
-      {!row && (key === "media_asset" || key === "briefing_video") && <p className="muted small">{t("mediaHub.admin.saveFirst")}</p>}
+      {!row && ["media_asset", "briefing_video", "venue", "camera_plan"].includes(key) && <p className="muted small">{t("mediaHub.admin.saveFirst")}</p>}
     </div>
   );
 }

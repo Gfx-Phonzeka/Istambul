@@ -28,7 +28,10 @@ export interface ContentType {
 
 export type ContentTypeKey =
   | "handbook_chapter" | "handbook_section" | "announcement" | "deadline" | "faq_category" | "faq"
-  | "glossary_term" | "contact_area" | "contact" | "legal_page" | "briefing_video" | "media_asset";
+  | "glossary_term" | "contact_area" | "contact" | "legal_page" | "briefing_video" | "media_asset"
+  | "cluster" | "sport" | "venue" | "venue_sport" | "camera_plan";
+
+export const FIELD_SHAPES = ["generic", "track", "pool", "pitch", "court", "ring", "mat", "piste", "circle"] as const;
 
 export const BRIEFING_CATEGORIES = ["welcome", "ibc", "signal", "graphics", "operations", "venues"] as const;
 export const MEDIA_CATEGORIES = ["graphics", "bumpers", "curtains", "promos", "music"] as const;
@@ -171,9 +174,76 @@ CONTENT_TYPES.media_asset = {
   order: [{ column: "category", ascending: true }, { column: "position", ascending: true }],
 };
 
+const shapeOptions = FIELD_SHAPES.map((v) => ({ value: v, label: `fields.${v}` }));
+
+CONTENT_TYPES.cluster = {
+  key: "cluster", table: "clusters", label: "cms.types.cluster", singular: "cms.single.cluster",
+  titleColumn: "title_en", publicPath: "/venues",
+  fields: [title, slug, position, visibility],
+  order: [{ column: "position", ascending: true }],
+};
+
+CONTENT_TYPES.sport = {
+  key: "sport", table: "sports", label: "cms.types.sport", singular: "cms.single.sport",
+  titleColumn: "title_en", publicPath: "/venues",
+  fields: [title, slug, { name: "field_shape", label: "cms.fields.fieldShape", kind: "select", required: true, options: shapeOptions, help: "cms.help.fieldShape" }, position, visibility],
+  order: [{ column: "position", ascending: true }],
+};
+
+CONTENT_TYPES.venue = {
+  key: "venue", table: "venues", label: "cms.types.venue", singular: "cms.single.venue",
+  titleColumn: "title_en", publicPath: "/venues", parent: { column: "cluster_id", type: "cluster" },
+  fields: [
+    { name: "cluster_id", label: "cms.fields.cluster", kind: "reference", ref: "cluster", required: true },
+    title, slug,
+    { name: "address", label: "cms.fields.address", kind: "text" },
+    {
+      name: "production_level", label: "cms.fields.productionLevel", kind: "select", required: true,
+      options: [{ value: "1", label: "venues.levels.1" }, { value: "2", label: "venues.levels.2" }, { value: "3", label: "venues.levels.3" }],
+    },
+    { name: "capacity", label: "cms.fields.capacity", kind: "number" },
+    { name: "map_x", label: "cms.fields.mapX", kind: "number", help: "cms.help.mapXY" },
+    { name: "map_y", label: "cms.fields.mapY", kind: "number", help: "cms.help.mapXY" },
+    { name: "commentary", label: "venues.sections.commentary", kind: "richtext", bilingual: true },
+    { name: "unilaterals", label: "venues.sections.unilaterals", kind: "richtext", bilingual: true },
+    { name: "access", label: "venues.sections.access", kind: "richtext", bilingual: true },
+    { name: "contacts", label: "venues.sections.contacts", kind: "richtext", bilingual: true },
+    position, visibility,
+  ],
+  order: [{ column: "cluster_id", ascending: true }, { column: "position", ascending: true }, { column: "title_en", ascending: true }],
+};
+
+CONTENT_TYPES.venue_sport = {
+  key: "venue_sport", table: "venue_sports", label: "cms.types.venue_sport", singular: "cms.single.venue_sport",
+  titleColumn: "start_date", publicPath: "/venues", parent: { column: "venue_id", type: "venue" },
+  fields: [
+    { name: "venue_id", label: "cms.fields.venue", kind: "reference", ref: "venue", required: true },
+    { name: "sport_id", label: "cms.fields.sport", kind: "reference", ref: "sport", required: true },
+    { name: "start_date", label: "cms.fields.startDate", kind: "date" },
+    { name: "end_date", label: "cms.fields.endDate", kind: "date" },
+    { name: "notes", label: "cms.fields.notes", kind: "text", bilingual: true },
+    position, visibility,
+  ],
+  order: [{ column: "venue_id", ascending: true }, { column: "start_date", ascending: true }],
+};
+
+CONTENT_TYPES.camera_plan = {
+  key: "camera_plan", table: "camera_plans", label: "cms.types.camera_plan", singular: "cms.single.camera_plan",
+  titleColumn: "title_en", publicPath: "/camera-maps", parent: { column: "venue_id", type: "venue" },
+  fields: [
+    { name: "venue_id", label: "cms.fields.venue", kind: "reference", ref: "venue", required: true },
+    { name: "sport_id", label: "cms.fields.sport", kind: "reference", ref: "sport", required: true },
+    { name: "title", label: "cms.fields.configuration", kind: "text", bilingual: true, required: true, help: "cms.help.configuration" },
+    { name: "field_shape", label: "cms.fields.fieldShape", kind: "select", options: [{ value: "", label: "cms.fields.fieldShapeDefault" }, ...shapeOptions] },
+    position, visibility,
+  ],
+  order: [{ column: "venue_id", ascending: true }, { column: "position", ascending: true }],
+};
+
 export const CONTENT_GROUPS: { label: string; types: ContentTypeKey[] }[] = [
   { label: "nav.handbook", types: ["handbook_chapter", "handbook_section"] },
   { label: "cms.groupMedia", types: ["briefing_video", "media_asset"] },
+  { label: "cms.groupVenues", types: ["cluster", "venue", "sport", "venue_sport", "camera_plan"] },
   { label: "nav.news", types: ["announcement", "deadline"] },
   { label: "nav.faq", types: ["faq_category", "faq"] },
   { label: "nav.glossary", types: ["glossary_term"] },

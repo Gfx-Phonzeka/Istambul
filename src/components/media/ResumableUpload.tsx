@@ -3,6 +3,7 @@ import { useRef, useState } from "react";
 import * as tus from "tus-js-client";
 import { createClient } from "@/lib/supabase/client";
 import { useI18n } from "@/lib/i18n/client";
+import { fmtBytes } from "@/lib/bytes";
 
 export interface UploadedFile { path: string; name: string; size: number; mime: string; duration?: number; width?: number; height?: number }
 
@@ -37,11 +38,6 @@ function probe(file: File): Promise<{ duration?: number; width?: number; height?
   });
 }
 
-function fmtBytes(n: number) {
-  if (n >= 1e9) return `${(n / 1e9).toFixed(2)} GB`;
-  if (n >= 1e6) return `${(n / 1e6).toFixed(1)} MB`;
-  return `${Math.max(1, Math.round(n / 1e3))} KB`;
-}
 
 /**
  * Resumable upload straight from the browser to Supabase Storage (TUS protocol).

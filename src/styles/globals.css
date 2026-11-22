@@ -342,3 +342,36 @@ mark { background: var(--color-warning-soft); color: inherit; padding: 0 1px; bo
 .player-empty { display: flex; align-items: center; justify-content: center; color: #fff; }
 .progress { height: 8px; background: var(--color-surface-muted); border-radius: var(--radius-pill); overflow: hidden; min-width: 220px; }
 .progress span { display: block; height: 100%; background: var(--color-primary); transition: width 200ms linear; }
+
+/* ---------- Venues & camera maps ---------- */
+.venue-map { width: 100%; height: auto; display: block; border-radius: var(--radius-md); }
+.venue-map a circle { transition: r var(--transition); }
+.venue-num { font-size: var(--text-3xl); font-weight: var(--weight-bold); color: var(--color-text-muted); }
+.camera-map { width: 100%; height: auto; display: block; border-radius: var(--radius-md); user-select: none; -webkit-user-select: none; }
+.camera-map.is-editable { touch-action: none; }
+.plan-thumb { position: relative; }
+.plan-thumb .camera-map { pointer-events: none; }
+.cam-legend { display: flex; gap: var(--space-4); flex-wrap: wrap; margin-top: var(--space-2); color: var(--color-text-muted); }
+.cam-legend i { display: inline-block; width: 12px; height: 12px; border-radius: 50%; vertical-align: -1px; margin-right: 4px; }
+.cam-legend .dot-l1 { background: var(--cam-l1); }
+.cam-legend .dot-l2 { background: var(--cam-l2); }
+.cam-legend .dot-l3 { background: var(--cam-l3); }
+.cam-legend .dot-special { background: var(--cam-special); border-radius: 2px; transform: rotate(45deg); }
+.plan-views { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); align-items: start; }
+.view-toggle { display: none; border: 1px solid var(--color-border-strong); border-radius: var(--radius-pill); overflow: hidden; width: fit-content; }
+.view-toggle button { border: 0; background: transparent; padding: 6px 14px; font: inherit; font-size: var(--text-sm); cursor: pointer; }
+.view-toggle button.is-active { background: var(--color-primary); color: var(--color-primary-contrast); }
+@media (max-width: 1000px) {
+  .plan-views { grid-template-columns: 1fr; }
+  .view-toggle { display: inline-flex; }
+  .plan-views.show-map .plan-view-drawing, .plan-views.show-drawing .plan-view-map { display: none; }
+}
+.pdf-viewer { border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; background: var(--color-surface-muted); }
+.pdf-toolbar { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2); background: var(--color-surface); border-bottom: 1px solid var(--color-border); }
+.pdf-scroll { max-height: 70vh; overflow: auto; padding: var(--space-2); }
+.pdf-pages { display: flex; flex-direction: column; gap: var(--space-2); align-items: flex-start; }
+.pdf-pages canvas { background: #fff; box-shadow: var(--shadow-sm); }
+.numbering-check { display: grid; grid-template-columns: minmax(0, 2fr) minmax(220px, 1fr); gap: var(--space-4); align-items: start; }
+@media (max-width: 800px) { .numbering-check { grid-template-columns: 1fr; } }
+.cam-edit-table .input, .cam-edit-table .select { min-height: 34px; padding: 4px 8px; font-size: var(--text-sm); }
+.cam-edit-table td { padding: 6px; vertical-align: middle; }
