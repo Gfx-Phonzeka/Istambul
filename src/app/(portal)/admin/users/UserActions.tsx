@@ -13,7 +13,7 @@ export interface AdminUserRow {
   created_at: string; last_login_at: string | null; preferred_language: string;
 }
 
-const ROLES = ["right_holder", "partner", "editor", "admin"] as const;
+const ROLES = ["right_holder", "partner", "production", "editor", "admin"] as const;
 
 export function UserActions({ user, isSelf }: { user: AdminUserRow; isSelf: boolean }) {
   const { t } = useI18n();

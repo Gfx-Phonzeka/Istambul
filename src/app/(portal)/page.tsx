@@ -13,7 +13,7 @@ export const metadata = { title: "Home" };
 
 interface Announcement {
   id: string; title_en: string; title_tr: string | null; body_en: string; body_tr: string | null;
-  priority: "normal" | "urgent"; visibility: "all" | "partners" | "internal"; published_at: string | null;
+  priority: "normal" | "urgent"; visibility: "all" | "partners" | "production" | "internal"; published_at: string | null;
 }
 interface Deadline { id: string; title_en: string; title_tr: string | null; due_at: string; visibility: string; link: string | null }
 
@@ -35,7 +35,7 @@ export default async function Dashboard() {
   const urgent = list.filter((a) => a.priority === "urgent");
   const normal = list.filter((a) => a.priority !== "urgent");
   const visBadge = (v: string) =>
-    v === "partners" ? <Badge tone="info">{t("dashboard.partnersOnly")}</Badge> : v === "internal" ? <Badge tone="warning">{t("dashboard.internalOnly")}</Badge> : null;
+    v === "partners" ? <Badge tone="info">{t("dashboard.partnersOnly")}</Badge> : v === "production" ? <Badge tone="success">{t("dashboard.productionOnly")}</Badge> : v === "internal" ? <Badge tone="warning">{t("dashboard.internalOnly")}</Badge> : null;
 
   return (
     <div className="stack">

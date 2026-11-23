@@ -3,8 +3,8 @@ import { useActionState, useEffect, useRef } from "react";
 import { createRequest } from "@/lib/actions/requests";
 import { useI18n } from "@/lib/i18n/client";
 
-export function RequestForm({ venues, sports, contact }: {
-  venues: { id: string; title: string }[]; sports: { id: string; title: string }[]; contact: { name: string; email: string; phone: string };
+export function RequestForm({ venues, sports, contact, types = ["unilateral", "additional_production", "other"] }: {
+  venues: { id: string; title: string }[]; sports: { id: string; title: string }[]; contact: { name: string; email: string; phone: string }; types?: string[];
 }) {
   const { t } = useI18n();
   const [state, action, pending] = useActionState(createRequest, undefined);
@@ -17,8 +17,8 @@ export function RequestForm({ venues, sports, contact }: {
       <div className="form-grid">
         <div className="field">
           <label htmlFor="request_type">{t("requests.type")} *</label>
-          <select id="request_type" name="request_type" className="select" required defaultValue="unilateral">
-            {["unilateral", "additional_production", "other"].map((x) => <option key={x} value={x}>{t(`requests.types.${x}`)}</option>)}
+          <select id="request_type" name="request_type" className="select" required defaultValue={types[0]}>
+            {types.map((x) => <option key={x} value={x}>{t(`requests.types.${x}`)}</option>)}
           </select>
         </div>
         <div className="field">

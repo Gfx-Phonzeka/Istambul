@@ -139,6 +139,7 @@ export function MediaHub({ items, termsAccepted, termsTitle, termsHtml, focusIte
                   {i.badge === "updated" && <Badge tone="info">{t("mediaHub.badgeUpdated")}</Badge>}
                   {i.draft && <Badge tone="warning">{t("cms.status.draft")}</Badge>}
                   {i.visibility === "partners" && <Badge tone="info">{t("dashboard.partnersOnly")}</Badge>}
+                {i.visibility === "production" && <Badge tone="success">{t("dashboard.productionOnly")}</Badge>}
                 </div>
                 {i.version && (
                   <label className="media-check">

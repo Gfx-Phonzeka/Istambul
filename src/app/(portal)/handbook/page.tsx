@@ -41,6 +41,7 @@ export default async function HandbookIndex({ searchParams }: { searchParams: Pr
                   <li key={s.id}>
                     <Link href={`/handbook/${c.slug}/${s.slug}${q}`}>{ci + 1}.{si + 1} {pick(locale, s.title_en, s.title_tr)}</Link>{" "}
                     {s.visibility === "partners" && <Badge tone="info">{t("dashboard.partnersOnly")}</Badge>}
+                {s.visibility === "production" && <Badge tone="success">{t("dashboard.productionOnly")}</Badge>}
                     {s.visibility === "internal" && <Badge tone="warning">{t("dashboard.internalOnly")}</Badge>}
                     {s.status !== "published" && <Badge tone="warning">{t("cms.status.draft")}</Badge>}
                   </li>

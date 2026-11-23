@@ -35,6 +35,7 @@ export default async function NewsPage({ searchParams }: { searchParams: Promise
               <div className="row" style={{ marginBottom: 4 }}>
                 {a.priority === "urgent" && <Badge tone="danger">{t("dashboard.urgent")}</Badge>}
                 {a.visibility === "partners" && <Badge tone="info">{t("dashboard.partnersOnly")}</Badge>}
+                {a.visibility === "production" && <Badge tone="success">{t("dashboard.productionOnly")}</Badge>}
                 {a.visibility === "internal" && <Badge tone="warning">{t("dashboard.internalOnly")}</Badge>}
                 {a.status !== "published" && <Badge tone="warning">{t("cms.status.draft")}</Badge>}
                 <span className="muted small">{formatDate(a.published_at ?? a.created_at, locale)}</span>

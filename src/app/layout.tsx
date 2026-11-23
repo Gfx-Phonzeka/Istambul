@@ -4,8 +4,8 @@ import { I18nProvider } from "@/lib/i18n/client";
 import { getLocale } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
-  title: { default: "Istanbul 2027 · Right Holders Portal", template: "%s · Istanbul 2027 RHB Portal" },
-  description: "Private portal for Right Holders and partners of the 4th European Games Istanbul 2027.",
+  title: { default: "Istanbul 2027 · HB Portal", template: "%s · Istanbul 2027 HB Portal" },
+  description: "Host Broadcaster portal for Right Holders, partners and the production team of the 4th European Games Istanbul 2027.",
   robots: { index: false, follow: false, nocache: true, googleBot: { index: false, follow: false } },
 };
 

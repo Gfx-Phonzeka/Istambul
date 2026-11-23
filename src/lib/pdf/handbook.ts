@@ -104,7 +104,7 @@ export async function buildHandbookPdf(
 
   const docTitle = t("handbook.pdfTitle");
   const doc: TDocumentDefinitions = {
-    info: { title: `${docTitle} – Istanbul 2027`, author: "Medialuso – Host Broadcaster", creator: "Istanbul 2027 RHB Portal" },
+    info: { title: `${docTitle} – Istanbul 2027`, author: "Medialuso – Host Broadcaster", creator: "Istanbul 2027 HB Portal" },
     pageSize: "A4",
     pageMargins: [50, 60, 50, 60],
     defaultStyle: { font: "Roboto", fontSize: 10, lineHeight: 1.25, color: "#16202e" },

@@ -8,7 +8,7 @@ export interface TranslateItem { key: string; text: string; html: boolean }
 
 const Output = z.object({ translations: z.array(z.object({ key: z.string(), text: z.string() })) });
 
-const SYSTEM = `You translate content for the private Right Holders portal of the 4th European Games Istanbul 2027 (Host Broadcaster: Medialuso) from English into Turkish.
+const SYSTEM = `You translate content for the private HB Portal of the 4th European Games Istanbul 2027 (Host Broadcaster: Medialuso) from English into Turkish.
 
 Rules:
 - Write natural, professional Turkish as used by Turkish broadcasters and sports organisations.

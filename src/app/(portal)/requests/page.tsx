@@ -7,10 +7,11 @@ import { Badge, Card, EmptyState, PageHeader } from "@/components/ui";
 import { RequestForm } from "@/components/requests/RequestForm";
 
 export const metadata = { title: "Service requests" };
-import { STATUS_TONE } from "@/lib/requests";
+import { STATUS_TONE, TEAM_REQUEST_TYPES } from "@/lib/requests";
 
 export default async function RequestsPage() {
   const me = await requireApproved();
+  const team = me.role === "production";
   const { t, locale } = await getT();
   const supabase = await createClient();
   const [{ data: requests }, { data: venues }, { data: sports }] = await Promise.all([
@@ -22,12 +23,13 @@ export default async function RequestsPage() {
   const S = new Map((sports ?? []).map((s) => [s.id, pick(locale, s.title_en, s.title_tr)]));
   return (
     <div className="stack">
-      <PageHeader title={t("nav.requests")} subtitle={t("requests.subtitle")} />
+      <PageHeader title={team ? t("team.requestsTitle") : t("nav.requests")} subtitle={team ? t("team.requestsSubtitle") : t("requests.subtitle")} />
       <Card title={t("requests.new")} className="anchor-target" id="new-request">
         <RequestForm
           venues={[...V.entries()].map(([id, title]) => ({ id, title }))}
           sports={[...S.entries()].map(([id, title]) => ({ id, title }))}
           contact={{ name: `${me.first_name} ${me.last_name}`, email: me.email, phone: me.phone }}
+          types={team ? TEAM_REQUEST_TYPES : undefined}
         />
       </Card>
       <section className="stack-sm">

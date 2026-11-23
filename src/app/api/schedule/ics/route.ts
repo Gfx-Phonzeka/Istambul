@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
   const now = utc(new Date().toISOString());
   const calName = sport && S.get(sport) ? `Istanbul 2027 – ${pick(locale, S.get(sport)!.title_en, S.get(sport)!.title_tr)}` : "Istanbul 2027";
   const lines = [
-    "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Medialuso//Istanbul 2027 RHB Portal//EN", "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
+    "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Medialuso//Istanbul 2027 HB Portal//EN", "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
     `X-WR-CALNAME:${esc(calName)}`, "X-WR-TIMEZONE:Europe/Istanbul",
   ];
   for (const s of sessions ?? []) {

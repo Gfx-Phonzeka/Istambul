@@ -49,6 +49,7 @@ const visibility: Field = {
   options: [
     { value: "all", label: "cms.visibility.all" },
     { value: "partners", label: "cms.visibility.partners" },
+    { value: "production", label: "cms.visibility.production" },
     { value: "internal", label: "cms.visibility.internal" },
   ],
 };

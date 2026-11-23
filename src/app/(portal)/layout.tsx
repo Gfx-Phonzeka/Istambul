@@ -1,5 +1,5 @@
 import { AppShell } from "@/components/shell/AppShell";
-import { requireApproved, isStaff, isAdmin } from "@/lib/auth";
+import { requireApproved, isStaff, isAdmin, isTeam } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
 import { NAV_GROUPS } from "@/lib/nav";
@@ -18,6 +18,16 @@ export default async function PortalLayout({ children }: { children: React.React
     .limit(20);
 
   const groups = [...NAV_GROUPS];
+  if (isTeam(profile)) {
+    // Production team area: only for the production team, editors and admins.
+    groups.splice(2, 0, {
+      title: "nav.groupTeam",
+      items: [
+        { key: "team.navHome", href: "/team", icon: "broadcast" },
+        { key: "team.links.guidelines", href: "/team/guidelines", icon: "book" },
+      ],
+    });
+  }
   if (isStaff(profile)) {
     groups.push({
       title: "admin.title",
@@ -29,6 +39,8 @@ export default async function PortalLayout({ children }: { children: React.React
           ? [
               { key: "admin.users", href: "/admin/users", icon: "users" },
               { key: "nav.requests", href: "/admin/requests", icon: "inbox" },
+              { key: "admin.teamRequests", href: "/admin/team-requests", icon: "inbox" },
+              { key: "team.admin.title", href: "/admin/team", icon: "users" },
               { key: "stats.title", href: "/admin/stats", icon: "activity" },
               { key: "admin.activity", href: "/admin/activity", icon: "activity" },
               { key: "admin.emails", href: "/admin/emails", icon: "mail" },
