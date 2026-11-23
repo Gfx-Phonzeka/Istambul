@@ -38,7 +38,7 @@ export function ContentEditor({
   const [msg, setMsg] = useState<{ tone: "success" | "danger" | "info"; text: string; at?: "translate" } | null>(null);
   const [errField, setErrField] = useState<string | null>(null);
   const [pending, start] = useTransition();
-  const [tab, setTab] = useState<Record<string, "en" | "tr">>({});
+  const [tab, setTab] = useState<Record<string, "en" | "pt" | "tr">>({});
 
   const set = (col: string, v: string) => {
     setValues((s) => ({ ...s, [col]: v }));
@@ -116,7 +116,7 @@ export function ContentEditor({
     });
   };
 
-  const input = (f: Field, col: string, lang?: "en" | "tr") => {
+  const input = (f: Field, col: string, lang?: "en" | "pt" | "tr") => {
     const v = values[col] ?? "";
     const invalid = errField === col;
     const common = { id: `f-${col}`, name: col, autoComplete: "off", "aria-invalid": invalid || undefined };
@@ -189,6 +189,39 @@ export function ContentEditor({
 
       <div className="card stack">
         {type.fields.map((f) => {
+          if (f.langs) {
+            const langs = f.langs;
+            if (f.kind === "richtext") {
+              const lang = tab[f.name] ?? langs[0];
+              return (
+                <div key={f.name} className="field">
+                  <div className="row-between">
+                    <span className="label">{t(f.label)}{f.required ? " *" : ""}</span>
+                    <div className="lang-switch" role="tablist">
+                      {langs.map((l) => (
+                        <button key={l} type="button" role="tab" aria-pressed={lang === l} onClick={() => setTab((s) => ({ ...s, [f.name]: l }))}>
+                          {l.toUpperCase()}{!(values[`${f.name}_${l}`] ?? "") ? " ·" : ""}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  {langs.map((l) => <div key={l} style={{ display: lang === l ? "block" : "none" }}>{input(f, `${f.name}_${l}`, l)}</div>)}
+                  {langs.map((l) => errField === `${f.name}_${l}` && <span key={l} className="field-error">{msg?.text}</span>)}
+                </div>
+              );
+            }
+            return (
+              <div key={f.name} className="form-grid">
+                {langs.map((l) => (
+                  <div key={l} className="field">
+                    <label htmlFor={`f-${f.name}_${l}`}>{t(f.label)} ({l.toUpperCase()}){f.required && l === "en" ? " *" : ""}</label>
+                    {input(f, `${f.name}_${l}`, l)}
+                    {errField === `${f.name}_${l}` && <span className="field-error">{msg?.text}</span>}
+                  </div>
+                ))}
+              </div>
+            );
+          }
           if (!f.bilingual) {
             return (
               <div key={f.name} className="field">

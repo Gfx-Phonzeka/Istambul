@@ -8,6 +8,8 @@ export interface Field {
   label: string;
   kind: FieldKind;
   bilingual?: boolean;
+  /** Several languages (columns <name>_<lang>), no machine translation. Used by the Production Guidelines (PT · EN · TR). */
+  langs?: readonly ("en" | "pt" | "tr")[];
   required?: boolean;
   options?: { value: string; label: string }[];
   ref?: ContentTypeKey;
@@ -30,7 +32,8 @@ export type ContentTypeKey =
   | "handbook_chapter" | "handbook_section" | "announcement" | "deadline" | "faq_category" | "faq"
   | "glossary_term" | "contact_area" | "contact" | "legal_page" | "briefing_video" | "media_asset"
   | "cluster" | "sport" | "venue" | "venue_sport" | "camera_plan"
-  | "schedule_session" | "broadcast_feed" | "distribution_channel" | "tech_parameter" | "info_block";
+  | "schedule_session" | "broadcast_feed" | "distribution_channel" | "tech_parameter" | "info_block"
+  | "guide_chapter" | "guide_section";
 
 export const FEED_TYPES = ["multilateral", "iso", "highlights", "ceremony", "other"] as const;
 
@@ -324,8 +327,35 @@ CONTENT_TYPES.info_block = {
   order: [{ column: "slug", ascending: true }],
 };
 
+// Production Guidelines (team only): Portuguese is the master text, then English and Turkish.
+const GUIDE_LANGS = ["pt", "en", "tr"] as const;
+const teamVisibility: Field = { ...visibility, options: [{ value: "production", label: "cms.visibility.production" }, { value: "internal", label: "cms.visibility.internal" }] };
+const trReviewed: Field = { name: "tr_reviewed", label: "cms.fields.trReviewed", kind: "boolean", help: "cms.help.trReviewed" };
+
+CONTENT_TYPES.guide_chapter = {
+  key: "guide_chapter", table: "guide_chapters", label: "cms.types.guide_chapter", singular: "cms.single.guide_chapter",
+  titleColumn: "title_en", publicPath: "/team/guidelines",
+  fields: [
+    { name: "title", label: "cms.fields.title", kind: "text", langs: GUIDE_LANGS, required: true }, slug,
+    { name: "summary", label: "cms.fields.summary", kind: "textarea", langs: GUIDE_LANGS }, position, teamVisibility, trReviewed,
+  ],
+  order: [{ column: "position", ascending: true }],
+};
+
+CONTENT_TYPES.guide_section = {
+  key: "guide_section", table: "guide_sections", label: "cms.types.guide_section", singular: "cms.single.guide_section",
+  titleColumn: "title_en", publicPath: "/team/guidelines", parent: { column: "chapter_id", type: "guide_chapter" },
+  fields: [
+    { name: "chapter_id", label: "cms.fields.chapter", kind: "reference", ref: "guide_chapter", required: true },
+    { name: "title", label: "cms.fields.title", kind: "text", langs: GUIDE_LANGS, required: true }, slug, position, teamVisibility, trReviewed,
+    { name: "body", label: "cms.fields.body", kind: "richtext", langs: GUIDE_LANGS, required: true },
+  ],
+  order: [{ column: "chapter_id", ascending: true }, { column: "position", ascending: true }],
+};
+
 export const CONTENT_GROUPS: { label: string; types: ContentTypeKey[] }[] = [
   { label: "nav.handbook", types: ["handbook_chapter", "handbook_section"] },
+  { label: "team.links.guidelines", types: ["guide_chapter", "guide_section"] },
   { label: "cms.groupMedia", types: ["briefing_video", "media_asset"] },
   { label: "cms.groupVenues", types: ["cluster", "venue", "sport", "venue_sport", "camera_plan"] },
   { label: "cms.groupSchedule", types: ["schedule_session", "broadcast_feed", "distribution_channel", "tech_parameter", "info_block"] },
@@ -342,5 +372,10 @@ export function isContentType(v: string): v is ContentTypeKey {
 
 /** Database columns that a type's fields write to. */
 export function columnsOf(type: ContentType): string[] {
-  return type.fields.flatMap((f) => (f.bilingual ? [`${f.name}_en`, `${f.name}_tr`] : [f.name]));
+  return type.fields.flatMap((f) => { const l = fieldLangs(f); return l ? l.map((x) => `${f.name}_${x}`) : [f.name]; });
+}
+
+/** Languages a field is stored in (null = a single, language-neutral column). */
+export function fieldLangs(f: Field): readonly ("en" | "pt" | "tr")[] | null {
+  return f.langs ?? (f.bilingual ? ["en", "tr"] : null);
 }

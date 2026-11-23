@@ -10,3 +10,7 @@ out
 next-env.d.ts
 .DS_Store
 *.local.md
+
+# Production Guidelines source texts: confidential team content, never in the public repository
+scripts/guidelines/*.md
+scripts/guidelines/guidelines.json

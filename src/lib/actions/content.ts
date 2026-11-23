@@ -3,7 +3,7 @@ import { after } from "next/server";
 import { revalidatePath } from "next/cache";
 import { requireStaff } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
-import { CONTENT_TYPES, columnsOf, isContentType, type ContentType } from "@/lib/content/registry";
+import { CONTENT_TYPES, columnsOf, fieldLangs, isContentType, type ContentType } from "@/lib/content/registry";
 import { sanitizeRichText } from "@/lib/content/sanitize";
 import { regenerateHandbookPdfs } from "@/lib/pdf/handbook";
 import { flushEmails } from "@/lib/email";
@@ -16,12 +16,12 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 function parseValues(type: ContentType, raw: Record<string, unknown>): { values: Record<string, unknown> } | { error: string; field: string } {
   const values: Record<string, unknown> = {};
   for (const f of type.fields) {
-    const langs = f.bilingual ? ["_en", "_tr"] : [""];
+    const langs = fieldLangs(f)?.map((l) => `_${l}`) ?? [""];
     for (const suffix of langs) {
       const col = f.name + suffix;
       const v = raw[col];
       let s = typeof v === "string" ? v.trim() : v == null ? "" : String(v);
-      const required = f.required && suffix !== "_tr";
+      const required = f.required && (suffix === "" || suffix === "_en");
       if (f.kind === "richtext") {
         s = sanitizeRichText(s);
         if (s.replace(/<[^>]+>/g, "").trim() === "" && !s.includes("<img") && !s.includes("<iframe")) s = "";
@@ -29,7 +29,7 @@ function parseValues(type: ContentType, raw: Record<string, unknown>): { values:
       if (f.kind === "boolean") { values[col] = s === "true" || s === "on"; continue; }
       if (required && s === "") return { error: "cms.errors.required", field: col };
       if (s === "") {
-        values[col] = suffix === "_tr" || !required ? null : "";
+        values[col] = (suffix !== "" && suffix !== "_en") || !required ? null : "";
         if (f.kind === "number") values[col] = 0;
         continue;
       }

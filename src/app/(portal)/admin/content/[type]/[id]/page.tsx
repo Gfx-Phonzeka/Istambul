@@ -8,7 +8,8 @@ import { DrawingPanel, type DrawingRow } from "@/components/venues/DrawingPanel"
 import { VenueFilesPanel, type VenueFileRow } from "@/components/venues/VenueFilesPanel";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
-import { CONTENT_TYPES, columnsOf, isContentType, type ContentType } from "@/lib/content/registry";
+import { GuideNotesPanel } from "@/components/cms/GuideNotesPanel";
+import { CONTENT_TYPES, columnsOf, fieldLangs, isContentType, type ContentType } from "@/lib/content/registry";
 import { ContentEditor } from "@/components/cms/ContentEditor";
 import { PageHeader } from "@/components/ui";
 
@@ -23,7 +24,7 @@ function toIstanbulLocal(iso: string) {
 function toFormValues(type: ContentType, row: Record<string, unknown>): Record<string, string> {
   const out: Record<string, string> = {};
   for (const f of type.fields) {
-    for (const col of f.bilingual ? [`${f.name}_en`, `${f.name}_tr`] : [f.name]) {
+    for (const col of fieldLangs(f)?.map((l) => `${f.name}_${l}`) ?? [f.name]) {
       const v = row[col];
       out[col] = v == null ? "" : f.kind === "datetime" ? toIstanbulLocal(String(v)) : String(v);
     }
@@ -82,6 +83,12 @@ export default async function EditContent({ params, searchParams }: { params: Pr
         break;
       }
       case "handbook_chapter": previewUrl = `/handbook/${row.slug}?preview=1`; break;
+      case "guide_section": {
+        const { data: ch } = await supabase.from("guide_chapters").select("slug").eq("id", merged.chapter_id).maybeSingle();
+        previewUrl = ch ? `/team/guidelines/${ch.slug}/${row.slug}?preview=1` : null;
+        break;
+      }
+      case "guide_chapter": previewUrl = `/team/guidelines/${row.slug}?preview=1`; break;
       case "announcement": previewUrl = `/news/${row.id}?preview=1`; break;
       case "legal_page": previewUrl = `/legal/${row.slug}?preview=1`; break;
       case "deadline": previewUrl = null; break;
@@ -103,6 +110,10 @@ export default async function EditContent({ params, searchParams }: { params: Pr
     const signed = await signPaths(supabase, "media-previews", [pv]);
     extra = <MediaVersionsPanel assetId={String(row.id)} versions={(versions ?? []) as VersionRow[]} previewUrl={pv ? signed[pv] ?? null : null}
       previewKind={(row.preview_kind as string | null) ?? null} isAdmin={isAdmin(me)} />;
+  }
+  if (row && key === "guide_section") {
+    const { data: note } = await supabase.from("guide_notes").select("notes").eq("section_id", row.id).maybeSingle();
+    extra = <GuideNotesPanel sectionId={String(row.id)} notes={note?.notes ?? ""} />;
   }
   if (row && key === "briefing_video") {
     extra = <BriefingFilesPanel videoId={String(row.id)} files={{
