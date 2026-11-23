@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { requireTeam, isStaff } from "@/lib/auth";
 import { getT } from "@/lib/i18n/server";
 import { isPreview } from "@/lib/preview";
-import { getGuideContext } from "@/lib/guide-page";
+import { getGuideBody, getGuideContext } from "@/lib/guide-page";
 import { decorateGuideHtml, tx } from "@/lib/guide";
 import { withHeadingAnchors } from "@/lib/content/render";
 import { formatDate } from "@/lib/format";
@@ -31,7 +31,8 @@ export default async function GuideSectionPage({ params, searchParams }: { param
   const pos = flat.findIndex((x) => x.id === section.id);
   const prev = flat[pos - 1];
   const next = flat[pos + 1];
-  const { html, headings } = withHeadingAnchors(decorateGuideHtml(tx(section, "body", lang)));
+  const body = await getGuideBody(section.id, preview);
+  const { html, headings } = withHeadingAnchors(decorateGuideHtml(tx({ ...section, ...body }, "body", lang)));
   const staff = isStaff(me);
   const toc = <GuideToc chapters={chapters} lang={lang} current={section.id} preview={preview} labels={{ contents: ui("contents"), draft: t("cms.status.draft") }} />;
 

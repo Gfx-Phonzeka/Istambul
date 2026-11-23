@@ -34,11 +34,11 @@ export interface Profile {
 /** Current user's profile (cached per request), or null when signed out. */
 export const getProfile = cache(async (): Promise<Profile | null> => {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return null;
-  const { data } = await supabase.from("profiles").select("*").eq("id", user.id).single();
+  // Signature checked locally (see middleware); the profile query below confirms the account still exists and its status.
+  const { data: auth } = await supabase.auth.getClaims();
+  const uid = auth?.claims?.sub;
+  if (!uid) return null;
+  const { data } = await supabase.from("profiles").select("*").eq("id", uid).single();
   return (data as Profile) ?? null;
 });
 

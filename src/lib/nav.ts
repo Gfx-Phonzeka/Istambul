@@ -40,5 +40,6 @@ export const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
 export const ALL_NAV: NavItem[] = NAV_GROUPS.flatMap((g) => g.items);
 
 export function isActive(pathname: string, href: string) {
-  return href === "/" || href === "/admin" ? pathname === href : pathname === href || pathname.startsWith(href + "/");
+  // Section roots that have their own sub-sections in the menu only light up on their own page.
+  return href === "/" || href === "/admin" || href === "/team" ? pathname === href : pathname === href || pathname.startsWith(href + "/");
 }

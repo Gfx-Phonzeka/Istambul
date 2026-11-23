@@ -13,13 +13,13 @@ export function HandbookToc({ chapters, locale, current, preview, labels }: {
       <ol>
         {chapters.map((c, ci) => (
           <li key={c.id}>
-            <Link href={`/handbook/${c.slug}${q}`} className="hb-toc-chapter">
+            <Link prefetch={false} href={`/handbook/${c.slug}${q}`} className="hb-toc-chapter">
               {ci + 1}. {pick(locale, c.title_en, c.title_tr)} {c.status !== "published" && <Badge tone="warning">{labels.draft}</Badge>}
             </Link>
             <ol>
               {c.sections.map((s, si) => (
                 <li key={s.id}>
-                  <Link href={`/handbook/${c.slug}/${s.slug}${q}`} aria-current={current === s.id ? "page" : undefined}>
+                  <Link prefetch={false} href={`/handbook/${c.slug}/${s.slug}${q}`} aria-current={current === s.id ? "page" : undefined}>
                     {ci + 1}.{si + 1} {pick(locale, s.title_en, s.title_tr)} {s.status !== "published" && <Badge tone="warning">{labels.draft}</Badge>}
                   </Link>
                 </li>

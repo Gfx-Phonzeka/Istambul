@@ -16,8 +16,9 @@ export default async function GuidelinesPage({ searchParams }: { searchParams: P
   const me = await requireTeam();
   const preview = await isPreview(await searchParams);
   const { t } = await getT();
-  const { chapters, lang, ui } = await getGuideContext(preview);
   const staff = isStaff(me);
+  // Editors see the list of open points, which needs the texts; the team only needs the titles.
+  const { chapters, lang, ui } = await getGuideContext(preview, { withBodies: staff });
   const q = preview ? "?preview=1" : "";
   const open = staff
     ? chapters.flatMap((c, ci) => c.sections.flatMap((s, si) => openPoints(tx(s, "body", lang)).map((p) => ({

@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { getT } from "@/lib/i18n/server";
 import { pick } from "@/lib/i18n";
 import { isPreview } from "@/lib/preview";
-import { getHandbookTree } from "@/lib/handbook-page";
+import { getHandbookBody, getHandbookTree } from "@/lib/handbook-page";
 import { withHeadingAnchors } from "@/lib/content/render";
 import { formatDate } from "@/lib/format";
 import { getProfile, isStaff } from "@/lib/auth";
@@ -31,7 +31,8 @@ export default async function SectionPage({ params, searchParams }: { params: Pr
   const next = flat[pos + 1];
   const q = preview ? "?preview=1" : "";
 
-  const { html, headings } = withHeadingAnchors(pick(locale, section.body_en, section.body_tr));
+  const body = await getHandbookBody(section.id, preview);
+  const { html, headings } = withHeadingAnchors(pick(locale, body.body_en, body.body_tr));
   const staff = isStaff(await getProfile());
 
   return (

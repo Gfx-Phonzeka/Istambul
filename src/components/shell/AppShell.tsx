@@ -10,6 +10,8 @@ import { LangSwitch } from "./LangSwitch";
 import { NotificationBell, type NotificationRow } from "./NotificationBell";
 import { UserMenu } from "./UserMenu";
 import { PageViewTracker } from "./PageViewTracker";
+import { NavProgress } from "./NavProgress";
+import { Suspense } from "react";
 
 export interface ShellNavGroup {
   title: string;
@@ -68,6 +70,7 @@ export function AppShell({
 
   return (
     <>
+      <Suspense fallback={null}><NavProgress /></Suspense>
       <a href="#main" className="skip-link">{t("common.skipToContent")}</a>
       <PageViewTracker />
       <div className="shell">

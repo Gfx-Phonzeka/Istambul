@@ -58,7 +58,7 @@ async function bodyToContent(html: string, origin: string): Promise<Content[]> {
 export async function buildGuidePdf(supabase: SupabaseClient, lang: GuideLang, scope: GuidePdfScope, origin: string): Promise<Buffer> {
   const L = GUIDE_UI[lang];
   const f = (k: string, v: Record<string, string | number> = {}) => Object.entries(v).reduce((s, [a, b]) => s.replaceAll(`{${a}}`, String(b)), L[k] ?? k);
-  const all = await loadGuide(supabase);
+  const all = await loadGuide(supabase, { withBodies: true });
   const chapters = filterScope(all, scope);
   const generated = new Intl.DateTimeFormat(LOCALE[lang], { dateStyle: "long", timeStyle: "short", timeZone: "Europe/Istanbul" }).format(new Date());
   const scopeLabel = scope.kind === "all" ? L.pdfAll : scope.kind === "chapter" ? L.pdfChapter : L.pdfSections;

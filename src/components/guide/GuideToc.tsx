@@ -12,13 +12,13 @@ export function GuideToc({ chapters, lang, current, preview, labels }: {
       <ol>
         {chapters.map((c, ci) => (
           <li key={c.id}>
-            <Link href={`/team/guidelines/${c.slug}${q}`} className="hb-toc-chapter">
+            <Link prefetch={false} href={`/team/guidelines/${c.slug}${q}`} className="hb-toc-chapter">
               {ci + 1}. {tx(c, "title", lang)} {c.status !== "published" && <Badge tone="warning">{labels.draft}</Badge>}
             </Link>
             <ol>
               {c.sections.map((s, si) => (
                 <li key={s.id}>
-                  <Link href={`/team/guidelines/${c.slug}/${s.slug}${q}`} aria-current={current === s.id ? "page" : undefined}>
+                  <Link prefetch={false} href={`/team/guidelines/${c.slug}/${s.slug}${q}`} aria-current={current === s.id ? "page" : undefined}>
                     {ci + 1}.{si + 1} {tx(s, "title", lang)} {s.status !== "published" && <Badge tone="warning">{labels.draft}</Badge>}
                   </Link>
                 </li>

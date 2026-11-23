@@ -28,13 +28,21 @@ export function tx(row: Tri & { title_en?: string }, field: "title" | "summary" 
   return row[`${field}_en`] ?? "";
 }
 
-export async function loadGuide(supabase: SupabaseClient, includeDrafts = false): Promise<GuideChapter[]> {
+const SECTION_LIGHT = "id,chapter_id,slug,position,title_en,title_pt,title_tr,visibility,status,content_updated_at,tr_reviewed";
+
+/**
+ * Loads the guidelines tree. By default only titles (for menus and lists): texts are heavy (three languages),
+ * so pages fetch the body of the section they show, and the PDF asks for all bodies with `withBodies`.
+ */
+export async function loadGuide(supabase: SupabaseClient, opts: { includeDrafts?: boolean; withBodies?: boolean } = {}): Promise<GuideChapter[]> {
+  const includeDrafts = opts.includeDrafts ?? false;
+  const cols = SECTION_LIGHT + (opts.withBodies ? ",body_en,body_pt,body_tr" : "") + (includeDrafts ? ",draft" : "");
   let cq = supabase.from("guide_chapters").select("*").order("position").order("title_en");
-  let sq = supabase.from("guide_sections").select("*").order("position").order("title_en");
+  let sq = supabase.from("guide_sections").select(cols).order("position").order("title_en");
   if (!includeDrafts) { cq = cq.eq("status", "published"); sq = sq.eq("status", "published"); }
   const [{ data: chapters }, { data: sections }] = await Promise.all([cq, sq]);
   return ((chapters ?? []) as GuideChapter[]).map((c) => ({
-    ...c, sections: ((sections ?? []) as GuideSection[]).filter((s) => s.chapter_id === c.id),
+    ...c, sections: ((sections ?? []) as unknown as GuideSection[]).filter((s) => s.chapter_id === c.id),
   }));
 }
 

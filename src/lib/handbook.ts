@@ -18,10 +18,12 @@ export interface HbChapter {
  */
 export async function loadHandbook(
   supabase: SupabaseClient,
-  opts: { includeDrafts?: boolean; onlyPublicVisibility?: boolean } = {},
+  opts: { includeDrafts?: boolean; onlyPublicVisibility?: boolean; withBodies?: boolean } = {},
 ): Promise<HbChapter[]> {
   let cq = supabase.from("handbook_chapters").select("*").order("position").order("title_en");
-  let sq = supabase.from("handbook_sections").select("*").order("position").order("title_en");
+  // Texts are only loaded when needed (PDF); menus and lists use titles only.
+  const cols = "id,chapter_id,slug,position,title_en,title_tr,visibility,status,content_updated_at" + (opts.withBodies !== false ? ",body_en,body_tr" : "") + (opts.includeDrafts ? ",draft" : "");
+  let sq = supabase.from("handbook_sections").select(cols).order("position").order("title_en");
   if (!opts.includeDrafts) {
     cq = cq.eq("status", "published");
     sq = sq.eq("status", "published");
@@ -33,6 +35,6 @@ export async function loadHandbook(
   const [{ data: chapters }, { data: sections }] = await Promise.all([cq, sq]);
   return ((chapters ?? []) as HbChapter[]).map((c) => ({
     ...c,
-    sections: ((sections ?? []) as HbSection[]).filter((s) => s.chapter_id === c.id),
+    sections: ((sections ?? []) as unknown as HbSection[]).filter((s) => s.chapter_id === c.id),
   }));
 }
