@@ -13,6 +13,7 @@ export interface EventConfig {
   /** Local time zone of the Games and its fixed UTC offset during the Games (used for date-time inputs). */
   tz: string;
   utcOffset: string;
+  utcOffsetHours: number;
   slug: string; // file-name prefix for downloads
   name: string; // "Istanbul 2027"
   logo: { src: string; width: number; height: number };
@@ -28,6 +29,7 @@ const EVENTS: Record<EventId, EventConfig> = {
     guideLangs: ["en", "pt", "tr"],
     tz: "Europe/Istanbul",
     utcOffset: "+03:00",
+    utcOffsetHours: 3,
     slug: "istanbul2027",
     name: "Istanbul 2027",
     logo: { src: "/brand/istanbul2027-logo.png", width: 214, height: 194 },
@@ -39,6 +41,7 @@ const EVENTS: Record<EventId, EventConfig> = {
     guideLangs: ["es", "pt"],
     tz: "America/Lima",
     utcOffset: "-05:00",
+    utcOffsetHours: -5,
     slug: "lima2027",
     name: "Lima 2027",
     logo: { src: "/brand/lima2027-logo.png", width: 420, height: 227 },
@@ -50,4 +53,12 @@ const EVENTS: Record<EventId, EventConfig> = {
 export const LANG_NAMES: Record<Locale, string> = { en: "English", tr: "Türkçe", es: "Español", pt: "Português" };
 
 export const EVENT: EventConfig = EVENTS[process.env.NEXT_PUBLIC_EVENT === "lima" ? "lima" : "istanbul"];
+/** ISO date-time → "YYYY-MM-DDTHH:mm" in the Games' local time (for datetime-local inputs). */
+export function toEventLocalInput(iso: string | undefined | null): string {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  return new Date(d.getTime() + EVENT.utcOffsetHours * 3600000).toISOString().slice(0, 16);
+}
+
 export const isLima = EVENT.id === "lima";

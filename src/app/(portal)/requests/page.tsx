@@ -1,7 +1,10 @@
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
 import { tx, cols, DEFAULT_LOCALE } from "@/lib/i18n";
-import { requireTeam } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import { isTeam, requireApproved } from "@/lib/auth";
+import { EVENT } from "@/lib/event";
+import { BookingGateway } from "@/components/requests/BookingGateway";
 import { formatDate, formatDateTime } from "@/lib/format";
 import { Badge, Card, EmptyState, PageHeader } from "@/components/ui";
 import { RequestForm } from "@/components/requests/RequestForm";
@@ -10,9 +13,13 @@ export const metadata = { title: "Service requests" };
 import { STATUS_TONE, TEAM_REQUEST_TYPES } from "@/lib/requests";
 
 export default async function RequestsPage() {
-  // Istanbul: only the production team (and staff) files requests here; right-holder requests go to the EBU.
-  const me = await requireTeam();
-  const team = true;
+  const me = await requireApproved();
+  const team = isTeam(me);
+  if (!team) {
+    // Right holders: Istanbul's service requests are run by the EBU (no page); Lima's go through the booking site.
+    if (EVENT.rhbRequests !== "booking") redirect("/");
+    return <BookingGateway />;
+  }
   const { t, locale } = await getT();
   const supabase = await createClient();
   const [{ data: requests }, { data: venues }, { data: sports }] = await Promise.all([

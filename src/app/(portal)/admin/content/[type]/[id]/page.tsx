@@ -1,4 +1,5 @@
 import { DEFAULT_LOCALE } from "@/lib/i18n";
+import { toEventLocalInput } from "@/lib/event";
 import { notFound } from "next/navigation";
 import { requireStaff, isAdmin } from "@/lib/auth";
 import { signPaths } from "@/lib/media";
@@ -16,11 +17,7 @@ import { PageHeader } from "@/components/ui";
 
 const UUID = /^[0-9a-f-]{36}$/;
 
-function toIstanbulLocal(iso: string) {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return "";
-  return new Date(d.getTime() + 3 * 3600000).toISOString().slice(0, 16);
-}
+const toIstanbulLocal = (iso: string) => toEventLocalInput(iso);
 
 function toFormValues(type: ContentType, row: Record<string, unknown>): Record<string, string> {
   const out: Record<string, string> = {};

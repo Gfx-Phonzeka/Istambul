@@ -1,4 +1,5 @@
 // Portal navigation. Order and grouping of the private-area sections.
+import { EVENT } from "@/lib/event";
 export interface NavItem {
   key: string; // i18n key under "nav."
   href: string;
@@ -28,6 +29,8 @@ export const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
   {
     title: "nav.groupSupport",
     items: [
+      // Lima: Service Requests is the way into the booking site. Istanbul: handled by the EBU, so no entry.
+      ...(EVENT.rhbRequests === "booking" ? [{ key: "requests", href: "/requests", icon: "inbox" }] : []),
       { key: "faq", href: "/faq", icon: "help" },
       { key: "glossary", href: "/glossary", icon: "list" },
       { key: "contacts", href: "/contacts", icon: "users" },

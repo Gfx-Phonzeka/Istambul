@@ -1,14 +1,14 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
-import { tx, cols } from "@/lib/i18n";
+import { tx, cols, LOCALES } from "@/lib/i18n";
 import { ALL_NAV } from "@/lib/nav";
 import { Badge, Card, EmptyState, PageHeader, Icon } from "@/components/ui";
 import { AutofocusDesktop } from "@/components/AutofocusDesktop";
 
 export const metadata = { title: "Search" };
 
-interface Hit { kind: string; id: string; title_en: string; title_tr: string | null; text_en: string | null; text_tr: string | null; href: string }
+interface Hit { kind: string; id: string; href: string; [col: string]: string | null }
 
 function snippet(text: string, term: string): string {
   const i = text.toLocaleLowerCase().indexOf(term);
@@ -43,11 +43,12 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
     const { data } = await supabase
       .from("content_index")
       .select(`kind,id,${cols("title")},${cols("text")},href` as "*")
-      .or(`title_en.ilike.%${s}%,title_tr.ilike.%${s}%,text_en.ilike.%${s}%,text_tr.ilike.%${s}%`)
+      .or(LOCALES.flatMap((l) => [`title_${l}.ilike.%${s}%`, `text_${l}.ilike.%${s}%`]).join(","))
       .limit(60);
     hits = (data ?? []) as Hit[];
     // Titles that match first
-    hits.sort((a, b) => Number(!`${a.title_en} ${a.title_tr}`.toLocaleLowerCase().includes(term)) - Number(!`${b.title_en} ${b.title_tr}`.toLocaleLowerCase().includes(term)));
+    const titles = (h: Hit) => LOCALES.map((l) => h[`title_${l}`] ?? "").join(" ").toLocaleLowerCase();
+    hits.sort((a, b) => Number(!titles(a).includes(term)) - Number(!titles(b).includes(term)));
   }
   const sections = term ? ALL_NAV.filter((n) => `${t(`nav.${n.key}`)} ${t(`sectionInfo.${n.key}`)}`.toLocaleLowerCase().includes(term)) : [];
   const total = hits.length + sections.length;

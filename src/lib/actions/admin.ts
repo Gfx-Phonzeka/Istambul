@@ -48,8 +48,8 @@ export async function saveCeremony(form: FormData) {
     key,
     value: {
       at: `${local}:00${EVENT.utcOffset}`,
-      label_en: String(form.get("label_en") ?? "").trim() || CEREMONIES[key],
-      label_tr: String(form.get("label_tr") ?? "").trim(),
+      ...Object.fromEntries(EVENT.locales.map((l) => [`label_${l}`, String(form.get(`label_${l}`) ?? "").trim()])),
+      ...(String(form.get(`label_${EVENT.locales[0]}`) ?? "").trim() ? {} : { [`label_${EVENT.locales[0]}`]: CEREMONIES[key] }),
     },
     updated_at: new Date().toISOString(),
   });

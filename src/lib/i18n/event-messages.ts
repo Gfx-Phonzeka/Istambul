@@ -8,6 +8,7 @@ const LIMA_EN: PartialMessages = {
   common: {
     appName: "Lima 2027 · HB Portal",
     games: "Pan American and Parapan American Games · Lima 2027",
+    hostBroadcaster: "Host Broadcaster",
     portalFor: "Host Broadcaster portal for Right Holders, partners and the production team",
   },
   sectionInfo: {
