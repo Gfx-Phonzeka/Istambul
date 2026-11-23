@@ -5,9 +5,9 @@ import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
 import { pick } from "@/lib/i18n";
 import { formatDate, formatDateTime } from "@/lib/format";
-import { isDay, reportsAccess, todayIn, type ReportFile } from "@/lib/reports";
+import { fileHref, isDay, reportsAccess, todayIn, type ReportFile } from "@/lib/reports";
 import { Alert, Card, EmptyState, PageHeader } from "@/components/ui";
-import { DailyReportForm, DeletePqcButton, PqcForm, fileHref } from "@/components/reports/ReportForms";
+import { DailyReportForm, DeletePqcButton, PqcForm } from "@/components/reports/ReportForms";
 
 export const metadata = { title: "Daily reports" };
 

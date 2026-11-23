@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useI18n } from "@/lib/i18n/client";
 import { addPqcReport, deleteDailyReport, deletePqcReport, discardReportUpload, saveDailyReport } from "@/lib/actions/reports";
-import { REPORT_MAX_BYTES, type ReportFile } from "@/lib/reports";
+import { REPORT_MAX_BYTES, fileHref, type ReportFile } from "@/lib/reports";
 
 type Opt = { id: string; title: string };
 
@@ -17,7 +17,6 @@ async function uploadFile(uid: string, file: File): Promise<ReportFile> {
   return { path, name: file.name, size: file.size };
 }
 
-export const fileHref = (f: { path: string; name: string }) => `/api/reports/file?path=${encodeURIComponent(f.path)}&name=${encodeURIComponent(f.name)}`;
 
 function Selects({ venues, sports, venue, sport, setVenue, setSport }: { venues: Opt[]; sports: Opt[]; venue: string; sport: string; setVenue: (v: string) => void; setSport: (v: string) => void }) {
   const { t } = useI18n();
