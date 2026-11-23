@@ -718,3 +718,9 @@ mark.tbc > b { font-size: 0.72em; letter-spacing: 0.04em; background: #f2b200; c
 .nav-progress.is-active { opacity: 1; background: linear-gradient(90deg, transparent, var(--color-primary, #0a6b70), transparent); background-size: 40% 100%; background-repeat: no-repeat; animation: nav-progress 1.1s ease-in-out infinite; }
 @keyframes nav-progress { from { background-position: -40% 0; } to { background-position: 140% 0; } }
 @media (prefers-reduced-motion: reduce) { .nav-progress.is-active { animation: none; background: var(--color-primary, #0a6b70); } }
+
+/* Lima 2027: the logo is wider than tall. */
+html[data-event="lima"] .brand-logo { width: 78px; padding: 3px 5px; }
+html[data-event="lima"] .topbar-brand .brand-logo { width: 68px; }
+html[data-event="lima"] .public-brand .brand-logo { width: 96px; }
+@media (max-width: 900px) { html[data-event="lima"] .topbar-brand .brand-mark.brand-logo { width: 68px; } }

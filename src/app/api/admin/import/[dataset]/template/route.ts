@@ -1,3 +1,4 @@
+import { EVENT } from "@/lib/event";
 import { NextResponse } from "next/server";
 import { getProfile, isStaff } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
@@ -14,7 +15,7 @@ export async function GET(_: Request, { params }: { params: Promise<{ dataset: s
   return new NextResponse(buf, {
     headers: {
       "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      "Content-Disposition": `attachment; filename="istanbul2027-${dataset}-template.xlsx"`,
+      "Content-Disposition": `attachment; filename="${EVENT.slug}-${dataset}-template.xlsx"`,
       "Cache-Control": "no-store",
     },
   });

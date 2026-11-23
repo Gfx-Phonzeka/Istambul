@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
-import { pick } from "@/lib/i18n";
+import { tx } from "@/lib/i18n";
 import { withDraft, withHeadingAnchors } from "@/lib/content/render";
 import { formatDateTime } from "@/lib/format";
 import { isPreview } from "@/lib/preview";
@@ -20,7 +20,7 @@ export default async function NewsItem({ params, searchParams }: { params: Promi
   const { data } = await supabase.from("announcements").select("*").eq("id", id).maybeSingle();
   if (!data || (!preview && data.status !== "published")) notFound();
   const a = withDraft(data, preview);
-  const { html } = withHeadingAnchors(pick(locale, a.body_en, a.body_tr));
+  const { html } = withHeadingAnchors(tx(a, "body", locale));
   const staff = isStaff(await getProfile());
   return (
     <article className="stack" style={{ maxWidth: 820 }}>
@@ -33,7 +33,7 @@ export default async function NewsItem({ params, searchParams }: { params: Promi
             {a.visibility === "partners" && <Badge tone="info">{t("dashboard.partnersOnly")}</Badge>}
             <span className="muted small">{formatDateTime(a.published_at ?? a.created_at, locale)}</span>
           </div>
-          <h1>{pick(locale, a.title_en, a.title_tr)}</h1>
+          <h1>{tx(a, "title", locale)}</h1>
         </div>
         {staff && <Link className="btn btn-sm" href={`/admin/content/announcement/${a.id}`}>{t("cms.edit")}</Link>}
       </header>

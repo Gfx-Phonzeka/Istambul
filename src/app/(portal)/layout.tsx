@@ -1,3 +1,4 @@
+import { cols } from "@/lib/i18n";
 import { AppShell } from "@/components/shell/AppShell";
 import { requireApproved, isStaff, isAdmin, isTeam } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
@@ -14,7 +15,7 @@ export default async function PortalLayout({ children }: { children: React.React
   const supabase = await createClient();
   const { data: notifications } = await supabase
     .from("notifications")
-    .select("id,title_en,title_tr,link,read_at,created_at")
+    .select(`id,${cols("title")},link,read_at,created_at` as "*")
     .order("created_at", { ascending: false })
     .limit(20);
 

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
-import { pick } from "@/lib/i18n";
+import { tx } from "@/lib/i18n";
 import { isPreview } from "@/lib/preview";
 import { getProfile, isStaff, requireApproved } from "@/lib/auth";
 import { formatDuration, signPaths } from "@/lib/media";
@@ -40,7 +40,7 @@ export default async function BriefingPage({ params, searchParams }: { params: P
             <span>{formatDate(v.recorded_on ?? v.published_at, locale)}</span>
             {v.duration_seconds ? <span>· {formatDuration(v.duration_seconds)}</span> : null}
           </div>
-          <h1>{pick(locale, v.title_en, v.title_tr)}</h1>
+          <h1>{tx(v, "title", locale)}</h1>
         </div>
         {staff && <Link className="btn btn-sm" href={`/admin/content/briefing_video/${id}`}>{t("cms.edit")}</Link>}
       </header>
@@ -53,7 +53,7 @@ export default async function BriefingPage({ params, searchParams }: { params: P
         hasTr={Boolean(v.subtitles_tr_path)}
         watched={Boolean(view)}
       />
-      {pick(locale, v.description_en, v.description_tr) && <p>{pick(locale, v.description_en, v.description_tr)}</p>}
+      {tx(v, "description", locale) && <p>{tx(v, "description", locale)}</p>}
     </article>
   );
 }

@@ -1,4 +1,5 @@
 "use client";
+import { EVENT } from "@/lib/event";
 import { useState, type ReactNode } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import Link from "next/link";
@@ -51,7 +52,7 @@ export function AppShell({
   const navBody = (onNavigate?: () => void) => (
     <>
       <Link href="/" className="brand rail-brand" onClick={onNavigate}>
-        <span className="brand-mark brand-logo"><img src="/brand/istanbul2027-logo.png" alt="" width={214} height={194} /></span>
+        <span className="brand-mark brand-logo"><img src={EVENT.logo.src} alt="" width={EVENT.logo.width} height={EVENT.logo.height} /></span>
         <span className="brand-text" translate="no">{t("common.appName")}</span>
       </Link>
       {groups.map((g) => (
@@ -92,7 +93,7 @@ export function AppShell({
               <Icon name="menu" />
             </button>
             <Link href="/" className="brand topbar-brand">
-              <span className="brand-mark brand-logo"><img src="/brand/istanbul2027-logo.png" alt="" width={214} height={194} /></span>
+              <span className="brand-mark brand-logo"><img src={EVENT.logo.src} alt="" width={EVENT.logo.width} height={EVENT.logo.height} /></span>
               <span className="brand-text" translate="no">{t("common.appName")}</span>
             </Link>
             <form

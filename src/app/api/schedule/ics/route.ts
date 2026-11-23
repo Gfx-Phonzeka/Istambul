@@ -1,7 +1,8 @@
+import { EVENT } from "@/lib/event";
 import { NextResponse, type NextRequest } from "next/server";
 import { getProfile } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
-import { normalizeLocale, pick } from "@/lib/i18n";
+import { normalizeLocale, tx, cols } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
@@ -28,37 +29,37 @@ export async function GET(req: NextRequest) {
   let q = supabase.from("schedule_sessions").select("*").eq("status", "published").order("start_at");
   if (sport && /^[0-9a-f-]{36}$/.test(sport)) q = q.eq("sport_id", sport);
   const [{ data: sessions }, { data: sports }, { data: venues }] = await Promise.all([
-    q, supabase.from("sports").select("id,slug,title_en,title_tr"), supabase.from("venues").select("id,title_en,title_tr,address"),
+    q, supabase.from("sports").select(`id,slug,${cols("title")}` as "*"), supabase.from("venues").select(`id,${cols("title")},address` as "*"),
   ]);
   const S = new Map((sports ?? []).map((s) => [s.id, s]));
   const V = new Map((venues ?? []).map((v) => [v.id, v]));
   const now = utc(new Date().toISOString());
-  const calName = sport && S.get(sport) ? `Istanbul 2027 – ${pick(locale, S.get(sport)!.title_en, S.get(sport)!.title_tr)}` : "Istanbul 2027";
+  const calName = sport && S.get(sport) ? `${EVENT.name} – ${tx(S.get(sport)!, "title", locale)}` : EVENT.name;
   const lines = [
-    "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Medialuso//Istanbul 2027 HB Portal//EN", "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
-    `X-WR-CALNAME:${esc(calName)}`, "X-WR-TIMEZONE:Europe/Istanbul",
+    "BEGIN:VCALENDAR", "VERSION:2.0", `PRODID:-//Medialuso//${EVENT.name} HB Portal//EN`, "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
+    `X-WR-CALNAME:${esc(calName)}`, `X-WR-TIMEZONE:${EVENT.tz}`,
   ];
   for (const s of sessions ?? []) {
     const sp = S.get(s.sport_id), v = V.get(s.venue_id);
-    const sportName = sp ? pick(locale, sp.title_en, sp.title_tr) : "";
-    const phase = pick(locale, s.phase_en, s.phase_tr);
+    const sportName = sp ? tx(sp, "title", locale) : "";
+    const phase = tx(s, "phase", locale);
     const desc = [
-      pick(locale, s.discipline_en, s.discipline_tr),
-      s.is_medal ? `🥇 ${pick(locale, s.medal_events_en, s.medal_events_tr) || (locale === "tr" ? "Madalya" : "Medal")}` : "",
+      tx(s, "discipline", locale),
+      s.is_medal ? `🥇 ${tx(s, "medal_events", locale) || (locale === "tr" ? "Madalya" : "Medal")}` : "",
       s.is_oq ? (locale === "tr" ? "LA28 olimpiyat elemesi (OQ)" : "LA28 Olympic qualification (OQ)") : "",
-      pick(locale, s.notes_en, s.notes_tr),
+      tx(s, "notes", locale),
       `Code: ${s.code}`,
     ].filter(Boolean).join("\n");
     lines.push(
       "BEGIN:VEVENT", `UID:${s.id}@istanbul2027-rhb-portal`, `DTSTAMP:${now}`, `LAST-MODIFIED:${utc(s.updated_at)}`,
       `DTSTART:${utc(s.start_at)}`, `DTEND:${utc(s.end_at)}`,
       `SUMMARY:${esc(`${s.is_medal ? "🥇 " : ""}${sportName} – ${phase}`)}`,
-      `LOCATION:${esc(v ? `${pick(locale, v.title_en, v.title_tr)}${v.address ? ", " + v.address : ""}` : "")}`,
+      `LOCATION:${esc(v ? `${tx(v, "title", locale)}${v.address ? ", " + v.address : ""}` : "")}`,
       `DESCRIPTION:${esc(desc)}`, "END:VEVENT",
     );
   }
   lines.push("END:VCALENDAR");
-  const file = `istanbul2027-schedule${sport && S.get(sport) ? "-" + S.get(sport)!.slug : ""}-${locale}.ics`;
+  const file = `${EVENT.slug}-schedule${sport && S.get(sport) ? "-" + S.get(sport)!.slug : ""}-${locale}.ics`;
   return new NextResponse(lines.map(fold).join("\r\n") + "\r\n", {
     headers: { "Content-Type": "text/calendar; charset=utf-8", "Content-Disposition": `attachment; filename="${file}"`, "Cache-Control": "private, no-store" },
   });

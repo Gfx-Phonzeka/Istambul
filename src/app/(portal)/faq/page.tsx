@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
-import { pick } from "@/lib/i18n";
+import { tx } from "@/lib/i18n";
 import { htmlToText, withDraft } from "@/lib/content/render";
 import { isPreview } from "@/lib/preview";
 import { Badge, PageHeader } from "@/components/ui";
@@ -21,8 +21,8 @@ export default async function FaqPage({ searchParams }: { searchParams: Promise<
   const categories = (cats ?? []).map((c) => withDraft(c, preview));
   const catIds = new Set(categories.map((c) => c.id));
   const items = (faqs ?? []).map((f) => withDraft(f, preview)).filter((f) => catIds.has(f.category_id)).map((f) => {
-    const question = pick(locale, f.question_en, f.question_tr);
-    const answer = pick(locale, f.answer_en, f.answer_tr);
+    const question = tx(f, "question", locale);
+    const answer = tx(f, "answer", locale);
     return {
       id: f.id,
       group: f.category_id,
@@ -45,7 +45,7 @@ export default async function FaqPage({ searchParams }: { searchParams: Promise<
       <PageHeader title={t("faq.title")} />
       <FilterList
         items={items}
-        groups={categories.map((c) => ({ id: c.id, title: pick(locale, c.title_en, c.title_tr) }))}
+        groups={categories.map((c) => ({ id: c.id, title: tx(c, "title", locale) }))}
         placeholder={t("faq.searchPlaceholder")}
         noMatch={t("faq.noMatch")}
         emptyText={t("faq.empty")}

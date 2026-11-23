@@ -1,7 +1,7 @@
 import { requireAdmin } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
-import { pick } from "@/lib/i18n";
+import { tx, cols } from "@/lib/i18n";
 import { formatDateTime } from "@/lib/format";
 import { Card, EmptyState, PageHeader } from "@/components/ui";
 import { InviteButton, TeamImport } from "@/components/admin/TeamImport";
@@ -15,11 +15,11 @@ export default async function AdminTeamPage() {
   const [{ data: team }, { data: venues }, { data: sports }] = await Promise.all([
     supabase.from("profiles").select("id,email,first_name,last_name,team_function,phone,team_venue_id,team_sport_id,last_login_at,status")
       .eq("role", "production").order("last_name"),
-    supabase.from("venues").select("id,title_en,title_tr"),
-    supabase.from("sports").select("id,title_en,title_tr"),
+    supabase.from("venues").select(`id,${cols("title")}` as "*"),
+    supabase.from("sports").select(`id,${cols("title")}` as "*"),
   ]);
-  const V = new Map((venues ?? []).map((v) => [v.id, pick(locale, v.title_en, v.title_tr)]));
-  const S = new Map((sports ?? []).map((s) => [s.id, pick(locale, s.title_en, s.title_tr)]));
+  const V = new Map((venues ?? []).map((v) => [v.id, tx(v, "title", locale)]));
+  const S = new Map((sports ?? []).map((s) => [s.id, tx(s, "title", locale)]));
   const neverIn = (team ?? []).filter((m) => !m.last_login_at).map((m) => m.id);
   return (
     <div className="stack">

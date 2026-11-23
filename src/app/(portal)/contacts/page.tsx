@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
-import { pick } from "@/lib/i18n";
+import { tx } from "@/lib/i18n";
 import { withDraft } from "@/lib/content/render";
 import { isPreview } from "@/lib/preview";
 import { Badge, Icon, PageHeader } from "@/components/ui";
@@ -20,7 +20,7 @@ export default async function ContactsPage({ searchParams }: { searchParams: Pro
   const areaList = (areas ?? []).map((a) => withDraft(a, preview));
   const ids = new Set(areaList.map((a) => a.id));
   const items = (contacts ?? []).map((c) => withDraft(c, preview)).filter((c) => ids.has(c.area_id)).map((c) => {
-    const role = pick(locale, c.role_en, c.role_tr);
+    const role = tx(c, "role", locale);
     return {
       id: c.id,
       group: c.area_id,
@@ -43,7 +43,7 @@ export default async function ContactsPage({ searchParams }: { searchParams: Pro
     <div className="stack">
       {preview && <PreviewBanner exitHref="/contacts" />}
       <PageHeader title={t("contacts.title")} subtitle={t("contacts.subtitle")} />
-      <FilterList items={items} groups={areaList.map((a) => ({ id: a.id, title: pick(locale, a.title_en, a.title_tr) }))}
+      <FilterList items={items} groups={areaList.map((a) => ({ id: a.id, title: tx(a, "title", locale) }))}
         placeholder={t("contacts.searchPlaceholder")} noMatch={t("glossary.noMatch")} emptyText={t("contacts.empty")} />
     </div>
   );

@@ -1,4 +1,6 @@
 "use client";
+import { intlLocale } from "@/lib/i18n";
+import { EVENT } from "@/lib/event";
 import { useMemo, useState } from "react";
 import { useI18n } from "@/lib/i18n/client";
 import { Badge, EmptyState } from "@/components/ui";
@@ -9,12 +11,12 @@ export interface FeedRow {
   start: string; end: string; channel: string; notes: string; draft: boolean;
 }
 
-const TRT = "Europe/Istanbul";
+const TRT = EVENT.tz;
 const TONE: Record<string, "primary" | "info" | "success" | "warning" | "neutral"> = { multilateral: "primary", iso: "info", highlights: "success", ceremony: "warning", other: "neutral" };
 
 export function FeedGrid({ feeds }: { feeds: FeedRow[] }) {
   const { t, locale } = useI18n();
-  const loc = locale === "tr" ? "tr-TR" : "en-GB";
+  const loc = intlLocale(locale);
   const dayKey = (iso: string) => new Intl.DateTimeFormat("en-CA", { timeZone: TRT, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(iso));
   const dayLabel = (k: string) => new Intl.DateTimeFormat(loc, { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" }).format(new Date(`${k}T12:00:00Z`));
   const time = (iso: string) => new Intl.DateTimeFormat(loc, { hour: "2-digit", minute: "2-digit", timeZone: TRT }).format(new Date(iso));

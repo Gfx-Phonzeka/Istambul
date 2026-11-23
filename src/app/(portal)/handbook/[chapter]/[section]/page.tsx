@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getT } from "@/lib/i18n/server";
-import { pick } from "@/lib/i18n";
+import { tx } from "@/lib/i18n";
 import { isPreview } from "@/lib/preview";
 import { getHandbookBody, getHandbookTree } from "@/lib/handbook-page";
 import { withHeadingAnchors } from "@/lib/content/render";
@@ -25,14 +25,14 @@ export default async function SectionPage({ params, searchParams }: { params: Pr
   const section = chapter.sections[si];
 
   // Flat list for previous / next navigation across chapters
-  const flat = chapters.flatMap((c, i) => c.sections.map((s, j) => ({ href: `/handbook/${c.slug}/${s.slug}`, label: `${i + 1}.${j + 1} ${pick(locale, s.title_en, s.title_tr)}`, id: s.id })));
+  const flat = chapters.flatMap((c, i) => c.sections.map((s, j) => ({ href: `/handbook/${c.slug}/${s.slug}`, label: `${i + 1}.${j + 1} ${tx(s, "title", locale)}`, id: s.id })));
   const pos = flat.findIndex((x) => x.id === section.id);
   const prev = flat[pos - 1];
   const next = flat[pos + 1];
   const q = preview ? "?preview=1" : "";
 
   const body = await getHandbookBody(section.id, preview);
-  const { html, headings } = withHeadingAnchors(pick(locale, body.body_en, body.body_tr));
+  const { html, headings } = withHeadingAnchors(tx(body, "body", locale));
   const staff = isStaff(await getProfile());
 
   return (
@@ -48,11 +48,11 @@ export default async function SectionPage({ params, searchParams }: { params: Pr
             <HandbookToc chapters={chapters} locale={locale} current={section.id} preview={preview} labels={{ contents: t("handbook.contents"), draft: t("cms.status.draft") }} />
           </details>
           <div className="small muted">
-            <Link href={`/handbook${q}`}>{t("handbook.title")}</Link> › <Link href={`/handbook/${chapter.slug}${q}`}>{ci + 1}. {pick(locale, chapter.title_en, chapter.title_tr)}</Link>
+            <Link href={`/handbook${q}`}>{t("handbook.title")}</Link> › <Link href={`/handbook/${chapter.slug}${q}`}>{ci + 1}. {tx(chapter, "title", locale)}</Link>
           </div>
           <header className="row-between">
             <div>
-              <h1 style={{ marginBottom: 4 }}>{ci + 1}.{si + 1} {pick(locale, section.title_en, section.title_tr)}</h1>
+              <h1 style={{ marginBottom: 4 }}>{ci + 1}.{si + 1} {tx(section, "title", locale)}</h1>
               <div className="row small muted">
                 {section.content_updated_at && <span>{t("handbook.updated", { date: formatDate(section.content_updated_at, locale) })}</span>}
                 {section.visibility === "partners" && <Badge tone="info">{t("dashboard.partnersOnly")}</Badge>}

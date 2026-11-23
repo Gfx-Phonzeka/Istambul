@@ -3,16 +3,17 @@ import { redirect } from "next/navigation";
 import { requireTeam } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
-import { pick } from "@/lib/i18n";
-import { formatDate, formatDateTime } from "@/lib/format";
+import { tx, cols, DEFAULT_LOCALE } from "@/lib/i18n";
+import { EVENT_TZ, formatDate, formatDateTime } from "@/lib/format";
+import type { Locale } from "@/lib/i18n";
 import { fileHref, isDay, reportsAccess, todayIn, type ReportFile } from "@/lib/reports";
 import { Alert, Card, EmptyState, PageHeader } from "@/components/ui";
 import { DailyReportForm, DeletePqcButton, PqcForm } from "@/components/reports/ReportForms";
 
 export const metadata = { title: "Daily reports" };
 
-const TZ = "Europe/Istanbul";
-const day = (d: string, locale: "en" | "tr") => formatDate(`${d}T12:00:00Z`, locale, "UTC");
+const TZ = EVENT_TZ;
+const day = (d: string, locale: Locale) => formatDate(`${d}T12:00:00Z`, locale, "UTC");
 
 type SP = { date?: string; venue?: string };
 
@@ -32,15 +33,15 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
   if (venueFilter) { allReports = allReports.eq("venue_id", venueFilter); pqcQuery = pqcQuery.eq("venue_id", venueFilter); }
 
   const [{ data: venues }, { data: sports }, mine, myList, all, pqc] = await Promise.all([
-    supabase.from("venues").select("id,title_en,title_tr").eq("status", "published").order("title_en"),
-    supabase.from("sports").select("id,title_en,title_tr").eq("status", "published").order("position"),
+    supabase.from("venues").select(`id,${cols("title")}` as "*").eq("status", "published").order(`title_${DEFAULT_LOCALE}`),
+    supabase.from("sports").select(`id,${cols("title")}` as "*").eq("status", "published").order("position"),
     can.write ? supabase.from("daily_reports").select("*").eq("author_id", me.id).eq("report_date", date).maybeSingle() : Promise.resolve({ data: null }),
     can.write ? supabase.from("daily_reports").select("id,report_date,venue_id,sport_id,updated_at").eq("author_id", me.id).order("report_date", { ascending: false }).limit(60) : Promise.resolve({ data: [] }),
     can.read ? allReports : Promise.resolve({ data: [] }),
     can.read || can.pqc ? (can.read ? pqcQuery : pqcQuery.eq("uploaded_by", me.id)) : Promise.resolve({ data: [] }),
   ]);
-  const V = new Map((venues ?? []).map((v) => [v.id, pick(locale, v.title_en, v.title_tr)]));
-  const S = new Map((sports ?? []).map((s) => [s.id, pick(locale, s.title_en, s.title_tr)]));
+  const V = new Map((venues ?? []).map((v) => [v.id, tx(v, "title", locale)]));
+  const S = new Map((sports ?? []).map((s) => [s.id, tx(s, "title", locale)]));
   const opts = (m: Map<string, string>) => [...m.entries()].map(([id, title]) => ({ id, title }));
   const where = (r: { venue_id: string | null; sport_id: string | null }) => [r.venue_id && V.get(r.venue_id), r.sport_id && S.get(r.sport_id)].filter(Boolean).join(" · ");
   const m = mine.data;

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PublicFrame } from "@/components/shell/PublicFrame";
 import { getT } from "@/lib/i18n/server";
-import { pick } from "@/lib/i18n";
+import { tx } from "@/lib/i18n";
 import { createClient } from "@/lib/supabase/server";
 import { withDraft, withHeadingAnchors } from "@/lib/content/render";
 import { isPreview } from "@/lib/preview";
@@ -16,12 +16,12 @@ export default async function LegalPage({ params, searchParams }: { params: Prom
   const { data } = await supabase.from("legal_pages").select("*").eq("slug", slug).maybeSingle();
   if (!data || (!preview && data.status !== "published")) notFound();
   const doc = withDraft(data, preview);
-  const { html } = withHeadingAnchors(pick(locale, doc.body_en, doc.body_tr));
+  const { html } = withHeadingAnchors(tx(doc, "body", locale));
   return (
     <PublicFrame wide>
       <article className="stack">
         {preview && <div className="alert alert-warning">{t("cms.previewBanner")}</div>}
-        <h1>{pick(locale, doc.title_en, doc.title_tr)}</h1>
+        <h1>{tx(doc, "title", locale)}</h1>
         <RichText html={html} />
         <Link href="/legal" className="small">← {t("nav.legal")}</Link>
       </article>

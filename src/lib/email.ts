@@ -1,4 +1,5 @@
 import "server-only";
+import { EVENT } from "@/lib/event";
 import { createClient } from "@/lib/supabase/server";
 
 interface OutboxRow {
@@ -21,7 +22,7 @@ export async function flushEmails(): Promise<void> {
     const { data, error } = await supabase.rpc("claim_queued_emails", { p_secret: secret });
     if (error || !data) return;
     const apiKey = process.env.RESEND_API_KEY;
-    const from = process.env.EMAIL_FROM || "Istanbul 2027 Portal <onboarding@resend.dev>";
+    const from = process.env.EMAIL_FROM || `${EVENT.name} Portal <onboarding@resend.dev>`;
     for (const row of data as OutboxRow[]) {
       if (!apiKey) {
         await supabase.rpc("mark_email_result", { p_secret: secret, p_id: row.id, p_status: "not_configured" });

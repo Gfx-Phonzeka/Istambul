@@ -1,3 +1,4 @@
+import { EVENT } from "@/lib/event";
 import ExcelJS from "exceljs";
 import { NextResponse, type NextRequest } from "next/server";
 import { getProfile } from "@/lib/auth";
@@ -45,7 +46,7 @@ export async function GET(req: NextRequest) {
   return new NextResponse(buf as ArrayBuffer, {
     headers: {
       "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      "Content-Disposition": `attachment; filename="istanbul2027-users-${status}-${new Date().toISOString().slice(0, 10)}.xlsx"`,
+      "Content-Disposition": `attachment; filename="${EVENT.slug}-users-${status}-${new Date().toISOString().slice(0, 10)}.xlsx"`,
       "Cache-Control": "no-store",
     },
   });

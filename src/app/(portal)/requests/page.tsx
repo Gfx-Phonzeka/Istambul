@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
-import { pick } from "@/lib/i18n";
+import { tx, cols, DEFAULT_LOCALE } from "@/lib/i18n";
 import { requireTeam } from "@/lib/auth";
 import { formatDate, formatDateTime } from "@/lib/format";
 import { Badge, Card, EmptyState, PageHeader } from "@/components/ui";
@@ -17,11 +17,11 @@ export default async function RequestsPage() {
   const supabase = await createClient();
   const [{ data: requests }, { data: venues }, { data: sports }] = await Promise.all([
     supabase.from("service_requests").select("*, request_events(status,message,created_at)").eq("user_id", me.id).order("created_at", { ascending: false }),
-    supabase.from("venues").select("id,title_en,title_tr").eq("status", "published").order("title_en"),
-    supabase.from("sports").select("id,title_en,title_tr").eq("status", "published").order("position"),
+    supabase.from("venues").select(`id,${cols("title")}` as "*").eq("status", "published").order(`title_${DEFAULT_LOCALE}`),
+    supabase.from("sports").select(`id,${cols("title")}` as "*").eq("status", "published").order("position"),
   ]);
-  const V = new Map((venues ?? []).map((v) => [v.id, pick(locale, v.title_en, v.title_tr)]));
-  const S = new Map((sports ?? []).map((s) => [s.id, pick(locale, s.title_en, s.title_tr)]));
+  const V = new Map((venues ?? []).map((v) => [v.id, tx(v, "title", locale)]));
+  const S = new Map((sports ?? []).map((s) => [s.id, tx(s, "title", locale)]));
   return (
     <div className="stack">
       <PageHeader title={team ? t("team.requestsTitle") : t("nav.requests")} subtitle={team ? t("team.requestsSubtitle") : t("requests.subtitle")} />

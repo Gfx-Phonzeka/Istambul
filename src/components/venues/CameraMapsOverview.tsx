@@ -1,4 +1,5 @@
 "use client";
+import { EVENT } from "@/lib/event";
 import { useState } from "react";
 import Link from "next/link";
 import { downloadZip } from "client-zip";
@@ -42,7 +43,7 @@ export function CameraMapsOverview({ plans, clusters, sports }: {
           setPack({ done, total: shown.length });
         }
       }
-      const zipName = `istanbul2027-camera-maps-${locale}.zip`;
+      const zipName = `${EVENT.slug}-camera-maps-${locale}.zip`;
       const res = downloadZip(files());
       const picker = (window as unknown as { showSaveFilePicker?: SavePicker }).showSaveFilePicker;
       if (picker) {

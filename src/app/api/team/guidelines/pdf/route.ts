@@ -1,8 +1,9 @@
+import { EVENT } from "@/lib/event";
 import { NextResponse, type NextRequest } from "next/server";
 import { getProfile, isTeam } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { buildGuidePdf, type GuidePdfScope } from "@/lib/pdf/guide";
-import type { GuideLang } from "@/lib/guide";
+import { GUIDE_LANGS, type GuideLang } from "@/lib/guide";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -16,7 +17,7 @@ export async function GET(req: NextRequest) {
   if (!me || me.status !== "approved" || !isTeam(me)) return new NextResponse("Forbidden", { status: 403 });
   const sp = req.nextUrl.searchParams;
   const l = sp.get("lang");
-  const lang: GuideLang = l === "pt" || l === "tr" ? l : "en";
+  const lang: GuideLang = GUIDE_LANGS.includes(l as GuideLang) ? (l as GuideLang) : GUIDE_LANGS[0];
   let scope: GuidePdfScope = { kind: "all" };
   if (sp.get("scope") === "chapter" && UUID.test(sp.get("id") ?? "")) scope = { kind: "chapter", id: sp.get("id")! };
   if (sp.get("scope") === "sections") {
@@ -29,7 +30,7 @@ export async function GET(req: NextRequest) {
   return new NextResponse(new Uint8Array(buf), {
     headers: {
       "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename="istanbul2027-production-guidelines-${scope.kind}-${lang}.pdf"`,
+      "Content-Disposition": `attachment; filename="${EVENT.slug}-production-guidelines-${scope.kind}-${lang}.pdf"`,
       "Cache-Control": "private, no-store",
     },
   });

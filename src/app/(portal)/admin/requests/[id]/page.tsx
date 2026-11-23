@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
-import { pick } from "@/lib/i18n";
+import { tx, cols } from "@/lib/i18n";
 import { formatDate, formatDateTime } from "@/lib/format";
 import { STATUS_TONE } from "@/lib/requests";
 import { Badge, Card, PageHeader } from "@/components/ui";
@@ -21,8 +21,8 @@ export default async function AdminRequest({ params }: { params: Promise<{ id: s
     supabase.from("profiles").select("first_name,last_name,organization,country,email").eq("id", r.user_id).maybeSingle(),
     supabase.from("request_events").select("*").eq("request_id", id).order("created_at"),
     supabase.from("request_notes").select("*").eq("request_id", id).order("created_at", { ascending: false }),
-    r.venue_id ? supabase.from("venues").select("title_en,title_tr").eq("id", r.venue_id).maybeSingle() : Promise.resolve({ data: null }),
-    r.sport_id ? supabase.from("sports").select("title_en,title_tr").eq("id", r.sport_id).maybeSingle() : Promise.resolve({ data: null }),
+    r.venue_id ? supabase.from("venues").select(`${cols("title")}` as "*").eq("id", r.venue_id).maybeSingle() : Promise.resolve({ data: null }),
+    r.sport_id ? supabase.from("sports").select(`${cols("title")}` as "*").eq("id", r.sport_id).maybeSingle() : Promise.resolve({ data: null }),
   ]);
   return (
     <div className="stack">
@@ -32,8 +32,8 @@ export default async function AdminRequest({ params }: { params: Promise<{ id: s
         <Card title={t("requests.details")}>
           <dl className="specs" style={{ fontSize: "var(--text-sm)", gap: "6px 16px" }}>
             <dt>{t("requests.requester")}</dt><dd>{p ? `${p.first_name} ${p.last_name} · ${p.organization} (${p.country})` : "—"}</dd>
-            <dt>{t("schedule.venue")}</dt><dd>{v ? pick(locale, v.title_en, v.title_tr) : "—"}</dd>
-            <dt>{t("venues.sport")}</dt><dd>{s ? pick(locale, s.title_en, s.title_tr) : "—"}</dd>
+            <dt>{t("schedule.venue")}</dt><dd>{v ? tx(v, "title", locale) : "—"}</dd>
+            <dt>{t("venues.sport")}</dt><dd>{s ? tx(s, "title", locale) : "—"}</dd>
             <dt>{t("requests.dates")}</dt><dd>{r.start_date ? `${formatDate(r.start_date, locale)}${r.end_date ? " – " + formatDate(r.end_date, locale) : ""}` : "—"}</dd>
             <dt>{t("requests.contact")}</dt><dd>{r.contact_name} · <a href={`mailto:${r.contact_email}`}>{r.contact_email}</a>{r.contact_phone ? ` · ${r.contact_phone}` : ""}</dd>
             <dt>{t("admin.columns.registered")}</dt><dd>{formatDateTime(r.created_at, locale)}</dd>

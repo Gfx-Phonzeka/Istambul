@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
-import { pick } from "@/lib/i18n";
+import { tx, cols } from "@/lib/i18n";
 import { ALL_NAV } from "@/lib/nav";
 import { Badge, Card, EmptyState, PageHeader, Icon } from "@/components/ui";
 import { AutofocusDesktop } from "@/components/AutofocusDesktop";
@@ -42,7 +42,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
     const s = term.replace(/[%_,()*\\]/g, " ").trim();
     const { data } = await supabase
       .from("content_index")
-      .select("kind,id,title_en,title_tr,text_en,text_tr,href")
+      .select(`kind,id,${cols("title")},${cols("text")},href` as "*")
       .or(`title_en.ilike.%${s}%,title_tr.ilike.%${s}%,text_en.ilike.%${s}%,text_tr.ilike.%${s}%`)
       .limit(60);
     hits = (data ?? []) as Hit[];
@@ -74,8 +74,8 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
                 </li>
               ))}
               {hits.map((h) => {
-                const title = pick(locale, h.title_en, h.title_tr);
-                const text = pick(locale, h.text_en, h.text_tr);
+                const title = tx(h, "title", locale);
+                const text = tx(h, "text", locale);
                 return (
                   <li key={`${h.kind}-${h.id}`}>
                     <div className="row" style={{ gap: 8 }}>

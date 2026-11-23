@@ -1,4 +1,5 @@
 "use client";
+import { EVENT } from "@/lib/event";
 import { useEffect, useMemo, useState } from "react";
 import { downloadZip } from "client-zip";
 import { useI18n } from "@/lib/i18n/client";
@@ -74,7 +75,7 @@ export function MediaHub({ items, termsAccepted, termsTitle, termsHtml, focusIte
           setZip({ done, total: files.length });
         }
       }
-      const zipName = `istanbul2027-media-${new Date().toISOString().slice(0, 10)}.zip`;
+      const zipName = `${EVENT.slug}-media-${new Date().toISOString().slice(0, 10)}.zip`;
       const response = downloadZip(entries());
       const picker = (window as unknown as { showSaveFilePicker?: SavePicker }).showSaveFilePicker;
       if (picker) {

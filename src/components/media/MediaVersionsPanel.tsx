@@ -1,4 +1,6 @@
 "use client";
+import { intlLocale } from "@/lib/i18n";
+import { EVENT } from "@/lib/event";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ResumableUpload, fmtBytes, type UploadedFile } from "./ResumableUpload";
@@ -49,7 +51,7 @@ export function MediaVersionsPanel({ assetId, versions, previewUrl, previewKind,
   const [msg, setMsg] = useState<string | null>(null);
   const current = versions.find((v) => v.is_current);
   const archived = versions.filter((v) => !v.is_current);
-  const date = (d: string) => new Date(d).toLocaleString(locale === "tr" ? "tr-TR" : "en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Europe/Istanbul" });
+  const date = (d: string) => new Date(d).toLocaleString(intlLocale(locale), { dateStyle: "medium", timeStyle: "short", timeZone: EVENT.tz });
 
   const saveNew = (s: Specs) => start(async () => {
     if (!uploaded) return;

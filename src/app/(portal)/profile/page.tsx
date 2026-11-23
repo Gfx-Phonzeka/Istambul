@@ -1,6 +1,6 @@
 import { requireApproved } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
-import { pick } from "@/lib/i18n";
+import { tx, cols } from "@/lib/i18n";
 import Link from "next/link";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { getT } from "@/lib/i18n/server";
@@ -16,7 +16,7 @@ export default async function ProfilePage() {
   const supabase = await createClient();
   const { data: downloads } = await supabase
     .from("media_downloads")
-    .select("id,created_at,via,asset_id,media_assets(title_en,title_tr),media_versions(version_number,file_name)")
+    .select(`id,created_at,via,asset_id,media_assets(${cols("title")}),media_versions(version_number,file_name)` as "*")
     .eq("user_id", profile.id)
     .order("created_at", { ascending: false })
     .limit(50);
@@ -26,14 +26,14 @@ export default async function ProfilePage() {
   const { data: favs } = await supabase.from("favorites").select("kind,target_id").eq("user_id", profile.id);
   const ids = (k: string) => (favs ?? []).filter((f) => f.kind === k).map((f) => f.target_id);
   const [{ data: fv }, { data: fs }, { data: fm }] = await Promise.all([
-    supabase.from("venues").select("id,slug,title_en,title_tr").in("id", ids("venue").length ? ids("venue") : ["00000000-0000-0000-0000-000000000000"]),
-    supabase.from("sports").select("id,title_en,title_tr").in("id", ids("sport").length ? ids("sport") : ["00000000-0000-0000-0000-000000000000"]),
-    supabase.from("media_assets").select("id,title_en,title_tr").in("id", ids("media_asset").length ? ids("media_asset") : ["00000000-0000-0000-0000-000000000000"]),
+    supabase.from("venues").select(`id,slug,${cols("title")}` as "*").in("id", ids("venue").length ? ids("venue") : ["00000000-0000-0000-0000-000000000000"]),
+    supabase.from("sports").select(`id,${cols("title")}` as "*").in("id", ids("sport").length ? ids("sport") : ["00000000-0000-0000-0000-000000000000"]),
+    supabase.from("media_assets").select(`id,${cols("title")}` as "*").in("id", ids("media_asset").length ? ids("media_asset") : ["00000000-0000-0000-0000-000000000000"]),
   ]);
   const favItems = [
-    ...(fv ?? []).map((x) => ({ kind: "venue" as const, id: x.id, label: pick(locale, x.title_en, x.title_tr), href: `/venues/${x.slug}` })),
-    ...(fs ?? []).map((x) => ({ kind: "sport" as const, id: x.id, label: pick(locale, x.title_en, x.title_tr), href: `/schedule` })),
-    ...(fm ?? []).map((x) => ({ kind: "media_asset" as const, id: x.id, label: pick(locale, x.title_en, x.title_tr), href: `/media-hub?item=${x.id}` })),
+    ...(fv ?? []).map((x) => ({ kind: "venue" as const, id: x.id, label: tx(x, "title", locale), href: `/venues/${x.slug}` })),
+    ...(fs ?? []).map((x) => ({ kind: "sport" as const, id: x.id, label: tx(x, "title", locale), href: `/schedule` })),
+    ...(fm ?? []).map((x) => ({ kind: "media_asset" as const, id: x.id, label: tx(x, "title", locale), href: `/media-hub?item=${x.id}` })),
   ];
   return (
     <div className="stack">
@@ -69,7 +69,7 @@ export default async function ProfilePage() {
                   <tr key={d.id}>
                     <td style={{ whiteSpace: "nowrap" }}>{formatDateTime(d.created_at, locale)}</td>
                     <td>
-                      {d.asset_id ? <Link href={`/media-hub?item=${d.asset_id}`}>{d.media_assets ? pick(locale, d.media_assets.title_en, d.media_assets.title_tr) : "—"}</Link> : "—"}
+                      {d.asset_id ? <Link href={`/media-hub?item=${d.asset_id}`}>{d.media_assets ? tx(d.media_assets, "title", locale) : "—"}</Link> : "—"}
                       <div className="muted">{d.media_versions?.file_name}{d.via === "zip" ? " · ZIP" : ""}</div>
                     </td>
                     <td>{d.media_versions ? `v${d.media_versions.version_number}` : "—"}</td>

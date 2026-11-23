@@ -3,7 +3,7 @@ import { requireTeam } from "@/lib/auth";
 import { reportsAccess } from "@/lib/reports";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
-import { pick } from "@/lib/i18n";
+import { tx, cols } from "@/lib/i18n";
 import { excerpt } from "@/lib/content/render";
 import { formatDate } from "@/lib/format";
 import { Alert, Badge, Card, EmptyState, PageHeader } from "@/components/ui";
@@ -16,10 +16,10 @@ export default async function TeamPage() {
   const { t, locale } = await getT();
   const supabase = await createClient();
   const [{ data: messages }, { data: venue }, { data: sport }] = await Promise.all([
-    supabase.from("announcements").select("id,title_en,title_tr,body_en,body_tr,priority,published_at")
+    supabase.from("announcements").select(`id,${cols("title")},${cols("body")},priority,published_at` as "*")
       .eq("visibility", "production").eq("status", "published").order("published_at", { ascending: false }).limit(10),
-    me.team_venue_id ? supabase.from("venues").select("slug,title_en,title_tr").eq("id", me.team_venue_id).maybeSingle() : Promise.resolve({ data: null }),
-    me.team_sport_id ? supabase.from("sports").select("title_en,title_tr").eq("id", me.team_sport_id).maybeSingle() : Promise.resolve({ data: null }),
+    me.team_venue_id ? supabase.from("venues").select(`slug,${cols("title")}` as "*").eq("id", me.team_venue_id).maybeSingle() : Promise.resolve({ data: null }),
+    me.team_sport_id ? supabase.from("sports").select(`${cols("title")}` as "*").eq("id", me.team_sport_id).maybeSingle() : Promise.resolve({ data: null }),
   ]);
   const links = [
     { href: "/team/guidelines", icon: "book", label: t("team.links.guidelines"), hint: t("team.links.guidelinesHint") },
@@ -43,8 +43,8 @@ export default async function TeamPage() {
                       {m.priority === "urgent" && <Badge tone="danger">{t("dashboard.urgent")}</Badge>}
                       <span className="muted small">{m.published_at ? formatDate(m.published_at, locale) : ""}</span>
                     </div>
-                    <strong>{pick(locale, m.title_en, m.title_tr)}</strong>
-                    <div className="muted small">{excerpt(pick(locale, m.body_en, m.body_tr) ?? "", 160)}</div>
+                    <strong>{tx(m, "title", locale)}</strong>
+                    <div className="muted small">{excerpt(tx(m, "body", locale) ?? "", 160)}</div>
                   </Link>
                 </li>
               ))}
@@ -55,8 +55,8 @@ export default async function TeamPage() {
           <Card title={t("team.myDetails")}>
             <dl className="specs">
               <dt>{t("team.function")}</dt><dd>{me.team_function ?? "—"}</dd>
-              <dt>{t("schedule.venue")}</dt><dd>{venue ? <Link href={`/venues/${venue.slug}`}>{pick(locale, venue.title_en, venue.title_tr)}</Link> : "—"}</dd>
-              <dt>{t("venues.sport")}</dt><dd>{sport ? pick(locale, sport.title_en, sport.title_tr) : "—"}</dd>
+              <dt>{t("schedule.venue")}</dt><dd>{venue ? <Link href={`/venues/${venue.slug}`}>{tx(venue, "title", locale)}</Link> : "—"}</dd>
+              <dt>{t("venues.sport")}</dt><dd>{sport ? tx(sport, "title", locale) : "—"}</dd>
             </dl>
             <p className="muted small" style={{ marginBottom: 0 }}>{t("team.detailsHelp")}</p>
           </Card>

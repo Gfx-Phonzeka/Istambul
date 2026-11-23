@@ -1,4 +1,5 @@
 "use client";
+import { EVENT, LANG_NAMES } from "@/lib/event";
 import { useActionState, useRef } from "react";
 import { changePassword, requestDeletion, updateProfile } from "@/lib/actions/profile";
 import { useI18n } from "@/lib/i18n/client";
@@ -45,8 +46,7 @@ export function DetailsForm({ profile }: { profile: P }) {
         <div className="field">
           <label htmlFor="preferred_language">{t("profile.languagePref")}</label>
           <select id="preferred_language" name="preferred_language" className="select" defaultValue={profile.preferred_language}>
-            <option value="en">English</option>
-            <option value="tr">Türkçe</option>
+            {EVENT.locales.map((l) => <option key={l} value={l}>{LANG_NAMES[l]}</option>)}
           </select>
         </div>
       </div>

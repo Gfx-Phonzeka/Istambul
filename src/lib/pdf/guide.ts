@@ -1,4 +1,5 @@
 import "server-only";
+import { EVENT } from "@/lib/event";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Content, TDocumentDefinitions } from "pdfmake/interfaces";
 import { getPrinter, htmlToContent } from "@/lib/pdf/handbook";
@@ -7,7 +8,7 @@ import { GUIDE_UI, loadGuide, tx, type GuideChapter, type GuideLang } from "@/li
 export type GuidePdfScope = { kind: "all" } | { kind: "chapter"; id: string } | { kind: "sections"; ids: string[] };
 
 const TBC = /\[(?:TBC|A CONFIRMAR)(?::\s*([^\]]*))?\]/g;
-const LOCALE: Record<GuideLang, string> = { en: "en-GB", pt: "pt-PT", tr: "tr-TR" };
+const LOCALE: Record<GuideLang, string> = { en: "en-GB", pt: "pt-PT", tr: "tr-TR", es: "es-PE" };
 
 function filterScope(chapters: GuideChapter[], scope: GuidePdfScope) {
   if (scope.kind === "chapter") return chapters.filter((c) => c.id === scope.id);
@@ -60,7 +61,7 @@ export async function buildGuidePdf(supabase: SupabaseClient, lang: GuideLang, s
   const f = (k: string, v: Record<string, string | number> = {}) => Object.entries(v).reduce((s, [a, b]) => s.replaceAll(`{${a}}`, String(b)), L[k] ?? k);
   const all = await loadGuide(supabase, { withBodies: true });
   const chapters = filterScope(all, scope);
-  const generated = new Intl.DateTimeFormat(LOCALE[lang], { dateStyle: "long", timeStyle: "short", timeZone: "Europe/Istanbul" }).format(new Date());
+  const generated = new Intl.DateTimeFormat(LOCALE[lang], { dateStyle: "long", timeStyle: "short", timeZone: EVENT.tz }).format(new Date());
   const scopeLabel = scope.kind === "all" ? L.pdfAll : scope.kind === "chapter" ? L.pdfChapter : L.pdfSections;
 
   const body: Content[] = [];
@@ -80,7 +81,7 @@ export async function buildGuidePdf(supabase: SupabaseClient, lang: GuideLang, s
   }
 
   const doc: TDocumentDefinitions = {
-    info: { title: `${L.title} – Istanbul 2027`, author: "Medialuso – Host Broadcaster", creator: "Istanbul 2027 HB Portal" },
+    info: { title: `${L.title} – ${EVENT.name}`, author: "Medialuso – Host Broadcaster", creator: `${EVENT.name} HB Portal` },
     pageSize: "A4",
     pageMargins: [50, 60, 50, 60],
     defaultStyle: { font: "Roboto", fontSize: 10, lineHeight: 1.25, color: "#16202e" },
@@ -104,7 +105,7 @@ export async function buildGuidePdf(supabase: SupabaseClient, lang: GuideLang, s
       { toc: { title: { text: L.contents, style: "toc" }, numberStyle: { color: "#5b6676" } }, pageBreak: "before" },
       ...body,
     ],
-    header: (page: number) => (page === 1 ? null : { text: `Istanbul 2027 · ${L.title} · ${L.pdfConfidential}`, fontSize: 8, color: "#5b6676", margin: [50, 30, 50, 0] }),
+    header: (page: number) => (page === 1 ? null : { text: `${EVENT.name} · ${L.title} · ${L.pdfConfidential}`, fontSize: 8, color: "#5b6676", margin: [50, 30, 50, 0] }),
     footer: (page: number, pages: number) =>
       page === 1 ? null : {
         columns: [

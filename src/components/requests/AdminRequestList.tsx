@@ -2,7 +2,7 @@ import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
-import { pick } from "@/lib/i18n";
+import { tx, cols, DEFAULT_LOCALE } from "@/lib/i18n";
 import { formatDate } from "@/lib/format";
 import { REQUEST_STATUSES, RHB_REQUEST_TYPES, STATUS_TONE, TEAM_REQUEST_TYPES } from "@/lib/requests";
 import { Badge, EmptyState, PageHeader, Tabs } from "@/components/ui";
@@ -21,11 +21,11 @@ export async function AdminRequestList({ sp, scope }: { sp: SP; scope: "rhb" | "
   if (sp.type) q = q.eq("request_type", sp.type);
   if (sp.venue) q = q.eq("venue_id", sp.venue);
   const [{ data }, { data: profiles }, { data: venues }, { data: all }] = await Promise.all([
-    q, supabase.from("profiles").select("id,first_name,last_name,organization"), supabase.from("venues").select("id,title_en,title_tr").order("title_en"),
+    q, supabase.from("profiles").select("id,first_name,last_name,organization"), supabase.from("venues").select(`id,${cols("title")}` as "*").order(`title_${DEFAULT_LOCALE}`),
     supabase.from("service_requests").select("status").in("request_type", TYPES),
   ]);
   const P = new Map((profiles ?? []).map((p) => [p.id, p]));
-  const V = new Map((venues ?? []).map((v) => [v.id, pick(locale, v.title_en, v.title_tr)]));
+  const V = new Map((venues ?? []).map((v) => [v.id, tx(v, "title", locale)]));
   const count = (s?: string) => (all ?? []).filter((r) => !s || r.status === s).length;
   const href = (o: Record<string, string | undefined>) => base + "?" + new URLSearchParams(Object.entries({ ...sp, ...o }).filter(([, v]) => v) as [string, string][]).toString();
   return (

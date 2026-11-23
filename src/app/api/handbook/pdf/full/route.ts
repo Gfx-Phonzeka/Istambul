@@ -1,3 +1,4 @@
+import { EVENT } from "@/lib/event";
 import { NextResponse, type NextRequest } from "next/server";
 import { getProfile } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
@@ -14,7 +15,7 @@ export async function GET(req: NextRequest) {
   const supabase = await createClient();
   const { data } = await supabase.storage
     .from("handbook-pdf")
-    .createSignedUrl(FULL_PDF_PATH(locale), 120, { download: `istanbul2027-handbook-${locale}.pdf` });
+    .createSignedUrl(FULL_PDF_PATH(locale), 120, { download: `${EVENT.slug}-handbook-${locale}.pdf` });
   if (!data?.signedUrl) {
     // Not generated yet: fall back to an on-demand export.
     return NextResponse.redirect(new URL(`/api/handbook/pdf?lang=${locale}`, req.url));

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
-import { pick } from "@/lib/i18n";
+import { tx, cols } from "@/lib/i18n";
 import { isPreview } from "@/lib/preview";
 import { withDraft, withHeadingAnchors } from "@/lib/content/render";
 import { Badge, Card, EmptyState, Icon, PageHeader, Tabs } from "@/components/ui";
@@ -25,8 +25,8 @@ export default async function BroadcastPage({ searchParams }: { searchParams: Pr
   if (tab === "feeds") {
     const [{ data }, { data: venues }, { data: sports }] = await Promise.all([
       pub(supabase.from("broadcast_feeds").select("*").order("start_at")),
-      supabase.from("venues").select("id,slug,title_en,title_tr"),
-      supabase.from("sports").select("id,title_en,title_tr"),
+      supabase.from("venues").select(`id,slug,${cols("title")}` as "*"),
+      supabase.from("sports").select(`id,${cols("title")}` as "*"),
     ]);
     const V = new Map((venues ?? []).map((v) => [v.id, v]));
     const S = new Map((sports ?? []).map((s) => [s.id, s]));
@@ -34,9 +34,9 @@ export default async function BroadcastPage({ searchParams }: { searchParams: Pr
       const f = withDraft(raw, preview);
       const v = f.venue_id ? V.get(f.venue_id) : null, s = f.sport_id ? S.get(f.sport_id) : null;
       return {
-        id: f.id, code: f.code, type: f.feed_type, title: pick(locale, f.title_en, f.title_tr), venue: v ? pick(locale, v.title_en, v.title_tr) : "",
-        venueSlug: v?.slug ?? null, sport: s ? pick(locale, s.title_en, s.title_tr) : "", start: f.start_at, end: f.end_at, channel: f.channel,
-        notes: pick(locale, f.notes_en, f.notes_tr), draft: f.status !== "published",
+        id: f.id, code: f.code, type: f.feed_type, title: tx(f, "title", locale), venue: v ? tx(v, "title", locale) : "",
+        venueSlug: v?.slug ?? null, sport: s ? tx(s, "title", locale) : "", start: f.start_at, end: f.end_at, channel: f.channel,
+        notes: tx(f, "notes", locale), draft: f.status !== "published",
       };
     });
     content = feeds.length ? <FeedGrid feeds={feeds} /> : <Card><EmptyState icon="broadcast" action={{ label: t("common.contactHost"), href: "/contacts" }}>{t("broadcast.noFeeds")}</EmptyState></Card>;
@@ -49,12 +49,12 @@ export default async function BroadcastPage({ searchParams }: { searchParams: Pr
         {rows.length === 0 ? <Card><EmptyState icon="broadcast" action={{ label: t("common.contactHost"), href: "/contacts" }}>—</EmptyState></Card> : (
           <div className="grid grid-3">
             {rows.map((c) => (
-              <Card key={c.id} title={<span className="row" style={{ gap: 8 }}><Badge tone="primary">{t(`broadcast.channelKinds.${c.kind}`)}</Badge> {pick(locale, c.title_en, c.title_tr)}</span>}>
-                <RichText html={withHeadingAnchors(pick(locale, c.body_en, c.body_tr)).html} />
-                {pick(locale, c.contact_en, c.contact_tr) && (
+              <Card key={c.id} title={<span className="row" style={{ gap: 8 }}><Badge tone="primary">{t(`broadcast.channelKinds.${c.kind}`)}</Badge> {tx(c, "title", locale)}</span>}>
+                <RichText html={withHeadingAnchors(tx(c, "body", locale)).html} />
+                {tx(c, "contact", locale) && (
                   <div className="small" style={{ marginTop: 12, borderTop: "1px solid var(--color-border)", paddingTop: 8 }}>
                     <strong>{t("broadcast.contact")}</strong>
-                    <RichText html={pick(locale, c.contact_en, c.contact_tr)} />
+                    <RichText html={tx(c, "contact", locale)} />
                   </div>
                 )}
               </Card>
@@ -73,7 +73,7 @@ export default async function BroadcastPage({ searchParams }: { searchParams: Pr
           <Card key={g} title={t(`broadcast.paramGroups.${g}`)}>
             <dl className="specs" style={{ fontSize: "var(--text-sm)", gap: "6px 16px" }}>
               {rows.filter((r) => r.grp === g).map((r) => (
-                <div key={r.id} style={{ display: "contents" }}><dt>{pick(locale, r.title_en, r.title_tr)}</dt><dd><strong>{pick(locale, r.value_en, r.value_tr)}</strong></dd></div>
+                <div key={r.id} style={{ display: "contents" }}><dt>{tx(r, "title", locale)}</dt><dd><strong>{tx(r, "value", locale)}</strong></dd></div>
               ))}
             </dl>
           </Card>
@@ -84,8 +84,8 @@ export default async function BroadcastPage({ searchParams }: { searchParams: Pr
     const { data } = await pub(supabase.from("info_blocks").select("*").eq("slug", "additional-production")).maybeSingle();
     const b = data ? withDraft(data, preview) : null;
     content = (
-      <Card title={b ? pick(locale, b.title_en, b.title_tr) : t("broadcast.tabs.additional")}>
-        {b ? <RichText html={withHeadingAnchors(pick(locale, b.body_en, b.body_tr)).html} /> : <p className="muted">—</p>}
+      <Card title={b ? tx(b, "title", locale) : t("broadcast.tabs.additional")}>
+        {b ? <RichText html={withHeadingAnchors(tx(b, "body", locale)).html} /> : <p className="muted">—</p>}
       </Card>
     );
   }

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getT } from "@/lib/i18n/server";
-import { pick } from "@/lib/i18n";
+import { tx } from "@/lib/i18n";
 import { isPreview } from "@/lib/preview";
 import { getHandbookTree } from "@/lib/handbook-page";
 import { Card, PageHeader } from "@/components/ui";
@@ -28,14 +28,14 @@ export default async function ChapterPage({ params, searchParams }: { params: Pr
         <div className="stack">
           <Link href={`/handbook${q}`} className="small">← {t("handbook.title")}</Link>
           <PageHeader
-            title={`${ci + 1}. ${pick(locale, c.title_en, c.title_tr)}`}
-            subtitle={pick(locale, c.summary_en, c.summary_tr) || undefined}
-            actions={<HandbookExport defaultChapter={c.id} chapters={chapters.map((x) => ({ id: x.id, title: pick(locale, x.title_en, x.title_tr), sections: x.sections.map((s) => ({ id: s.id, title: pick(locale, s.title_en, s.title_tr) })) }))} />}
+            title={`${ci + 1}. ${tx(c, "title", locale)}`}
+            subtitle={tx(c, "summary", locale) || undefined}
+            actions={<HandbookExport defaultChapter={c.id} chapters={chapters.map((x) => ({ id: x.id, title: tx(x, "title", locale), sections: x.sections.map((s) => ({ id: s.id, title: tx(s, "title", locale) })) }))} />}
           />
           <Card>
             <ol className="list">
               {c.sections.map((s, si) => (
-                <li key={s.id}><Link href={`/handbook/${c.slug}/${s.slug}${q}`}>{ci + 1}.{si + 1} {pick(locale, s.title_en, s.title_tr)}</Link></li>
+                <li key={s.id}><Link href={`/handbook/${c.slug}/${s.slug}${q}`}>{ci + 1}.{si + 1} {tx(s, "title", locale)}</Link></li>
               ))}
             </ol>
           </Card>

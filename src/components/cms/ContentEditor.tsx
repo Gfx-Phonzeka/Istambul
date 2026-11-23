@@ -3,7 +3,8 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { CONTENT_TYPES, type ContentTypeKey, type Field } from "@/lib/content/registry";
+import { CONTENT_TYPES, fieldLangs, primaryLang, usesTranslationPair, type ContentTypeKey, type Field } from "@/lib/content/registry";
+import type { Locale } from "@/lib/event";
 import { deleteContent, discardDraft, publishContent, saveContent, unpublishContent } from "@/lib/actions/content";
 import { translateFields } from "@/lib/actions/translate";
 import { useI18n } from "@/lib/i18n/client";
@@ -38,7 +39,7 @@ export function ContentEditor({
   const [msg, setMsg] = useState<{ tone: "success" | "danger" | "info"; text: string; at?: "translate" } | null>(null);
   const [errField, setErrField] = useState<string | null>(null);
   const [pending, start] = useTransition();
-  const [tab, setTab] = useState<Record<string, "en" | "pt" | "tr">>({});
+  const [tab, setTab] = useState<Record<string, Locale>>({});
 
   const set = (col: string, v: string) => {
     setValues((s) => ({ ...s, [col]: v }));
@@ -46,7 +47,7 @@ export function ContentEditor({
   };
 
   const [translating, setTranslating] = useState<string | null>(null);
-  const bilingual = type.fields.filter((f) => f.bilingual);
+  const bilingual = usesTranslationPair ? type.fields.filter((f) => f.bilingual) : [];
 
   /** Machine-translates the English text of the given fields into the Turkish fields. */
   const translate = async (names: string[], onlyEmpty: boolean, tag: string) => {
@@ -116,7 +117,7 @@ export function ContentEditor({
     });
   };
 
-  const input = (f: Field, col: string, lang?: "en" | "pt" | "tr") => {
+  const input = (f: Field, col: string, lang?: Locale) => {
     const v = values[col] ?? "";
     const invalid = errField === col;
     const common = { id: `f-${col}`, name: col, autoComplete: "off", "aria-invalid": invalid || undefined };
@@ -189,8 +190,8 @@ export function ContentEditor({
 
       <div className="card stack">
         {type.fields.map((f) => {
-          if (f.langs) {
-            const langs = f.langs;
+          if (f.langs || (f.bilingual && !usesTranslationPair)) {
+            const langs = fieldLangs(f)!;
             if (f.kind === "richtext") {
               const lang = tab[f.name] ?? langs[0];
               return (
@@ -214,7 +215,7 @@ export function ContentEditor({
               <div key={f.name} className="form-grid">
                 {langs.map((l) => (
                   <div key={l} className="field">
-                    <label htmlFor={`f-${f.name}_${l}`}>{t(f.label)} ({l.toUpperCase()}){f.required && l === "en" ? " *" : ""}</label>
+                    <label htmlFor={`f-${f.name}_${l}`}>{t(f.label)} ({l.toUpperCase()}){f.required && l === primaryLang(f) ? " *" : ""}</label>
                     {input(f, `${f.name}_${l}`, l)}
                     {errField === `${f.name}_${l}` && <span className="field-error">{msg?.text}</span>}
                   </div>

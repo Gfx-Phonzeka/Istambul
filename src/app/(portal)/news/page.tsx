@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
-import { pick } from "@/lib/i18n";
+import { tx } from "@/lib/i18n";
 import { excerpt } from "@/lib/content/render";
 import { formatDate } from "@/lib/format";
 import { isPreview } from "@/lib/preview";
@@ -40,8 +40,8 @@ export default async function NewsPage({ searchParams }: { searchParams: Promise
                 {a.status !== "published" && <Badge tone="warning">{t("cms.status.draft")}</Badge>}
                 <span className="muted small">{formatDate(a.published_at ?? a.created_at, locale)}</span>
               </div>
-              <strong>{pick(locale, a.title_en, a.title_tr)}</strong>
-              <p className="small muted" style={{ margin: "4px 0 0" }}>{excerpt(pick(locale, a.body_en, a.body_tr))}</p>
+              <strong>{tx(a, "title", locale)}</strong>
+              <p className="small muted" style={{ margin: "4px 0 0" }}>{excerpt(tx(a, "body", locale))}</p>
             </Link>
           ))}
         </div>

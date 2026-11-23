@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
-import { pick } from "@/lib/i18n";
+import { tx } from "@/lib/i18n";
 import { withDraft } from "@/lib/content/render";
 import { isPreview } from "@/lib/preview";
 import { Badge, PageHeader } from "@/components/ui";
@@ -16,7 +16,7 @@ export default async function GlossaryPage({ searchParams }: { searchParams: Pro
   let q = supabase.from("glossary_terms").select("*");
   if (!preview) q = q.eq("status", "published");
   const { data } = await q;
-  const terms = (data ?? []).map((g) => withDraft(g, preview)).map((g) => ({ ...g, term: pick(locale, g.term_en, g.term_tr), def: pick(locale, g.definition_en, g.definition_tr) }));
+  const terms = (data ?? []).map((g) => withDraft(g, preview)).map((g) => ({ ...g, term: tx(g, "term", locale), def: tx(g, "definition", locale) }));
   terms.sort((a, b) => a.term.localeCompare(b.term, locale));
   const letters = [...new Set(terms.map((x) => x.term[0]?.toLocaleUpperCase(locale) ?? "#"))];
   const items = terms.map((g) => ({

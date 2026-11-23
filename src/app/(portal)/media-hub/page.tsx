@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
-import { pick } from "@/lib/i18n";
+import { tx, cols, DEFAULT_LOCALE } from "@/lib/i18n";
 import { isPreview } from "@/lib/preview";
 import { requireApproved, isStaff } from "@/lib/auth";
 import { formatDuration, freshness, signPaths } from "@/lib/media";
@@ -18,13 +18,13 @@ export default async function MediaHubPage({ searchParams }: { searchParams: Pro
   const preview = await isPreview(sp);
   const { t, locale } = await getT();
   const supabase = await createClient();
-  let aq = supabase.from("media_assets").select("*").order("category").order("position").order("title_en");
+  let aq = supabase.from("media_assets").select("*").order("category").order("position").order(`title_${DEFAULT_LOCALE}`);
   if (!preview) aq = aq.eq("status", "published");
   const [{ data: assets }, { data: versions }, { data: terms }, { data: legal }, { data: favs }] = await Promise.all([
     aq,
     supabase.from("media_versions").select("*").eq("is_current", true),
     supabase.from("material_terms_acceptances").select("accepted_at").eq("user_id", me.id).maybeSingle(),
-    supabase.from("legal_pages").select("title_en,title_tr,body_en,body_tr").eq("slug", "material").maybeSingle(),
+    supabase.from("legal_pages").select(`${cols("title")},${cols("body")}` as "*").eq("slug", "material").maybeSingle(),
     supabase.from("favorites").select("target_id").eq("user_id", me.id).eq("kind", "media_asset"),
   ]);
   const favSet = new Set((favs ?? []).map((f) => f.target_id));
@@ -37,8 +37,8 @@ export default async function MediaHubPage({ searchParams }: { searchParams: Pro
       id: a.id,
       category: a.category,
       subtype: a.subtype,
-      title: pick(locale, a.title_en, a.title_tr),
-      description: pick(locale, a.description_en, a.description_tr),
+      title: tx(a, "title", locale),
+      description: tx(a, "description", locale),
       previewUrl: a.preview_path ? previews[a.preview_path] ?? null : null,
       previewKind: a.preview_kind,
       draft: a.status !== "published",
@@ -51,7 +51,7 @@ export default async function MediaHubPage({ searchParams }: { searchParams: Pro
       } : null,
     };
   });
-  const termsHtml = legal ? withHeadingAnchors(pick(locale, legal.body_en, legal.body_tr)).html : "";
+  const termsHtml = legal ? withHeadingAnchors(tx(legal, "body", locale)).html : "";
   return (
     <div className="stack">
       {preview && <PreviewBanner exitHref="/media-hub" />}
@@ -59,7 +59,7 @@ export default async function MediaHubPage({ searchParams }: { searchParams: Pro
       <MediaHub
         items={items}
         termsAccepted={Boolean(terms) || isStaff(me)}
-        termsTitle={legal ? pick(locale, legal.title_en, legal.title_tr) : t("legal.material")}
+        termsTitle={legal ? tx(legal, "title", locale) : t("legal.material")}
         termsHtml={termsHtml}
         focusItem={sp.item ?? null}
         openTerms={sp.terms === "1"}

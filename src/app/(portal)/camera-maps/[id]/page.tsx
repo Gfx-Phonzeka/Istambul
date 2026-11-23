@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
-import { pick } from "@/lib/i18n";
+import { tx } from "@/lib/i18n";
 import { isPreview } from "@/lib/preview";
 import { getProfile, isStaff } from "@/lib/auth";
 import { freshness, signPaths } from "@/lib/media";
@@ -54,7 +54,7 @@ export default async function CameraPlanPage({ params, searchParams }: { params:
         title={`${plan.venueTitle} · ${plan.sportTitle}`}
         cameras={(cams ?? []).map((c) => ({
           id: c.id, number: c.number, type: c.type, level: c.level, is_special: c.is_special, x: Number(c.x), y: Number(c.y),
-          angle: c.angle == null ? null : Number(c.angle), lens: c.lens, function: pick(locale, c.function_en, c.function_tr),
+          angle: c.angle == null ? null : Number(c.angle), lens: c.lens, function: tx(c, "function", locale),
         }))}
         drawing={drawing && signed[drawing.file_path] ? {
           url: signed[drawing.file_path], downloadUrl: `/api/camera-plans/${id}/drawing`, version: drawing.version_number,

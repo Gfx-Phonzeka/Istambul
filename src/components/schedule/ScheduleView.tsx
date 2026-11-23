@@ -1,4 +1,6 @@
 "use client";
+import { intlLocale } from "@/lib/i18n";
+import { EVENT } from "@/lib/event";
 import { useEffect, useMemo, useState } from "react";
 import { useI18n } from "@/lib/i18n/client";
 import { Badge, EmptyState } from "@/components/ui";
@@ -11,13 +13,13 @@ export interface SessionRow {
   notes: string; draft: boolean;
 }
 
-const TRT = "Europe/Istanbul";
+const TRT = EVENT.tz;
 
 export function ScheduleView({ sessions, sports, venues, focus, favSports = [] }: {
   sessions: SessionRow[]; sports: { id: string; title: string }[]; venues: { id: string; title: string }[]; focus?: string | null; favSports?: string[];
 }) {
   const { t, locale } = useI18n();
-  const loc = locale === "tr" ? "tr-TR" : "en-GB";
+  const loc = intlLocale(locale);
   const [tzModeRaw, setTzMode] = useUrlState("tz", "trt");
   const tzMode = tzModeRaw === "local" ? "local" : "trt";
   const [localTz, setLocalTz] = useState<string | null>(null);

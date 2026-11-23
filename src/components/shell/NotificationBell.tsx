@@ -1,11 +1,13 @@
 "use client";
+import { intlLocale } from "@/lib/i18n";
+import { EVENT } from "@/lib/event";
 import { useState, useTransition } from "react";
 import * as Popover from "@radix-ui/react-popover";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Icon } from "@/components/ui/Icon";
 import { markAllNotificationsRead } from "@/lib/actions/notifications";
-import { pick } from "@/lib/i18n";
+import { tx } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n/client";
 
 export interface NotificationRow {
@@ -56,9 +58,9 @@ export function NotificationBell({ items }: { items: NotificationRow[] }) {
               {items.map((n) => {
                 const content = (
                   <>
-                    <div>{pick(locale, n.title_en, n.title_tr)}</div>
+                    <div>{tx(n, "title", locale)}</div>
                     <div className="muted" style={{ fontSize: "var(--text-xs)" }}>
-                      {new Date(n.created_at).toLocaleString(locale === "tr" ? "tr-TR" : "en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Europe/Istanbul" })}
+                      {new Date(n.created_at).toLocaleString(intlLocale(locale), { dateStyle: "medium", timeStyle: "short", timeZone: EVENT.tz })}
                     </div>
                   </>
                 );

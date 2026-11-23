@@ -1,9 +1,10 @@
 "use server";
+import { EVENT } from "@/lib/event";
 import { after } from "next/server";
 import { revalidatePath } from "next/cache";
 import { requireStaff } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
-import { CONTENT_TYPES, columnsOf, fieldLangs, isContentType, type ContentType } from "@/lib/content/registry";
+import { CONTENT_TYPES, columnsOf, fieldLangs, isContentType, primaryLang, type ContentType } from "@/lib/content/registry";
 import { sanitizeRichText } from "@/lib/content/sanitize";
 import { regenerateHandbookPdfs } from "@/lib/pdf/handbook";
 import { flushEmails } from "@/lib/email";
@@ -17,11 +18,12 @@ function parseValues(type: ContentType, raw: Record<string, unknown>): { values:
   const values: Record<string, unknown> = {};
   for (const f of type.fields) {
     const langs = fieldLangs(f)?.map((l) => `_${l}`) ?? [""];
+    const main = `_${primaryLang(f)}`;
     for (const suffix of langs) {
       const col = f.name + suffix;
       const v = raw[col];
       let s = typeof v === "string" ? v.trim() : v == null ? "" : String(v);
-      const required = f.required && (suffix === "" || suffix === "_en");
+      const required = f.required && (suffix === "" || suffix === main);
       if (f.kind === "richtext") {
         s = sanitizeRichText(s);
         if (s.replace(/<[^>]+>/g, "").trim() === "" && !s.includes("<img") && !s.includes("<iframe")) s = "";
@@ -29,7 +31,7 @@ function parseValues(type: ContentType, raw: Record<string, unknown>): { values:
       if (f.kind === "boolean") { values[col] = s === "true" || s === "on"; continue; }
       if (required && s === "") return { error: "cms.errors.required", field: col };
       if (s === "") {
-        values[col] = (suffix !== "" && suffix !== "_en") || !required ? null : "";
+        values[col] = (suffix !== "" && suffix !== main) || !required ? null : "";
         if (f.kind === "number") values[col] = 0;
         continue;
       }
@@ -46,7 +48,7 @@ function parseValues(type: ContentType, raw: Record<string, unknown>): { values:
           break;
         case "datetime":
           if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(s)) return { error: "cms.errors.date", field: col };
-          values[col] = `${s}:00+03:00`; // entered in Istanbul time
+          values[col] = `${s}:00${EVENT.utcOffset}`; // entered in Istanbul time
           break;
         case "slug":
           if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(s)) return { error: "cms.errors.slug", field: col };

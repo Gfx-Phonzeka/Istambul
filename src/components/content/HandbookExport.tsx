@@ -1,4 +1,5 @@
 "use client";
+import { LANG_NAMES } from "@/lib/event";
 import { useState } from "react";
 import { Modal } from "@/components/ui/Modal";
 import { useI18n } from "@/lib/i18n/client";
@@ -69,7 +70,7 @@ export function HandbookExport({ chapters, defaultChapter }: { chapters: Ch[]; d
                 ))}
               </div>
             )}
-            <p className="hint" style={{ margin: 0 }}>{t("handbook.exportLanguage", { lang: locale === "tr" ? "Türkçe" : "English" })}</p>
+            <p className="hint" style={{ margin: 0 }}>{t("handbook.exportLanguage", { lang: LANG_NAMES[locale] })}</p>
           </div>
         </Modal>
       )}

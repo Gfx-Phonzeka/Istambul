@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getT } from "@/lib/i18n/server";
-import { pick } from "@/lib/i18n";
+import { tx } from "@/lib/i18n";
 import { isPreview } from "@/lib/preview";
 import { getHandbookTree } from "@/lib/handbook-page";
 import { Card, EmptyState, PageHeader, Badge } from "@/components/ui";
@@ -24,7 +24,7 @@ export default async function HandbookIndex({ searchParams }: { searchParams: Pr
           chapters.length > 0 && (
             <>
               <a className="btn" href={`/api/handbook/pdf/full?lang=${locale}`}>{t("handbook.downloadFull")}</a>
-              <HandbookExport chapters={chapters.map((c) => ({ id: c.id, title: pick(locale, c.title_en, c.title_tr), sections: c.sections.map((s) => ({ id: s.id, title: pick(locale, s.title_en, s.title_tr) })) }))} />
+              <HandbookExport chapters={chapters.map((c) => ({ id: c.id, title: tx(c, "title", locale), sections: c.sections.map((s) => ({ id: s.id, title: tx(s, "title", locale) })) }))} />
             </>
           )
         }
@@ -34,12 +34,12 @@ export default async function HandbookIndex({ searchParams }: { searchParams: Pr
       ) : (
         <div className="grid grid-2">
           {chapters.map((c, ci) => (
-            <Card key={c.id} title={<Link href={`/handbook/${c.slug}${q}`}>{ci + 1}. {pick(locale, c.title_en, c.title_tr)}</Link>}>
-              {pick(locale, c.summary_en, c.summary_tr) && <p className="muted small">{pick(locale, c.summary_en, c.summary_tr)}</p>}
+            <Card key={c.id} title={<Link href={`/handbook/${c.slug}${q}`}>{ci + 1}. {tx(c, "title", locale)}</Link>}>
+              {tx(c, "summary", locale) && <p className="muted small">{tx(c, "summary", locale)}</p>}
               <ol className="list">
                 {c.sections.map((s, si) => (
                   <li key={s.id}>
-                    <Link href={`/handbook/${c.slug}/${s.slug}${q}`}>{ci + 1}.{si + 1} {pick(locale, s.title_en, s.title_tr)}</Link>{" "}
+                    <Link href={`/handbook/${c.slug}/${s.slug}${q}`}>{ci + 1}.{si + 1} {tx(s, "title", locale)}</Link>{" "}
                     {s.visibility === "partners" && <Badge tone="info">{t("dashboard.partnersOnly")}</Badge>}
                 {s.visibility === "production" && <Badge tone="success">{t("dashboard.productionOnly")}</Badge>}
                     {s.visibility === "internal" && <Badge tone="warning">{t("dashboard.internalOnly")}</Badge>}

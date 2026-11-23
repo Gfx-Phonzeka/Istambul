@@ -2,6 +2,7 @@ import "server-only";
 import { cache } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import type { Locale } from "@/lib/event";
 
 export type Role = "right_holder" | "partner" | "production" | "editor" | "admin";
 export type AccountStatus = "pending" | "approved" | "rejected" | "suspended";
@@ -18,7 +19,7 @@ export interface Profile {
   phone: string;
   role: Role | null;
   status: AccountStatus;
-  preferred_language: "en" | "tr";
+  preferred_language: Locale;
   notify_email: boolean;
   review_reason: string | null;
   reviewed_at: string | null;

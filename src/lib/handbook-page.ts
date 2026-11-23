@@ -1,3 +1,4 @@
+import { cols } from "@/lib/i18n";
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
 import { loadHandbook, type HbChapter } from "@/lib/handbook";
@@ -14,7 +15,7 @@ export async function getHandbookTree(preview: boolean): Promise<HbChapter[]> {
 /** Text of one handbook section (EN and TR), with pending changes in preview mode. */
 export async function getHandbookBody(id: string, preview: boolean): Promise<{ body_en: string; body_tr: string | null }> {
   const supabase = await createClient();
-  const { data } = await supabase.from("handbook_sections").select("body_en,body_tr,draft").eq("id", id).maybeSingle();
+  const { data } = await supabase.from("handbook_sections").select(`${cols("body")},draft` as "*").eq("id", id).maybeSingle();
   const row = withDraft((data ?? { body_en: "", body_tr: null, draft: null }) as { body_en: string; body_tr: string | null; draft: Record<string, unknown> | null }, preview);
   return { body_en: row.body_en, body_tr: row.body_tr };
 }

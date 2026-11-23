@@ -1,8 +1,10 @@
 // Production Guidelines (team only): data loading, reading language and display helpers.
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { EVENT, type Locale } from "@/lib/event";
 
-export type GuideLang = "en" | "pt" | "tr";
-export const GUIDE_LANGS: GuideLang[] = ["en", "pt", "tr"];
+/** Reading languages of the manual for this event (Istanbul: EN/PT/TR · Lima: ES/PT). The first is the fallback. */
+export type GuideLang = Locale;
+export const GUIDE_LANGS: GuideLang[] = EVENT.guideLangs;
 export const GUIDE_LANG_COOKIE = "guide_lang";
 
 type Tri = { [K in `${"title" | "summary" | "body"}_${GuideLang}`]?: string | null };
@@ -17,18 +19,19 @@ export interface GuideChapter extends Tri {
 }
 
 /** The language to read in: the reader's choice, else the portal language. */
-export function resolveGuideLang(cookie: string | undefined, uiLocale: "en" | "tr"): GuideLang {
-  return cookie === "en" || cookie === "pt" || cookie === "tr" ? cookie : uiLocale;
+export function resolveGuideLang(cookie: string | undefined, uiLocale: Locale): GuideLang {
+  if (GUIDE_LANGS.includes(cookie as GuideLang)) return cookie as GuideLang;
+  return GUIDE_LANGS.includes(uiLocale) ? uiLocale : GUIDE_LANGS[0];
 }
 
-/** Text of a field in the chosen language, falling back to English when that language is empty. */
+/** Text of a field in the chosen language, falling back to the manual's first language when that one is empty. */
 export function tx(row: Tri & { title_en?: string }, field: "title" | "summary" | "body", lang: GuideLang): string {
-  const v = row[`${field}_${lang}`];
-  if (v && v.trim() !== "") return v;
-  return row[`${field}_en`] ?? "";
+  const get = (l: GuideLang) => { const v = row[`${field}_${l}`]; return v && v.trim() !== "" ? v : ""; };
+  return get(lang) || GUIDE_LANGS.map(get).find(Boolean) || "";
 }
 
-const SECTION_LIGHT = "id,chapter_id,slug,position,title_en,title_pt,title_tr,visibility,status,content_updated_at,tr_reviewed";
+const langCols = (f: string) => GUIDE_LANGS.map((l) => `${f}_${l}`).join(",");
+const SECTION_LIGHT = `id,chapter_id,slug,position,${langCols("title")},visibility,status,content_updated_at,tr_reviewed`;
 
 /**
  * Loads the guidelines tree. By default only titles (for menus and lists): texts are heavy (three languages),
@@ -36,9 +39,9 @@ const SECTION_LIGHT = "id,chapter_id,slug,position,title_en,title_pt,title_tr,vi
  */
 export async function loadGuide(supabase: SupabaseClient, opts: { includeDrafts?: boolean; withBodies?: boolean } = {}): Promise<GuideChapter[]> {
   const includeDrafts = opts.includeDrafts ?? false;
-  const cols = SECTION_LIGHT + (opts.withBodies ? ",body_en,body_pt,body_tr" : "") + (includeDrafts ? ",draft" : "");
-  let cq = supabase.from("guide_chapters").select("*").order("position").order("title_en");
-  let sq = supabase.from("guide_sections").select(cols).order("position").order("title_en");
+  const cols = SECTION_LIGHT + (opts.withBodies ? `,${langCols("body")}` : "") + (includeDrafts ? ",draft" : "");
+  let cq = supabase.from("guide_chapters").select("*").order("position").order(`title_${GUIDE_LANGS[0]}`);
+  let sq = supabase.from("guide_sections").select(cols as "*").order("position").order(`title_${GUIDE_LANGS[0]}`);
   if (!includeDrafts) { cq = cq.eq("status", "published"); sq = sq.eq("status", "published"); }
   const [{ data: chapters }, { data: sections }] = await Promise.all([cq, sq]);
   return ((chapters ?? []) as GuideChapter[]).map((c) => ({
@@ -62,7 +65,7 @@ export function decorateGuideHtml(html: string): string {
 }
 
 /** Interface labels of the guidelines pages, in the three reading languages. */
-export const GUIDE_UI: Record<GuideLang, Record<string, string>> = {
+const BASE_UI: Partial<Record<GuideLang, Record<string, string>>> = {
   en: {
     exportAll: "The whole manual", exportChapter: "One chapter", exportSections: "Selected sections", 
     games: "4th European Games · Istanbul 2027", hb: "Medialuso · Host Broadcaster", pdfAll: "Complete manual", pdfChapter: "Chapter", pdfSections: "Selected sections", generated: "Generated on {date}", pageOf: "Page {n} of {total}", pdfConfidential: "Confidential: for the HB production team only.", exportPdf: "Export PDF", exportTitle: "Export the guidelines as PDF", exportWhat: "What to export", exportButton: "Download PDF", exportWorking: "Preparing…", exportLanguage: "The PDF is created in the reading language selected: {lang}.", cancel: "Cancel", langName: "English",
@@ -91,3 +94,24 @@ export const GUIDE_UI: Record<GuideLang, Record<string, string>> = {
     tbcNone: "Açık nokta yok.", backToTeam: "Ekip alanı",
   },
 };
+
+const ES_UI: Record<string, string> = {
+  exportAll: "El manual completo", exportChapter: "Un capítulo", exportSections: "Secciones elegidas",
+  games: "Juegos Panamericanos y Parapanamericanos · Lima 2027", hb: "Medialuso · Host Broadcaster", pdfAll: "Manual completo", pdfChapter: "Capítulo", pdfSections: "Secciones elegidas", generated: "Generado el {date}", pageOf: "Página {n} de {total}", pdfConfidential: "Confidencial: solo para el equipo de producción del HB.", exportPdf: "Exportar PDF", exportTitle: "Exportar el manual en PDF", exportWhat: "Qué exportar", exportButton: "Descargar PDF", exportWorking: "Preparando…", exportLanguage: "El PDF se crea en el idioma de lectura elegido: {lang}.", cancel: "Cancelar", langName: "Español",
+  title: "Manual de Directrices de Producción", subtitle: "Cómo produce el Host Broadcaster cada sesión. Obligatorio para todos los equipos de producción y realización.",
+  contents: "Índice", chapter: "Capítulo", previous: "Anterior", next: "Siguiente", onThisPage: "En esta página", updated: "Actualizado el {date}",
+  language: "Idioma de lectura", openPoints: "Puntos abiertos (TBC)", openPointsHelp: "Puntos aún por confirmar, tal como están marcados en el texto. Solo los ven editores y administradores.",
+  trReview: "Texto por revisar por un hablante nativo", sections: "secciones", confidential: "Solo para el equipo de producción. No compartir fuera del equipo.",
+  tbcNone: "Sin puntos abiertos.", backToTeam: "Área del equipo",
+};
+
+/** Interface labels of the guidelines pages, per reading language, with this event's name. */
+export const GUIDE_UI: Record<GuideLang, Record<string, string>> = (() => {
+  const all: Record<string, Record<string, string>> = { ...BASE_UI, es: ES_UI };
+  if (EVENT.id === "lima") {
+    all.en = { ...all.en, games: "Pan American and Parapan American Games · Lima 2027" };
+    all.pt = { ...all.pt, games: "Jogos Pan-Americanos e Parapan-Americanos · Lima 2027" };
+  }
+  return Object.fromEntries((["en", "tr", "es", "pt"] as GuideLang[]).map((l) => [l, all[l] ?? all.en!])) as Record<GuideLang, Record<string, string>>;
+})();
+

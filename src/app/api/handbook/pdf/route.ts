@@ -1,3 +1,4 @@
+import { EVENT } from "@/lib/event";
 import { NextResponse, type NextRequest } from "next/server";
 import { getProfile } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
@@ -28,7 +29,7 @@ export async function GET(req: NextRequest) {
   return new NextResponse(new Uint8Array(buf), {
     headers: {
       "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename="istanbul2027-handbook-${scope.kind}-${locale}.pdf"`,
+      "Content-Disposition": `attachment; filename="${EVENT.slug}-handbook-${scope.kind}-${locale}.pdf"`,
       "Cache-Control": "private, no-store",
     },
   });

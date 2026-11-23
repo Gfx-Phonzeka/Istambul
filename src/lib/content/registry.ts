@@ -1,5 +1,8 @@
 // Content types managed in the backoffice. One generic editor drives all of them.
-// Labels are i18n keys. A "bilingual" field maps to two columns: <name>_en and <name>_tr.
+// Labels are i18n keys. A "bilingual" field maps to one column per portal language: <name>_en and <name>_tr
+// in Istanbul, <name>_es, <name>_en and <name>_pt in Lima.
+import { DEFAULT_LOCALE } from "@/lib/i18n";
+import { EVENT, type Locale } from "@/lib/event";
 
 export type FieldKind = "text" | "textarea" | "richtext" | "select" | "number" | "datetime" | "date" | "reference" | "slug" | "email" | "boolean";
 
@@ -9,7 +12,7 @@ export interface Field {
   kind: FieldKind;
   bilingual?: boolean;
   /** Several languages (columns <name>_<lang>), no machine translation. Used by the Production Guidelines (PT · EN · TR). */
-  langs?: readonly ("en" | "pt" | "tr")[];
+  langs?: readonly Locale[];
   required?: boolean;
   options?: { value: string; label: string }[];
   ref?: ContentTypeKey;
@@ -63,13 +66,13 @@ const slug: Field = { name: "slug", label: "cms.fields.slug", kind: "slug", requ
 export const CONTENT_TYPES = {
   handbook_chapter: {
     key: "handbook_chapter", table: "handbook_chapters", label: "cms.types.handbook_chapter", singular: "cms.single.handbook_chapter",
-    titleColumn: "title_en", publicPath: "/handbook",
+    titleColumn: `title_${DEFAULT_LOCALE}`, publicPath: "/handbook",
     fields: [title, slug, { name: "summary", label: "cms.fields.summary", kind: "textarea", bilingual: true }, position, visibility],
     order: [{ column: "position", ascending: true }],
   },
   handbook_section: {
     key: "handbook_section", table: "handbook_sections", label: "cms.types.handbook_section", singular: "cms.single.handbook_section",
-    titleColumn: "title_en", publicPath: "/handbook", parent: { column: "chapter_id", type: "handbook_chapter" },
+    titleColumn: `title_${DEFAULT_LOCALE}`, publicPath: "/handbook", parent: { column: "chapter_id", type: "handbook_chapter" },
     fields: [
       { name: "chapter_id", label: "cms.fields.chapter", kind: "reference", ref: "handbook_chapter", required: true },
       title, slug, position, visibility,
@@ -79,7 +82,7 @@ export const CONTENT_TYPES = {
   },
   announcement: {
     key: "announcement", table: "announcements", label: "cms.types.announcement", singular: "cms.single.announcement",
-    titleColumn: "title_en", publicPath: "/news",
+    titleColumn: `title_${DEFAULT_LOCALE}`, publicPath: "/news",
     fields: [
       title,
       {
@@ -93,13 +96,13 @@ export const CONTENT_TYPES = {
   },
   deadline: {
     key: "deadline", table: "deadlines", label: "cms.types.deadline", singular: "cms.single.deadline",
-    titleColumn: "title_en", publicPath: "/",
+    titleColumn: `title_${DEFAULT_LOCALE}`, publicPath: "/",
     fields: [title, { name: "due_at", label: "cms.fields.dueAt", kind: "datetime", required: true }, { name: "link", label: "cms.fields.link", kind: "text", help: "cms.help.link" }, visibility],
     order: [{ column: "due_at", ascending: true }],
   },
   faq_category: {
     key: "faq_category", table: "faq_categories", label: "cms.types.faq_category", singular: "cms.single.faq_category",
-    titleColumn: "title_en", publicPath: "/faq",
+    titleColumn: `title_${DEFAULT_LOCALE}`, publicPath: "/faq",
     fields: [title, position, visibility],
     order: [{ column: "position", ascending: true }],
   },
@@ -126,7 +129,7 @@ export const CONTENT_TYPES = {
   },
   contact_area: {
     key: "contact_area", table: "contact_areas", label: "cms.types.contact_area", singular: "cms.single.contact_area",
-    titleColumn: "title_en", publicPath: "/contacts",
+    titleColumn: `title_${DEFAULT_LOCALE}`, publicPath: "/contacts",
     fields: [title, position, visibility],
     order: [{ column: "position", ascending: true }],
   },
@@ -145,7 +148,7 @@ export const CONTENT_TYPES = {
   },
   legal_page: {
     key: "legal_page", table: "legal_pages", label: "cms.types.legal_page", singular: "cms.single.legal_page",
-    titleColumn: "title_en", publicPath: "/legal",
+    titleColumn: `title_${DEFAULT_LOCALE}`, publicPath: "/legal",
     fields: [title, slug, position, { name: "body", label: "cms.fields.body", kind: "richtext", bilingual: true, required: true }],
     order: [{ column: "position", ascending: true }],
   },
@@ -153,7 +156,7 @@ export const CONTENT_TYPES = {
 
 CONTENT_TYPES.briefing_video = {
   key: "briefing_video", table: "briefing_videos", label: "cms.types.briefing_video", singular: "cms.single.briefing_video",
-  titleColumn: "title_en", publicPath: "/briefings",
+  titleColumn: `title_${DEFAULT_LOCALE}`, publicPath: "/briefings",
   fields: [
     {
       name: "category", label: "cms.fields.category", kind: "select", required: true,
@@ -169,7 +172,7 @@ CONTENT_TYPES.briefing_video = {
 
 CONTENT_TYPES.media_asset = {
   key: "media_asset", table: "media_assets", label: "cms.types.media_asset", singular: "cms.single.media_asset",
-  titleColumn: "title_en", publicPath: "/media-hub",
+  titleColumn: `title_${DEFAULT_LOCALE}`, publicPath: "/media-hub",
   fields: [
     {
       name: "category", label: "cms.fields.category", kind: "select", required: true,
@@ -187,21 +190,21 @@ const shapeOptions = FIELD_SHAPES.map((v) => ({ value: v, label: `fields.${v}` }
 
 CONTENT_TYPES.cluster = {
   key: "cluster", table: "clusters", label: "cms.types.cluster", singular: "cms.single.cluster",
-  titleColumn: "title_en", publicPath: "/venues",
+  titleColumn: `title_${DEFAULT_LOCALE}`, publicPath: "/venues",
   fields: [title, slug, position, visibility],
   order: [{ column: "position", ascending: true }],
 };
 
 CONTENT_TYPES.sport = {
   key: "sport", table: "sports", label: "cms.types.sport", singular: "cms.single.sport",
-  titleColumn: "title_en", publicPath: "/venues",
+  titleColumn: `title_${DEFAULT_LOCALE}`, publicPath: "/venues",
   fields: [title, slug, { name: "field_shape", label: "cms.fields.fieldShape", kind: "select", required: true, options: shapeOptions, help: "cms.help.fieldShape" }, position, visibility],
   order: [{ column: "position", ascending: true }],
 };
 
 CONTENT_TYPES.venue = {
   key: "venue", table: "venues", label: "cms.types.venue", singular: "cms.single.venue",
-  titleColumn: "title_en", publicPath: "/venues", parent: { column: "cluster_id", type: "cluster" },
+  titleColumn: `title_${DEFAULT_LOCALE}`, publicPath: "/venues", parent: { column: "cluster_id", type: "cluster" },
   fields: [
     { name: "cluster_id", label: "cms.fields.cluster", kind: "reference", ref: "cluster", required: true },
     title, slug,
@@ -219,7 +222,7 @@ CONTENT_TYPES.venue = {
     { name: "contacts", label: "venues.sections.contacts", kind: "richtext", bilingual: true },
     position, visibility,
   ],
-  order: [{ column: "cluster_id", ascending: true }, { column: "position", ascending: true }, { column: "title_en", ascending: true }],
+  order: [{ column: "cluster_id", ascending: true }, { column: "position", ascending: true }, { column: `title_${DEFAULT_LOCALE}`, ascending: true }],
 };
 
 CONTENT_TYPES.venue_sport = {
@@ -238,7 +241,7 @@ CONTENT_TYPES.venue_sport = {
 
 CONTENT_TYPES.camera_plan = {
   key: "camera_plan", table: "camera_plans", label: "cms.types.camera_plan", singular: "cms.single.camera_plan",
-  titleColumn: "title_en", publicPath: "/camera-maps", parent: { column: "venue_id", type: "venue" },
+  titleColumn: `title_${DEFAULT_LOCALE}`, publicPath: "/camera-maps", parent: { column: "venue_id", type: "venue" },
   fields: [
     { name: "venue_id", label: "cms.fields.venue", kind: "reference", ref: "venue", required: true },
     { name: "sport_id", label: "cms.fields.sport", kind: "reference", ref: "sport", required: true },
@@ -291,7 +294,7 @@ CONTENT_TYPES.broadcast_feed = {
 
 CONTENT_TYPES.distribution_channel = {
   key: "distribution_channel", table: "distribution_channels", label: "cms.types.distribution_channel", singular: "cms.single.distribution_channel",
-  titleColumn: "title_en", publicPath: "/broadcast?tab=distribution",
+  titleColumn: `title_${DEFAULT_LOCALE}`, publicPath: "/broadcast?tab=distribution",
   fields: [
     {
       name: "kind", label: "cms.fields.channelKind", kind: "select", required: true,
@@ -307,7 +310,7 @@ CONTENT_TYPES.distribution_channel = {
 
 CONTENT_TYPES.tech_parameter = {
   key: "tech_parameter", table: "tech_parameters", label: "cms.types.tech_parameter", singular: "cms.single.tech_parameter",
-  titleColumn: "title_en", publicPath: "/broadcast?tab=technical",
+  titleColumn: `title_${DEFAULT_LOCALE}`, publicPath: "/broadcast?tab=technical",
   fields: [
     {
       name: "grp", label: "cms.fields.group", kind: "select", required: true,
@@ -322,19 +325,19 @@ CONTENT_TYPES.tech_parameter = {
 
 CONTENT_TYPES.info_block = {
   key: "info_block", table: "info_blocks", label: "cms.types.info_block", singular: "cms.single.info_block",
-  titleColumn: "title_en", publicPath: "/broadcast?tab=additional",
+  titleColumn: `title_${DEFAULT_LOCALE}`, publicPath: "/broadcast?tab=additional",
   fields: [title, { ...slug, help: "cms.help.infoSlug" }, { name: "body", label: "cms.fields.body", kind: "richtext", bilingual: true, required: true }, visibility],
   order: [{ column: "slug", ascending: true }],
 };
 
 // Production Guidelines (team only): Portuguese is the master text, then English and Turkish.
-const GUIDE_LANGS = ["pt", "en", "tr"] as const;
+const GUIDE_LANGS = EVENT.id === "lima" ? (["es", "pt"] as const) : (["pt", "en", "tr"] as const);
 const teamVisibility: Field = { ...visibility, options: [{ value: "production", label: "cms.visibility.production" }, { value: "internal", label: "cms.visibility.internal" }] };
 const trReviewed: Field = { name: "tr_reviewed", label: "cms.fields.trReviewed", kind: "boolean", help: "cms.help.trReviewed" };
 
 CONTENT_TYPES.guide_chapter = {
   key: "guide_chapter", table: "guide_chapters", label: "cms.types.guide_chapter", singular: "cms.single.guide_chapter",
-  titleColumn: "title_en", publicPath: "/team/guidelines",
+  titleColumn: `title_${DEFAULT_LOCALE}`, publicPath: "/team/guidelines",
   fields: [
     { name: "title", label: "cms.fields.title", kind: "text", langs: GUIDE_LANGS, required: true }, slug,
     { name: "summary", label: "cms.fields.summary", kind: "textarea", langs: GUIDE_LANGS }, position, teamVisibility, trReviewed,
@@ -344,7 +347,7 @@ CONTENT_TYPES.guide_chapter = {
 
 CONTENT_TYPES.guide_section = {
   key: "guide_section", table: "guide_sections", label: "cms.types.guide_section", singular: "cms.single.guide_section",
-  titleColumn: "title_en", publicPath: "/team/guidelines", parent: { column: "chapter_id", type: "guide_chapter" },
+  titleColumn: `title_${DEFAULT_LOCALE}`, publicPath: "/team/guidelines", parent: { column: "chapter_id", type: "guide_chapter" },
   fields: [
     { name: "chapter_id", label: "cms.fields.chapter", kind: "reference", ref: "guide_chapter", required: true },
     { name: "title", label: "cms.fields.title", kind: "text", langs: GUIDE_LANGS, required: true }, slug, position, teamVisibility, trReviewed,
@@ -376,6 +379,14 @@ export function columnsOf(type: ContentType): string[] {
 }
 
 /** Languages a field is stored in (null = a single, language-neutral column). */
-export function fieldLangs(f: Field): readonly ("en" | "pt" | "tr")[] | null {
-  return f.langs ?? (f.bilingual ? ["en", "tr"] : null);
+export function fieldLangs(f: Field): readonly Locale[] | null {
+  return f.langs ?? (f.bilingual ? EVENT.locales : null);
 }
+
+/** The language that must be filled in when the field is required (Istanbul: English; Lima: the first language). */
+export function primaryLang(f: Field): Locale {
+  return EVENT.id === "istanbul" ? "en" : (fieldLangs(f) ?? EVENT.locales)[0];
+}
+
+/** Istanbul edits EN/TR side by side with machine translation; other events use one tab per language. */
+export const usesTranslationPair = EVENT.id === "istanbul";

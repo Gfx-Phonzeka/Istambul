@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
-import { pick } from "@/lib/i18n";
+import { tx, cols } from "@/lib/i18n";
 import { isPreview } from "@/lib/preview";
 import { getProfile, isStaff } from "@/lib/auth";
 import { FavoriteButton } from "@/components/FavoriteButton";
@@ -26,9 +26,9 @@ export default async function VenuePage({ params, searchParams }: { params: Prom
   let vsq = supabase.from("venue_sports").select("*").eq("venue_id", v.id).order("start_date");
   if (!preview) vsq = vsq.eq("status", "published");
   const [{ data: cluster }, { data: vs }, { data: sports }, { data: files }, plans] = await Promise.all([
-    supabase.from("clusters").select("title_en,title_tr").eq("id", v.cluster_id).maybeSingle(),
+    supabase.from("clusters").select(`${cols("title")}` as "*").eq("id", v.cluster_id).maybeSingle(),
     vsq,
-    supabase.from("sports").select("id,title_en,title_tr"),
+    supabase.from("sports").select(`id,${cols("title")}` as "*"),
     supabase.from("venue_files").select("*").eq("venue_id", v.id).order("position"),
     loadPlans(supabase, locale, preview),
   ]);
@@ -39,16 +39,16 @@ export default async function VenuePage({ params, searchParams }: { params: Prom
   const photos = (files ?? []).filter((f) => f.kind === "photo");
   const docs = (files ?? []).filter((f) => f.kind === "document");
   const signed = await signPaths(supabase, "venues", photos.map((p) => p.file_path));
-  const sportName = (id: string) => { const s = (sports ?? []).find((x) => x.id === id); return s ? pick(locale, s.title_en, s.title_tr) : ""; };
+  const sportName = (id: string) => { const s = (sports ?? []).find((x) => x.id === id); return s ? tx(s, "title", locale) : ""; };
   const me = await getProfile();
   const staff = isStaff(me);
   const { data: favs } = await supabase.from("favorites").select("kind,target_id").eq("user_id", me!.id);
   const fav = (kind: string, id: string) => (favs ?? []).some((f) => f.kind === kind && f.target_id === id);
   const sections = [
-    { key: "commentary", icon: "users", html: pick(locale, v.commentary_en, v.commentary_tr) },
-    { key: "unilaterals", icon: "camera", html: pick(locale, v.unilaterals_en, v.unilaterals_tr) },
-    { key: "access", icon: "pin", html: pick(locale, v.access_en, v.access_tr) },
-    { key: "contacts", icon: "mail", html: pick(locale, v.contacts_en, v.contacts_tr) },
+    { key: "commentary", icon: "users", html: tx(v, "commentary", locale) },
+    { key: "unilaterals", icon: "camera", html: tx(v, "unilaterals", locale) },
+    { key: "access", icon: "pin", html: tx(v, "access", locale) },
+    { key: "contacts", icon: "mail", html: tx(v, "contacts", locale) },
   ].filter((s) => s.html);
 
   return (
@@ -58,10 +58,10 @@ export default async function VenuePage({ params, searchParams }: { params: Prom
       <header className="row-between">
         <div>
           <div className="row small muted" style={{ marginBottom: 4 }}>
-            <Badge tone="primary">{cluster ? pick(locale, cluster.title_en, cluster.title_tr) : ""}</Badge>
+            <Badge tone="primary">{cluster ? tx(cluster, "title", locale) : ""}</Badge>
             {v.production_level && <Badge>{t(`venues.levels.${v.production_level}`)}</Badge>}
           </div>
-          <h1 style={{ marginBottom: 4 }}>{pick(locale, v.title_en, v.title_tr)}</h1>
+          <h1 style={{ marginBottom: 4 }}>{tx(v, "title", locale)}</h1>
           {v.address && <p className="muted" style={{ margin: 0 }}>{v.address}</p>}
         </div>
         <div className="row">
@@ -99,8 +99,8 @@ export default async function VenuePage({ params, searchParams }: { params: Prom
           <div className="media-grid">
             {photos.map((p) => signed[p.file_path] && (
               <figure key={p.id} className="card" style={{ margin: 0, padding: "var(--space-2)" }}>
-                <a href={signed[p.file_path]} target="_blank" rel="noreferrer" aria-label={`${t("common.openPhoto")}: ${pick(locale, p.title_en, p.title_tr) || pick(locale, v.title_en, v.title_tr)}`}><img src={signed[p.file_path]} alt={pick(locale, p.title_en, p.title_tr)} width={1280} height={720} loading="lazy" decoding="async" style={{ width: "100%", height: "auto", borderRadius: 8 }} /></a>
-                {pick(locale, p.title_en, p.title_tr) && <figcaption className="small muted">{pick(locale, p.title_en, p.title_tr)}</figcaption>}
+                <a href={signed[p.file_path]} target="_blank" rel="noreferrer" aria-label={`${t("common.openPhoto")}: ${tx(p, "title", locale) || tx(v, "title", locale)}`}><img src={signed[p.file_path]} alt={tx(p, "title", locale)} width={1280} height={720} loading="lazy" decoding="async" style={{ width: "100%", height: "auto", borderRadius: 8 }} /></a>
+                {tx(p, "title", locale) && <figcaption className="small muted">{tx(p, "title", locale)}</figcaption>}
               </figure>
             ))}
           </div>
@@ -120,7 +120,7 @@ export default async function VenuePage({ params, searchParams }: { params: Prom
           <ul className="list">
             {docs.map((d) => (
               <li key={d.id} className="row-between">
-                <span><Icon name="file" size={16} /> {pick(locale, d.title_en, d.title_tr) || d.file_name}</span>
+                <span><Icon name="file" size={16} /> {tx(d, "title", locale) || d.file_name}</span>
                 <a className="btn btn-sm" href={`/api/venue-files/${d.id}`}>{t("mediaHub.download")} {d.file_size ? `(${fmtBytes(d.file_size)})` : ""}</a>
               </li>
             ))}

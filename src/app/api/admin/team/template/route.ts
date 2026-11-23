@@ -1,3 +1,4 @@
+import { EVENT } from "@/lib/event";
 import { NextResponse } from "next/server";
 import { getProfile, isAdmin } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
@@ -12,7 +13,7 @@ export async function GET() {
   return new NextResponse(buf, {
     headers: {
       "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      "Content-Disposition": 'attachment; filename="istanbul2027-production-team-template.xlsx"',
+      "Content-Disposition": `attachment; filename="${EVENT.slug}-production-team-template.xlsx"`,
       "Cache-Control": "no-store",
     },
   });

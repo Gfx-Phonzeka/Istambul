@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
-import { pick } from "@/lib/i18n";
+import { tx, DEFAULT_LOCALE } from "@/lib/i18n";
 import { isPreview } from "@/lib/preview";
 import { requireApproved } from "@/lib/auth";
 import { formatDuration, signPaths } from "@/lib/media";
@@ -19,7 +19,7 @@ export default async function BriefingsPage({ searchParams }: { searchParams: Pr
   const preview = await isPreview(sp);
   const { t, locale } = await getT();
   const supabase = await createClient();
-  let q = supabase.from("briefing_videos").select("*").order("position").order("title_en");
+  let q = supabase.from("briefing_videos").select("*").order("position").order(`title_${DEFAULT_LOCALE}`);
   if (!preview) q = q.eq("status", "published");
   const [{ data }, { data: views }] = await Promise.all([q, supabase.from("briefing_views").select("video_id").eq("user_id", me.id)]);
   const videos = (data ?? []).map((v) => withDraft(v, preview));
@@ -61,9 +61,9 @@ export default async function BriefingsPage({ searchParams }: { searchParams: Pr
                         {v.status !== "published" && <Badge tone="warning">{t("cms.status.draft")}</Badge>}
                       </div>
                     </div>
-                    <strong>{pick(locale, v.title_en, v.title_tr)}</strong>
+                    <strong>{tx(v, "title", locale)}</strong>
                     <span className="muted small">{formatDate(v.recorded_on ?? v.published_at, locale)}</span>
-                    {pick(locale, v.description_en, v.description_tr) && <p className="small muted" style={{ margin: 0 }}>{pick(locale, v.description_en, v.description_tr)}</p>}
+                    {tx(v, "description", locale) && <p className="small muted" style={{ margin: 0 }}>{tx(v, "description", locale)}</p>}
                   </Link>
                 ))}
               </div>

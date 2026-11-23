@@ -1,3 +1,4 @@
+import { intlLocale } from "@/lib/i18n";
 import { requireAdmin } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
@@ -20,7 +21,7 @@ export default async function StatsPage({ searchParams }: { searchParams: Promis
   const supabase = await createClient();
   const { data } = await supabase.rpc("admin_stats", { p_days: days });
   const s = data as Stats;
-  const dayLabel = (k: string) => new Intl.DateTimeFormat(locale === "tr" ? "tr-TR" : "en-GB", { day: "numeric", month: "short", timeZone: "UTC" }).format(new Date(`${k}T12:00:00Z`));
+  const dayLabel = (k: string) => new Intl.DateTimeFormat(intlLocale(locale), { day: "numeric", month: "short", timeZone: "UTC" }).format(new Date(`${k}T12:00:00Z`));
   const tile = (label: string, value: number) => (
     <div className="card stat-tile"><div className="muted small">{label}</div><div className="stat-value">{value}</div></div>
   );

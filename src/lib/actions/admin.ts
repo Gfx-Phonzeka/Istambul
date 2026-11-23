@@ -1,4 +1,5 @@
 "use server";
+import { EVENT } from "@/lib/event";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { flushEmails } from "@/lib/email";
@@ -46,7 +47,7 @@ export async function saveCeremony(form: FormData) {
   await supabase.from("settings").upsert({
     key,
     value: {
-      at: `${local}:00+03:00`,
+      at: `${local}:00${EVENT.utcOffset}`,
       label_en: String(form.get("label_en") ?? "").trim() || CEREMONIES[key],
       label_tr: String(form.get("label_tr") ?? "").trim(),
     },

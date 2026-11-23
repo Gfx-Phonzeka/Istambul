@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
-import { pick } from "@/lib/i18n";
+import { tx, cols, DEFAULT_LOCALE } from "@/lib/i18n";
 import { isPreview } from "@/lib/preview";
 import { withDraft } from "@/lib/content/render";
 import { Card, EmptyState, PageHeader } from "@/components/ui";
@@ -18,19 +18,19 @@ export default async function SchedulePage({ searchParams }: { searchParams: Pro
   if (!preview) q = q.eq("status", "published");
   const [{ data }, { data: sports }, { data: venues }, { data: favs }] = await Promise.all([
     q,
-    supabase.from("sports").select("id,title_en,title_tr,position").order("position"),
-    supabase.from("venues").select("id,slug,title_en,title_tr").order("title_en"),
+    supabase.from("sports").select(`id,${cols("title")},position` as "*").order("position"),
+    supabase.from("venues").select(`id,slug,${cols("title")}` as "*").order(`title_${DEFAULT_LOCALE}`),
     supabase.from("favorites").select("target_id").eq("kind", "sport"),
   ]);
-  const S = new Map((sports ?? []).map((s) => [s.id, pick(locale, s.title_en, s.title_tr)]));
-  const V = new Map((venues ?? []).map((v) => [v.id, { title: pick(locale, v.title_en, v.title_tr), slug: v.slug }]));
+  const S = new Map((sports ?? []).map((s) => [s.id, tx(s, "title", locale)]));
+  const V = new Map((venues ?? []).map((v) => [v.id, { title: tx(v, "title", locale), slug: v.slug }]));
   const rows: SessionRow[] = (data ?? []).map((raw) => {
     const s = withDraft(raw, preview);
     return {
       id: s.id, code: s.code, sportId: s.sport_id, sport: S.get(s.sport_id) ?? "", venueId: s.venue_id, venue: V.get(s.venue_id)?.title ?? "",
-      venueSlug: V.get(s.venue_id)?.slug ?? "", discipline: pick(locale, s.discipline_en, s.discipline_tr), phase: pick(locale, s.phase_en, s.phase_tr),
-      start: s.start_at, end: s.end_at, isMedal: s.is_medal, medalEvents: pick(locale, s.medal_events_en, s.medal_events_tr), isOq: s.is_oq,
-      notes: pick(locale, s.notes_en, s.notes_tr), draft: s.status !== "published",
+      venueSlug: V.get(s.venue_id)?.slug ?? "", discipline: tx(s, "discipline", locale), phase: tx(s, "phase", locale),
+      start: s.start_at, end: s.end_at, isMedal: s.is_medal, medalEvents: tx(s, "medal_events", locale), isOq: s.is_oq,
+      notes: tx(s, "notes", locale), draft: s.status !== "published",
     };
   });
   const usedSports = new Set(rows.map((r) => r.sportId));

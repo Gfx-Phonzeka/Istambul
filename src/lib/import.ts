@@ -1,3 +1,5 @@
+import { EVENT } from "@/lib/event";
+import { cols } from "@/lib/i18n";
 import "server-only";
 import ExcelJS from "exceljs";
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -7,38 +9,43 @@ export const DATASETS: Dataset[] = ["sessions", "feeds"];
 
 interface Col { key: string; header: string; required?: boolean; width?: number }
 
+const CITY = EVENT.name.replace(/ \d+$/, "");
+const MAIN = EVENT.id === "istanbul" ? "en" : EVENT.locales[0];
+/** One column per portal language for a multilingual field (Istanbul: EN/TR · Lima: ES/EN/PT). */
+function ml(key: string, label: string, width: number, required = false): Col[] {
+  return EVENT.locales.map((l) => ({ key: `${key}_${l}`, header: `${label} ${l.toUpperCase()}`, width, ...(required && l === MAIN ? { required: true } : {}) }));
+}
+/** Values of a multilingual field from an imported row. */
+function mlValues(r: Record<string, string>, key: string): Record<string, string | null> {
+  return Object.fromEntries(EVENT.locales.map((l) => [`${key}_${l}`, r[`${key}_${l}`] || null]));
+}
+
 export const COLUMNS: Record<Dataset, Col[]> = {
   sessions: [
     { key: "code", header: "Code", required: true, width: 14 },
     { key: "date", header: "Date (YYYY-MM-DD)", required: true, width: 16 },
-    { key: "start", header: "Start (HH:MM, Istanbul)", required: true, width: 12 },
-    { key: "end", header: "End (HH:MM, Istanbul)", required: true, width: 12 },
+    { key: "start", header: `Start (HH:MM, ${CITY})`, required: true, width: 12 },
+    { key: "end", header: `End (HH:MM, ${CITY})`, required: true, width: 12 },
     { key: "sport", header: "Sport (code or name)", required: true, width: 18 },
     { key: "venue", header: "Venue (code or name)", required: true, width: 22 },
-    { key: "discipline_en", header: "Discipline EN", width: 16 },
-    { key: "discipline_tr", header: "Discipline TR", width: 16 },
-    { key: "phase_en", header: "Phase EN", required: true, width: 28 },
-    { key: "phase_tr", header: "Phase TR", width: 28 },
+    ...ml("discipline", "Discipline", 16),
+    ...ml("phase", "Phase", 28, true),
     { key: "is_medal", header: "Medal (yes/no)", width: 10 },
-    { key: "medal_events_en", header: "Medal events EN", width: 28 },
-    { key: "medal_events_tr", header: "Medal events TR", width: 28 },
+    ...ml("medal_events", "Medal events", 28),
     { key: "is_oq", header: "OQ LA28 (yes/no)", width: 10 },
-    { key: "notes_en", header: "Notes EN", width: 20 },
-    { key: "notes_tr", header: "Notes TR", width: 20 },
+    ...ml("notes", "Notes", 20),
   ],
   feeds: [
     { key: "code", header: "Code", required: true, width: 16 },
     { key: "date", header: "Date (YYYY-MM-DD)", required: true, width: 16 },
-    { key: "start", header: "Start (HH:MM, Istanbul)", required: true, width: 12 },
-    { key: "end", header: "End (HH:MM, Istanbul)", required: true, width: 12 },
+    { key: "start", header: `Start (HH:MM, ${CITY})`, required: true, width: 12 },
+    { key: "end", header: `End (HH:MM, ${CITY})`, required: true, width: 12 },
     { key: "feed_type", header: "Type (multilateral/iso/highlights/ceremony/other)", required: true, width: 18 },
-    { key: "title_en", header: "Title EN", required: true, width: 32 },
-    { key: "title_tr", header: "Title TR", width: 32 },
+    ...ml("title", "Title", 32, true),
     { key: "venue", header: "Venue (code or name, optional)", width: 22 },
     { key: "sport", header: "Sport (code or name, optional)", width: 18 },
     { key: "channel", header: "Channel", required: true, width: 18 },
-    { key: "notes_en", header: "Notes EN", width: 20 },
-    { key: "notes_tr", header: "Notes TR", width: 20 },
+    ...ml("notes", "Notes", 20),
   ],
 };
 
@@ -123,19 +130,19 @@ function toIso(date: string, time: string): string | null {
   const [y, m, day] = d[1].length === 4 ? [d[1], d[2], d[3]] : [d[3], d[2], d[1]];
   const t = time.trim().match(/^(\d{1,2})[:.h](\d{2})/);
   if (!t) return null;
-  const iso = `${y}-${m}-${day}T${t[1].padStart(2, "0")}:${t[2]}:00+03:00`;
+  const iso = `${y}-${m}-${day}T${t[1].padStart(2, "0")}:${t[2]}:00${EVENT.utcOffset}`;
   return Number.isNaN(new Date(iso).getTime()) ? null : iso;
 }
 
 /** Validates rows, resolves sports/venues and compares with the current data. */
 export async function buildPreview(supabase: SupabaseClient, dataset: Dataset, raw: Record<string, string>[]) {
   const [{ data: sports }, { data: venues }] = await Promise.all([
-    supabase.from("sports").select("id,slug,title_en,title_tr"),
-    supabase.from("venues").select("id,slug,title_en,title_tr"),
+    supabase.from("sports").select(`id,slug,${cols("title")}` as "*"),
+    supabase.from("venues").select(`id,slug,${cols("title")}` as "*"),
   ]);
-  const find = (list: { id: string; slug: string; title_en: string; title_tr: string | null }[] | null, v: string) => {
+  const find = (list: Record<string, string | null>[] | null, v: string) => {
     const n = norm(v);
-    return (list ?? []).find((x) => norm(x.slug) === n || norm(x.title_en) === n || (x.title_tr && norm(x.title_tr) === n));
+    return (list ?? []).find((x) => norm(x.slug ?? "") === n || EVENT.locales.some((l) => x[`title_${l}`] && norm(x[`title_${l}`]!) === n)) as { id: string } | undefined;
   };
   const errors: RowIssue[] = [];
   const clean: Record<string, unknown>[] = [];
@@ -155,23 +162,23 @@ export async function buildPreview(supabase: SupabaseClient, dataset: Dataset, r
       const sp = find(sports, r.sport ?? ""), ve = find(venues, r.venue ?? "");
       if (!sp) return err(`sport_unknown:${r.sport}`);
       if (!ve) return err(`venue_unknown:${r.venue}`);
-      if (!r.phase_en) return err("phase_missing");
+      if (!r[`phase_${MAIN}`]) return err("phase_missing");
       clean.push({
-        code, sport_id: sp.id, venue_id: ve.id, start_at: start, end_at: end, discipline_en: r.discipline_en || null, discipline_tr: r.discipline_tr || null,
-        phase_en: r.phase_en, phase_tr: r.phase_tr || null, is_medal: yes(r.is_medal ?? ""), medal_events_en: r.medal_events_en || null,
-        medal_events_tr: r.medal_events_tr || null, is_oq: yes(r.is_oq ?? ""), notes_en: r.notes_en || null, notes_tr: r.notes_tr || null,
+        code, sport_id: sp.id, venue_id: ve.id, start_at: start, end_at: end, ...mlValues(r, "discipline"),
+        ...mlValues(r, "phase"), is_medal: yes(r.is_medal ?? ""), ...mlValues(r, "medal_events"),
+        is_oq: yes(r.is_oq ?? ""), ...mlValues(r, "notes"),
       });
     } else {
       const type = (r.feed_type ?? "").trim().toLowerCase();
       if (!FEED_TYPES.includes(type)) return err(`type_invalid:${r.feed_type}`);
-      if (!r.title_en) return err("title_missing");
+      if (!r[`title_${MAIN}`]) return err("title_missing");
       if (!r.channel) return err("channel_missing");
       const ve = r.venue ? find(venues, r.venue) : null, sp = r.sport ? find(sports, r.sport) : null;
       if (r.venue && !ve) return err(`venue_unknown:${r.venue}`);
       if (r.sport && !sp) return err(`sport_unknown:${r.sport}`);
       clean.push({
-        code, feed_type: type, title_en: r.title_en, title_tr: r.title_tr || null, venue_id: ve?.id ?? null, sport_id: sp?.id ?? null,
-        start_at: start, end_at: end, channel: r.channel, notes_en: r.notes_en || null, notes_tr: r.notes_tr || null,
+        code, feed_type: type, ...mlValues(r, "title"), venue_id: ve?.id ?? null, sport_id: sp?.id ?? null,
+        start_at: start, end_at: end, channel: r.channel, ...mlValues(r, "notes"),
       });
     }
   });
@@ -180,8 +187,8 @@ export async function buildPreview(supabase: SupabaseClient, dataset: Dataset, r
   const { data: existing } = await supabase.from(table).select("*");
   const byCode = new Map((existing ?? []).map((e) => [e.code as string, e as Record<string, unknown>]));
   const label = (r: Record<string, unknown>) => dataset === "sessions"
-    ? `${(sports ?? []).find((s) => s.id === r.sport_id)?.title_en ?? ""} · ${r.phase_en ?? ""}`
-    : String(r.title_en ?? "");
+    ? `${(sports ?? []).find((s) => s.id === r.sport_id)?.[`title_${MAIN}`] ?? ""} · ${r[`phase_${MAIN}`] ?? ""}`
+    : String(r[`title_${MAIN}`] ?? "");
   const same = (a: unknown, b: unknown, k: string) =>
     k.endsWith("_at") ? new Date(String(a)).getTime() === new Date(String(b)).getTime() : (a ?? null) === (b ?? null);
   const items: PreviewItem[] = clean.map((r) => {
@@ -198,8 +205,8 @@ export async function buildPreview(supabase: SupabaseClient, dataset: Dataset, r
 /** Excel template with the current data (so it can be edited and re-imported) and a sheet with valid codes. */
 export async function buildTemplate(supabase: SupabaseClient, dataset: Dataset): Promise<ArrayBuffer> {
   const [{ data: sports }, { data: venues }] = await Promise.all([
-    supabase.from("sports").select("id,slug,title_en").order("position"),
-    supabase.from("venues").select("id,slug,title_en").order("title_en"),
+    supabase.from("sports").select(`id,slug,title_${MAIN}` as "*").order("position"),
+    supabase.from("venues").select(`id,slug,title_${MAIN}` as "*").order(`title_${MAIN}`),
   ]);
   const S = new Map((sports ?? []).map((s) => [s.id, s.slug]));
   const V = new Map((venues ?? []).map((v) => [v.id, v.slug]));
@@ -227,7 +234,7 @@ export async function buildTemplate(supabase: SupabaseClient, dataset: Dataset):
     { header: "Venue code", key: "v", width: 22 }, { header: "Venue", key: "vn", width: 34 }];
   help.getRow(1).font = { bold: true };
   const n = Math.max(sports?.length ?? 0, venues?.length ?? 0);
-  for (let i = 0; i < n; i++) help.addRow({ s: sports?.[i]?.slug, sn: sports?.[i]?.title_en, v: venues?.[i]?.slug, vn: venues?.[i]?.title_en });
+  for (let i = 0; i < n; i++) help.addRow({ s: sports?.[i]?.slug, sn: sports?.[i]?.[`title_${MAIN}`], v: venues?.[i]?.slug, vn: venues?.[i]?.[`title_${MAIN}`] });
   const info = wb.addWorksheet("Instructions");
   [
     "Fill one line per item. Columns marked * are required.",

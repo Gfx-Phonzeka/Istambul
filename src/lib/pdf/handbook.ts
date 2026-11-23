@@ -1,9 +1,11 @@
 import "server-only";
+import { intlLocale, LOCALES } from "@/lib/i18n";
+import { EVENT } from "@/lib/event";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Content, TDocumentDefinitions } from "pdfmake/interfaces";
 import { createClient } from "@/lib/supabase/server";
 import { loadHandbook, type HbChapter } from "@/lib/handbook";
-import { dictionaries, pick, translate, type Locale } from "@/lib/i18n";
+import { dictionaries, tx, translate, type Locale } from "@/lib/i18n";
 
 export type PdfScope = { kind: "all" } | { kind: "chapter"; id: string } | { kind: "sections"; ids: string[] };
 
@@ -84,19 +86,19 @@ export async function buildHandbookPdf(
 ): Promise<Buffer> {
   const t = (k: string, v?: Record<string, string | number>) => translate(dictionaries[locale], k, v);
   const chapters = filterScope(await loadHandbook(supabase, { onlyPublicVisibility: opts.onlyPublicVisibility }), scope);
-  const generated = new Intl.DateTimeFormat(locale === "tr" ? "tr-TR" : "en-GB", {
-    dateStyle: "long", timeStyle: "short", timeZone: "Europe/Istanbul",
+  const generated = new Intl.DateTimeFormat(intlLocale(locale), {
+    dateStyle: "long", timeStyle: "short", timeZone: EVENT.tz,
   }).format(new Date());
   const scopeLabel = scope.kind === "all" ? t("handbook.pdfScopeAll") : scope.kind === "chapter" ? t("handbook.pdfScopeChapter") : t("handbook.pdfScopeSections");
 
   const body: Content[] = [];
   for (const [ci, c] of chapters.entries()) {
-    body.push({ text: `${ci + 1}. ${pick(locale, c.title_en, c.title_tr)}`, style: "chapter", tocItem: true, pageBreak: "before" });
-    const summary = pick(locale, c.summary_en, c.summary_tr);
+    body.push({ text: `${ci + 1}. ${tx(c, "title", locale)}`, style: "chapter", tocItem: true, pageBreak: "before" });
+    const summary = tx(c, "summary", locale);
     if (summary) body.push({ text: summary, style: "summary" });
     for (const [si, s] of c.sections.entries()) {
-      body.push({ text: `${ci + 1}.${si + 1} ${pick(locale, s.title_en, s.title_tr)}`, style: "section", tocItem: true, tocMargin: [14, 0, 0, 0] });
-      const html = await prepareHtml(pick(locale, s.body_en, s.body_tr), supabase, t("handbook.video"));
+      body.push({ text: `${ci + 1}.${si + 1} ${tx(s, "title", locale)}`, style: "section", tocItem: true, tocMargin: [14, 0, 0, 0] });
+      const html = await prepareHtml(tx(s, "body", locale), supabase, t("handbook.video"));
       body.push(await htmlToContent(html));
     }
   }
@@ -104,7 +106,7 @@ export async function buildHandbookPdf(
 
   const docTitle = t("handbook.pdfTitle");
   const doc: TDocumentDefinitions = {
-    info: { title: `${docTitle} – Istanbul 2027`, author: "Medialuso – Host Broadcaster", creator: "Istanbul 2027 HB Portal" },
+    info: { title: `${docTitle} – ${EVENT.name}`, author: "Medialuso – Host Broadcaster", creator: `${EVENT.name} HB Portal` },
     pageSize: "A4",
     pageMargins: [50, 60, 50, 60],
     defaultStyle: { font: "Roboto", fontSize: 10, lineHeight: 1.25, color: "#16202e" },
@@ -129,7 +131,7 @@ export async function buildHandbookPdf(
       ...body,
     ],
     header: (page: number) =>
-      page === 1 ? null : { text: `Istanbul 2027 · ${docTitle}`, fontSize: 8, color: "#5b6676", margin: [50, 30, 50, 0] },
+      page === 1 ? null : { text: `${EVENT.name} · ${docTitle}`, fontSize: 8, color: "#5b6676", margin: [50, 30, 50, 0] },
     footer: (page: number, pages: number) =>
       page === 1
         ? null
@@ -155,10 +157,10 @@ export async function buildHandbookPdf(
 
 export const FULL_PDF_PATH = (locale: Locale) => `handbook-${locale}.pdf`;
 
-/** Rebuilds the complete handbook PDFs (EN and TR, content visible to all users) and stores them. */
+/** Rebuilds the complete handbook PDFs (one per portal language, content visible to all users) and stores them. */
 export async function regenerateHandbookPdfs(): Promise<void> {
   const supabase = await createClient();
-  for (const locale of ["en", "tr"] as const) {
+  for (const locale of LOCALES) {
     const buf = await buildHandbookPdf(supabase, locale, { kind: "all" }, { onlyPublicVisibility: true });
     const { error } = await supabase.storage
       .from("handbook-pdf")

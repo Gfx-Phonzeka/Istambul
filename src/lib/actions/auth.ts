@@ -1,4 +1,6 @@
 "use server";
+import { intlLocale } from "@/lib/i18n";
+import { EVENT } from "@/lib/event";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -26,7 +28,7 @@ export async function signIn(_: FormState, form: FormData): Promise<FormState> {
   if (result.status === "locked") {
     const store = await cookies();
     const locale = normalizeLocale(store.get(LOCALE_COOKIE)?.value);
-    const time = new Intl.DateTimeFormat(locale === "tr" ? "tr-TR" : "en-GB", { timeStyle: "short", timeZone: "Europe/Istanbul" }).format(new Date(result.until!));
+    const time = new Intl.DateTimeFormat(intlLocale(locale), { timeStyle: "short", timeZone: EVENT.tz }).format(new Date(result.until!));
     return { error: "auth.locked", errorVars: { time: `${time} (TRT)` } };
   }
   if (result.status === "invalid") {

@@ -1,3 +1,4 @@
+import { cols, DEFAULT_LOCALE } from "@/lib/i18n";
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
@@ -20,10 +21,10 @@ export async function loadHandbook(
   supabase: SupabaseClient,
   opts: { includeDrafts?: boolean; onlyPublicVisibility?: boolean; withBodies?: boolean } = {},
 ): Promise<HbChapter[]> {
-  let cq = supabase.from("handbook_chapters").select("*").order("position").order("title_en");
+  let cq = supabase.from("handbook_chapters").select("*").order("position").order(`title_${DEFAULT_LOCALE}`);
   // Texts are only loaded when needed (PDF); menus and lists use titles only.
-  const cols = "id,chapter_id,slug,position,title_en,title_tr,visibility,status,content_updated_at" + (opts.withBodies !== false ? ",body_en,body_tr" : "") + (opts.includeDrafts ? ",draft" : "");
-  let sq = supabase.from("handbook_sections").select(cols).order("position").order("title_en");
+  const sectionCols = `id,chapter_id,slug,position,${cols("title")},visibility,status,content_updated_at` + (opts.withBodies !== false ? `,${cols("body")}` : "") + (opts.includeDrafts ? ",draft" : "");
+  let sq = supabase.from("handbook_sections").select(sectionCols as "*").order("position").order(`title_${DEFAULT_LOCALE}`);
   if (!opts.includeDrafts) {
     cq = cq.eq("status", "published");
     sq = sq.eq("status", "published");

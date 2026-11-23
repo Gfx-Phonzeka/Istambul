@@ -1,4 +1,5 @@
 import "server-only";
+import { DEFAULT_LOCALE } from "@/lib/i18n";
 import ExcelJS from "exceljs";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
@@ -38,8 +39,8 @@ function cellText(v: ExcelJS.CellValue): string {
 
 export async function buildTeamTemplate(supabase: SupabaseClient): Promise<ArrayBuffer> {
   const [{ data: venues }, { data: sports }] = await Promise.all([
-    supabase.from("venues").select("title_en").order("title_en"),
-    supabase.from("sports").select("title_en").order("title_en"),
+    supabase.from("venues").select(`title:title_${DEFAULT_LOCALE}` as "*").order(`title_${DEFAULT_LOCALE}`),
+    supabase.from("sports").select(`title:title_${DEFAULT_LOCALE}` as "*").order(`title_${DEFAULT_LOCALE}`),
   ]);
   const wb = new ExcelJS.Workbook();
   const ws = wb.addWorksheet("Team");
@@ -53,7 +54,7 @@ export async function buildTeamTemplate(supabase: SupabaseClient): Promise<Array
   lists.columns = [{ header: "Functions", width: 32 }, { header: "Venues", width: 40 }, { header: "Sports", width: 26 }];
   lists.getRow(1).font = { bold: true };
   const max = Math.max(TEAM_FUNCTIONS.length, venues?.length ?? 0, sports?.length ?? 0);
-  for (let i = 0; i < max; i++) lists.addRow([TEAM_FUNCTIONS[i] ?? "", venues?.[i]?.title_en ?? "", sports?.[i]?.title_en ?? ""]);
+  for (let i = 0; i < max; i++) lists.addRow([TEAM_FUNCTIONS[i] ?? "", venues?.[i]?.title ?? "", sports?.[i]?.title ?? ""]);
   const end = (n: number) => n + 1;
   for (let r = 2; r <= 300; r++) {
     ws.getCell(`D${r}`).dataValidation = { type: "list", allowBlank: true, formulae: [`Lists!$A$2:$A$${end(TEAM_FUNCTIONS.length)}`] };
@@ -100,10 +101,10 @@ export async function readTeamFile(supabase: SupabaseClient, file: File) {
   if (missing.length) return { error: "missing_columns" as const, missing };
 
   const [{ data: venues }, { data: sports }] = await Promise.all([
-    supabase.from("venues").select("id,title_en,slug"), supabase.from("sports").select("id,title_en,slug"),
+    supabase.from("venues").select(`id,title:title_${DEFAULT_LOCALE},slug` as "*"), supabase.from("sports").select(`id,title:title_${DEFAULT_LOCALE},slug` as "*"),
   ]);
-  const find = (list: { id: string; title_en: string; slug: string }[] | null, v: string) =>
-    v ? (list ?? []).find((x) => norm(x.title_en) === norm(v) || norm(x.slug) === norm(v))?.id ?? null : null;
+  const find = (list: { id: string; title: string | null; slug: string }[] | null, v: string) =>
+    v ? (list ?? []).find((x) => norm(x.title ?? "") === norm(v) || norm(x.slug) === norm(v))?.id ?? null : null;
 
   const rows: { line: number; data: TeamRow; venue_id: string | null; sport_id: string | null; problem?: string }[] = [];
   ws.eachRow((row, n) => {

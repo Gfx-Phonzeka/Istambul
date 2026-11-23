@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n/client";
-import { pick } from "@/lib/i18n";
+import { tx } from "@/lib/i18n";
 import { formatDateTime } from "@/lib/format";
 
 export interface Ceremony { at: string; label_en: string; label_tr?: string }
@@ -27,7 +27,7 @@ export function CeremonyCountdown({ ceremonies }: { ceremonies: Ceremony[] }) {
   const ref = now ?? Date.now();
   const next = list.find((c) => new Date(c.at).getTime() > ref);
   const shown = next ?? list[list.length - 1];
-  const label = pick(locale, shown.label_en, shown.label_tr);
+  const label = tx(shown, "label", locale);
   const diff = now === null ? null : Math.max(0, new Date(shown.at).getTime() - now);
   // After the last ceremony: "ended" when there was more than one, "started" when only the opening is set.
   const over = next === undefined && now !== null;

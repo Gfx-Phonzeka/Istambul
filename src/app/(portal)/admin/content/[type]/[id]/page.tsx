@@ -1,3 +1,4 @@
+import { DEFAULT_LOCALE } from "@/lib/i18n";
 import { notFound } from "next/navigation";
 import { requireStaff, isAdmin } from "@/lib/auth";
 import { signPaths } from "@/lib/media";
@@ -132,12 +133,12 @@ export default async function EditContent({ params, searchParams }: { params: Pr
       supabase.from("cameras").select("*").eq("plan_id", row.id).order("position"),
       supabase.from("camera_drawings").select("*").eq("plan_id", row.id).order("version_number", { ascending: false }),
       supabase.from("sports").select("field_shape").eq("id", row.sport_id as string).maybeSingle(),
-      supabase.from("camera_plans").select("id,title_en,venue_id,sport_id").neq("id", row.id as string),
-      supabase.from("venues").select("id,title_en"),
-      supabase.from("sports").select("id,title_en"),
+      supabase.from("camera_plans").select(`id,title:title_${DEFAULT_LOCALE},venue_id,sport_id` as "*").neq("id", row.id as string),
+      supabase.from("venues").select(`id,title:title_${DEFAULT_LOCALE}` as "*"),
+      supabase.from("sports").select(`id,title:title_${DEFAULT_LOCALE}` as "*"),
     ]);
-    const vn = new Map((venues ?? []).map((v) => [v.id, v.title_en]));
-    const sn = new Map((sports ?? []).map((v) => [v.id, v.title_en]));
+    const vn = new Map((venues ?? []).map((v) => [v.id, v.title]));
+    const sn = new Map((sports ?? []).map((v) => [v.id, v.title]));
     const shape = (row.field_shape as string) || sport?.field_shape || "generic";
     extra = (
       <>
@@ -149,7 +150,7 @@ export default async function EditContent({ params, searchParams }: { params: Pr
             key: c.id, id: c.id, number: c.number, type: c.type, lens: c.lens ?? "", function_en: c.function_en ?? "", function_tr: c.function_tr ?? "",
             level: c.level, is_special: c.is_special, x: Number(c.x), y: Number(c.y), angle: c.angle == null ? "" : String(c.angle),
           }))}
-          otherPlans={(others ?? []).map((p) => ({ id: p.id, label: `${vn.get(p.venue_id) ?? ""} · ${sn.get(p.sport_id) ?? ""} · ${p.title_en}` }))}
+          otherPlans={(others ?? []).map((p) => ({ id: p.id, label: `${vn.get(p.venue_id) ?? ""} · ${sn.get(p.sport_id) ?? ""} · ${p.title}` }))}
         />
         <DrawingPanel planId={String(row.id)} drawings={(drawings ?? []) as DrawingRow[]} cameras={(cams ?? []).map((c) => ({ number: c.number, type: c.type }))} isAdmin={isAdmin(me)} />
       </>

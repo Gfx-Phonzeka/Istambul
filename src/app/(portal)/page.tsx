@@ -2,7 +2,7 @@ import Link from "next/link";
 import { requireApproved } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
-import { pick } from "@/lib/i18n";
+import { tx, cols } from "@/lib/i18n";
 import { formatDate, formatDateTime } from "@/lib/format";
 import { Badge, Card, EmptyState, Icon, PageHeader } from "@/components/ui";
 import { CeremonyCountdown, type Ceremony } from "@/components/CeremonyCountdown";
@@ -27,7 +27,7 @@ export default async function Dashboard() {
     supabase.from("settings").select("key,value").in("key", ["opening_ceremony", "closing_ceremony"]),
     supabase.from("announcements").select("*").eq("status", "published").order("published_at", { ascending: false }).limit(6),
     supabase.from("deadlines").select("*").eq("status", "published").gte("due_at", new Date(Date.now() - 86400000).toISOString()).order("due_at").limit(5),
-    supabase.from("content_index").select("kind,id,title_en,title_tr,href,published_at,content_updated_at")
+    supabase.from("content_index").select(`kind,id,${cols("title")},href,published_at,content_updated_at` as "*")
       .gt("content_updated_at", since).order("content_updated_at", { ascending: false }).limit(8),
   ]);
   const ceremonies = (opening ?? []).map((r) => r.value as Ceremony).filter((c) => c?.at);
@@ -50,8 +50,8 @@ export default async function Dashboard() {
               {visBadge(a.visibility)}
               <span>{formatDate(a.published_at, locale)}</span>
             </div>
-            <Link href={`/news/${a.id}`} className="item-title">{pick(locale, a.title_en, a.title_tr)}</Link>
-            <p className="item-excerpt">{excerpt(pick(locale, a.body_en, a.body_tr), 300)}</p>
+            <Link href={`/news/${a.id}`} className="item-title">{tx(a, "title", locale)}</Link>
+            <p className="item-excerpt">{excerpt(tx(a, "body", locale), 300)}</p>
           </div>
         </div>
       ))}
@@ -70,8 +70,8 @@ export default async function Dashboard() {
                     <span>{formatDate(a.published_at, locale)}</span>
                     {visBadge(a.visibility)}
                   </div>
-                  <Link href={`/news/${a.id}`} className="item-title">{pick(locale, a.title_en, a.title_tr)}</Link>
-                  <p className="item-excerpt">{excerpt(pick(locale, a.body_en, a.body_tr))}</p>
+                  <Link href={`/news/${a.id}`} className="item-title">{tx(a, "title", locale)}</Link>
+                  <p className="item-excerpt">{excerpt(tx(a, "body", locale))}</p>
                 </li>
               ))}
             </ul>
@@ -89,7 +89,7 @@ export default async function Dashboard() {
                   return (
                     <li key={d.id} className="deadline">
                       <div className="deadline-main">
-                        <div className="item-title">{pick(locale, d.title_en, d.title_tr)}</div>
+                        <div className="item-title">{tx(d, "title", locale)}</div>
                         <div className="item-meta">
                           <span>{formatDateTime(d.due_at, locale)}</span>
                           {visBadge(d.visibility)}
@@ -118,7 +118,7 @@ export default async function Dashboard() {
                       </Badge>
                       <span>{t(`kinds.${c.kind}`)}</span>
                     </div>
-                    <Link href={c.href} className="item-title">{pick(locale, c.title_en, c.title_tr)}</Link>
+                    <Link href={c.href} className="item-title">{tx(c, "title", locale)}</Link>
                   </li>
                 ))}
               </ul>

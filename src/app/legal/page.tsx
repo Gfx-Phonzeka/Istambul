@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { PublicFrame } from "@/components/shell/PublicFrame";
 import { getT } from "@/lib/i18n/server";
-import { pick } from "@/lib/i18n";
+import { tx, cols } from "@/lib/i18n";
 import { createClient } from "@/lib/supabase/server";
 import { getProfile } from "@/lib/auth";
 
@@ -10,7 +10,7 @@ export const metadata = { title: "Legal documents" };
 export default async function LegalIndex() {
   const { t, locale } = await getT();
   const supabase = await createClient();
-  const { data } = await supabase.from("legal_pages").select("slug,title_en,title_tr").eq("status", "published").order("position");
+  const { data } = await supabase.from("legal_pages").select(`slug,${cols("title")}` as "*").eq("status", "published").order("position");
   const profile = await getProfile();
   return (
     <PublicFrame wide>
@@ -18,7 +18,7 @@ export default async function LegalIndex() {
         <h1>{t("nav.legal")}</h1>
         <ul className="list">
           {(data ?? []).map((d) => (
-            <li key={d.slug}><Link href={`/legal/${d.slug}`}>{pick(locale, d.title_en, d.title_tr)}</Link></li>
+            <li key={d.slug}><Link href={`/legal/${d.slug}`}>{tx(d, "title", locale)}</Link></li>
           ))}
         </ul>
         {profile?.status === "approved" && <Link href="/" className="small">← {t("nav.dashboard")}</Link>}

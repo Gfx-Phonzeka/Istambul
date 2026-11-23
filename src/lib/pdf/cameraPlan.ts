@@ -1,8 +1,10 @@
 import "server-only";
+import { intlLocale } from "@/lib/i18n";
+import { EVENT } from "@/lib/event";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Content, TDocumentDefinitions } from "pdfmake/interfaces";
 import { createElement } from "react";
-import { dictionaries, pick, translate, type Locale } from "@/lib/i18n";
+import { dictionaries, tx, translate, type Locale } from "@/lib/i18n";
 import { loadPlans } from "@/lib/venues";
 import { StaticCameraMap } from "@/components/venues/cameraMapStatic";
 
@@ -29,7 +31,7 @@ export async function buildCameraPlanPdf(supabase: SupabaseClient, planId: strin
   const cameras = (cams ?? []).map((c) => ({ ...c, x: Number(c.x), y: Number(c.y), angle: c.angle == null ? null : Number(c.angle) }));
   const { renderToStaticMarkup } = await import("react-dom/server");
   const svg = renderToStaticMarkup(createElement(StaticCameraMap, { shape: plan.shape, cameras }));
-  const generated = new Intl.DateTimeFormat(locale === "tr" ? "tr-TR" : "en-GB", { dateStyle: "long", timeStyle: "short", timeZone: "Europe/Istanbul" }).format(new Date());
+  const generated = new Intl.DateTimeFormat(intlLocale(locale), { dateStyle: "long", timeStyle: "short", timeZone: EVENT.tz }).format(new Date());
 
   const legend: Content = {
     columns: [
@@ -44,7 +46,7 @@ export async function buildCameraPlanPdf(supabase: SupabaseClient, planId: strin
   const header = [t("cameraMaps.cols.number"), t("cameraMaps.cols.type"), t("cameraMaps.cols.lens"), t("cameraMaps.cols.function"), t("cameraMaps.cols.level"), t("cameraMaps.cols.special")]
     .map((h) => ({ text: h, bold: true, fillColor: "#eceef1" }));
   const rows = cameras.map((c) => [
-    { text: c.number, bold: true }, t(`cameraTypes.${c.type}`), c.lens ?? "", pick(locale, c.function_en, c.function_tr), c.level, c.is_special ? "●" : "",
+    { text: c.number, bold: true }, t(`cameraTypes.${c.type}`), c.lens ?? "", tx(c, "function", locale), c.level, c.is_special ? "●" : "",
   ]);
 
   const doc: TDocumentDefinitions = {
@@ -53,7 +55,7 @@ export async function buildCameraPlanPdf(supabase: SupabaseClient, planId: strin
     pageMargins: [36, 44, 36, 40],
     info: { title: `${plan.venueTitle} – ${plan.sportTitle} – ${plan.title}`, author: "Medialuso – Host Broadcaster" },
     defaultStyle: { font: "Roboto", fontSize: 9, color: "#16202e" },
-    header: { text: `Istanbul 2027 · ${t("nav.cameraMaps")}`, fontSize: 8, color: "#5b6676", margin: [36, 18, 36, 0] },
+    header: { text: `${EVENT.name} · ${t("nav.cameraMaps")}`, fontSize: 8, color: "#5b6676", margin: [36, 18, 36, 0] },
     footer: (page: number, pages: number) => ({
       columns: [
         { text: `${t("common.hostBroadcaster")} · ${generated}`, fontSize: 7, color: "#5b6676" },
