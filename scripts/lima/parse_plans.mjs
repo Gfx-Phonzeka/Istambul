@@ -14,7 +14,7 @@ const W = 1000, H = 600;
 // file name (without the upload prefix) → sports (slug) and venues (slug)
 const MAP = {
   "Boxe": [["boxeo"], ["coliseo-miguel-grau"]],
-  "Futbol": [["futbol"], ["estadio-miguel-grau", "estadio-alberto-gallardo"]],
+  "Futbol": [["futbol"], ["estadio-san-marcos"]],
   "Ciclismo_Bmxtrack": [["bmx-racing"], ["pista-bmx-racing"]],
   "Ciclismo_MTB": [["ciclismo-mtb"], ["santuario-amancay"]],
   "Ciclismo_Ruta": [["ciclismo-ruta"], ["circuito-ciudad"]],
@@ -26,7 +26,7 @@ const MAP = {
   "Bowling": [["bowling"], ["bowling-center"]],
   "Ciclismo_Pista": [["ciclismo-pista"], ["velodromo"]],
   "Esgrima": [["esgrima"], ["polideportivo-2"]],
-  "Canotaje_Remo": [["canotaje-velocidad", "remo"], ["laguna-yarinacocha"]],
+  "Canotaje_Remo": [["canotaje-velocidad", "remo"], ["albufera-medio-mundo"]],
   "Esqui_wakeboard": [["esqui-acuatico"], ["bujama-lacus"]],
   "Gimnasia__Ritmica": [["gimnasia-ritmica"], ["polideportivo-villa-el-salvador"]],
   "Atletismo_Marcha": [["marcha"], ["circuito-ciudad"]],
@@ -34,7 +34,7 @@ const MAP = {
   "Acuaticos_artistica": [["natacion-artistica"], ["centro-acuatico"]],
   "Balonmano": [["balonmano"], ["polideportivo-1"]],
   "Atletismo_Maraton": [["maraton"], ["circuito-ciudad"]],
-  "Acuaticos_Aguas_abiertas": [["aguas-abiertas"], ["playa-agua-dulce"]],
+  "Acuaticos_Aguas_abiertas": [["aguas-abiertas"], ["bujama-lacus"]],
   "Badminton": [["badminton"], ["polideportivo-3"]],
   "Atletismo": [["atletismo", "para-atletismo"], ["estadio-atletico"]],
   "Acuaticos_clavados": [["clavados"], ["centro-acuatico"]],

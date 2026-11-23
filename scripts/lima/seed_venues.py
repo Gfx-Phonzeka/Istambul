@@ -16,8 +16,10 @@ CLUSTERS = [
     ("e", "Clúster E · Villa El Salvador", "Cluster E · Villa El Salvador", "Cluster E · Villa El Salvador", (44, 80)),
     ("f", "Clúster F · Circuito Ciudad", "Cluster F · City circuit", "Cluster F · Circuito Cidade", (36, 30)),
     ("g", "Clúster G · Sedes fuera de Lima", "Cluster G · Venues outside Lima", "Cluster G · Sedes fora de Lima", (84, 84)),
+    ("h", "Otras sedes", "Other venues", "Outras sedes", (24, 18)),
 ]
 
+# Updated with the newest documents: Pan sports calendar v3 (26 Oct 2026) and Parapan calendar v1.3 (20 Aug 2026).
 # venue: slug, cluster, title (official name, same in all languages), address/district
 VENUES = [
     ("polideportivo-callao", "a", "Polideportivo Callao", "Villa Deportiva Regional del Callao"),
@@ -55,11 +57,15 @@ VENUES = [
     ("campos-cricket", "e", "Campos de Críquet Villa El Salvador", "Complejo Deportivo Villa El Salvador"),
     ("santuario-amancay", "e", "Santuario de Amancay", "Villa María del Triunfo"),
     ("circuito-ciudad", "f", "Circuito Ciudad", "Lima"),
+    ("circuito-costa-verde", "b", "Circuito Costa Verde", "Costa Verde"),
+    ("playa-los-yuyos", "d", "Playa Los Yuyos", "Barranco"),
+    ("albufera-medio-mundo", "g", "Albufera de Medio Mundo", "Végueta · Huaura"),
+    ("estadio-san-marcos", "h", "Estadio San Marcos", "Lima"),
+    ("estadio-nacional", "h", "Estadio Nacional", "Lima"),
     ("punta-rocas", "g", "Centro de Alto Rendimiento Punta Rocas", "Punta Negra"),
-    ("bujama-lacus", "g", "Club Náutico Bujama Lacus", "Mala"),
+    ("bujama-lacus", "g", "Laguna Bujama", "Mala"),
     ("rio-lunahuana", "g", "Río Lunahuaná", "Lunahuaná · Cañete"),
     ("yacht-club-paracas", "g", "Yacht Club Paracas", "Paracas · Ica"),
-    ("laguna-yarinacocha", "g", "Laguna Yarinacocha", "Pucallpa · Ucayali"),
 ]
 
 # sport (discipline level, as the camera plans): slug, es, en, pt, venues, para?
@@ -71,14 +77,14 @@ SPORTS = [
     ("clavados", "Clavados", "Diving", "Saltos ornamentais", ["centro-acuatico"]),
     ("natacion-artistica", "Natación artística", "Artistic swimming", "Nado artístico", ["centro-acuatico"]),
     ("polo-acuatico", "Polo acuático", "Water polo", "Polo aquático", ["centro-acuatico"]),
-    ("aguas-abiertas", "Aguas abiertas", "Open water swimming", "Maratona aquática", ["playa-agua-dulce"]),
+    ("aguas-abiertas", "Aguas abiertas", "Open water swimming", "Maratona aquática", ["bujama-lacus"]),
     ("badminton", "Bádminton", "Badminton", "Badminton", ["polideportivo-3"]),
     ("balonmano", "Balonmano", "Handball", "Handebol", ["polideportivo-1"]),
     ("beisbol", "Béisbol", "Baseball", "Beisebol", ["estadio-beisbol"]),
     ("softbol", "Softbol", "Softball", "Softbol", ["estadio-softbol"]),
     ("bowling", "Bowling", "Bowling", "Boliche", ["bowling-center"]),
     ("boxeo", "Boxeo", "Boxing", "Boxe", ["coliseo-miguel-grau"]),
-    ("canotaje-velocidad", "Canotaje de velocidad", "Canoe sprint", "Canoagem de velocidade", ["laguna-yarinacocha"]),
+    ("canotaje-velocidad", "Canotaje de velocidad", "Canoe sprint", "Canoagem de velocidade", ["albufera-medio-mundo"]),
     ("canotaje-slalom", "Canotaje eslalon", "Canoe slalom", "Canoagem slalom", ["rio-lunahuana"]),
     ("ciclismo-pista", "Ciclismo de pista", "Track cycling", "Ciclismo de pista", ["velodromo"]),
     ("ciclismo-ruta", "Ciclismo de ruta", "Road cycling", "Ciclismo de estrada", ["circuito-ciudad"]),
@@ -90,7 +96,7 @@ SPORTS = [
     ("escalada", "Escalada deportiva", "Sport climbing", "Escalada esportiva", ["muros-escalada"]),
     ("esgrima", "Esgrima", "Fencing", "Esgrima", ["polideportivo-2"]),
     ("esqui-acuatico", "Esquí acuático y wakeboard", "Water skiing & wakeboard", "Esqui aquático e wakeboard", ["bujama-lacus"]),
-    ("futbol", "Fútbol", "Football", "Futebol", ["estadio-miguel-grau", "estadio-alberto-gallardo"]),
+    ("futbol", "Fútbol", "Football", "Futebol", ["estadio-san-marcos"]),
     ("gimnasia-artistica", "Gimnasia artística", "Artistic gymnastics", "Ginástica artística", ["polideportivo-villa-el-salvador"]),
     ("gimnasia-ritmica", "Gimnasia rítmica", "Rhythmic gymnastics", "Ginástica rítmica", ["polideportivo-villa-el-salvador"]),
     ("trampolin", "Trampolín", "Trampoline", "Ginástica de trampolim", ["polideportivo-villa-el-salvador"]),
@@ -106,8 +112,8 @@ SPORTS = [
     ("pelota-vasca", "Pelota vasca", "Basque pelota", "Pelota basca", ["complejo-pelota-vasca"]),
     ("pentatlon", "Pentatlón moderno", "Modern pentathlon", "Pentatlo moderno", ["estadio-atletico", "centro-acuatico"]),
     ("raquetbol", "Ráquetbol", "Racquetball", "Raquetebol", ["canchas-raquetbol"]),
-    ("remo", "Remo", "Rowing", "Remo", ["laguna-yarinacocha"]),
-    ("remo-coastal", "Remo coastal", "Coastal rowing", "Remo costeiro", ["playa-agua-dulce"]),
+    ("remo", "Remo", "Rowing", "Remo", ["albufera-medio-mundo"]),
+    ("remo-coastal", "Remo coastal", "Coastal rowing", "Remo costeiro", ["playa-los-yuyos"]),
     ("rugby", "Rugby 7", "Rugby sevens", "Rúgbi de 7", ["estadio-rugby"]),
     ("squash", "Squash", "Squash", "Squash", ["car-voley"]),
     ("surf", "Surf", "Surfing", "Surfe", ["punta-rocas"]),
@@ -124,21 +130,21 @@ SPORTS = [
     ("para-atletismo", "Para atletismo", "Para athletics", "Atletismo paralímpico", ["estadio-atletico"]),
     ("para-natacion", "Para natación", "Para swimming", "Natação paralímpica", ["centro-acuatico"]),
     ("para-badminton", "Para bádminton", "Para badminton", "Parabadminton", ["polideportivo-3"]),
-    ("baloncesto-silla", "Baloncesto en silla de ruedas", "Wheelchair basketball", "Basquete em cadeira de rodas", ["polideportivo-callao"]),
+    ("baloncesto-silla", "Baloncesto en silla de ruedas", "Wheelchair basketball", "Basquete em cadeira de rodas", ["polideportivo-1"]),
     ("boccia", "Boccia", "Boccia", "Bocha", ["polideportivo-villa-el-salvador"]),
-    ("futbol-ciegos", "Fútbol para ciegos", "Blind football", "Futebol de cegos", ["estadio-hockey"]),
+    ("futbol-ciegos", "Fútbol para ciegos", "Blind football", "Futebol de cegos", ["estadio-rugby"]),
     ("golbol", "Golbol", "Goalball", "Goalball", ["polideportivo-2"]),
     ("para-judo", "Para judo", "Para judo", "Judô paralímpico", ["coliseo-eduardo-dibos"]),
-    ("para-powerlifting", "Para powerlifting", "Para powerlifting", "Halterofilismo paralímpico", ["coliseo-mariscal-caceres"]),
-    ("rugby-silla", "Rugby en silla de ruedas", "Wheelchair rugby", "Rúgbi em cadeira de rodas", ["polideportivo-1"]),
+    ("para-powerlifting", "Para powerlifting", "Para powerlifting", "Halterofilismo paralímpico", ["velodromo"]),
+    ("rugby-silla", "Rugby en silla de ruedas", "Wheelchair rugby", "Rúgbi em cadeira de rodas", ["polideportivo-villa-el-salvador"]),
     ("para-taekwondo", "Para taekwondo", "Para taekwondo", "Parataekwondo", ["coliseo-eduardo-dibos"]),
     ("para-tenis-mesa", "Para tenis de mesa", "Para table tennis", "Tênis de mesa paralímpico", ["polideportivo-3"]),
     ("tenis-silla", "Tenis en silla de ruedas", "Wheelchair tennis", "Tênis em cadeira de rodas", ["centro-tenis"]),
     ("para-tiro-arco", "Para tiro con arco", "Para archery", "Tiro com arco paralímpico", ["estadio-rugby"]),
     ("tiro-para-deportivo", "Tiro para deportivo", "Shooting Para sport", "Tiro esportivo paralímpico", ["poligono-tiro"]),
     ("para-ciclismo-pista", "Para ciclismo de pista", "Para cycling track", "Paraciclismo de pista", ["velodromo"]),
-    ("para-ciclismo-ruta", "Para ciclismo de ruta", "Para cycling road", "Paraciclismo de estrada", ["circuito-ciudad"]),
-    ("voleibol-sentado", "Voleibol sentado", "Sitting volleyball", "Vôlei sentado", ["polideportivo-1"]),
+    ("para-ciclismo-ruta", "Para ciclismo de ruta", "Para cycling road", "Paraciclismo de estrada", ["circuito-costa-verde"]),
+    ("voleibol-sentado", "Voleibol sentado", "Sitting volleyball", "Vôlei sentado", ["polideportivo-callao"]),
 ]
 
 out = ["-- Lima 2027 · clusters, venues and sports. Generated by scripts/lima/seed_venues.py. Lima database only."]
@@ -170,4 +176,10 @@ for i, (slug, es, en, pt, venues) in enumerate(SPORTS):
             f"select v.id, s.id, {j + 1}, 'all', 'published', now() from public.venues v, public.sports s "
             f"where v.slug = {q(v)} and s.slug = {q(slug)} and not exists (select 1 from public.venue_sports x where x.venue_id = v.id and x.sport_id = s.id);")
 
+# Links and venues replaced by the newer calendars
+out.append("delete from public.venue_sports vs using public.sports s, public.venues v where vs.sport_id = s.id and vs.venue_id = v.id and not (" +
+           " or ".join(f"(s.slug = {q(sl)} and v.slug = {q(vv)})" for sl, *_, vs in SPORTS for vv in vs) + ");")
+out.append("delete from public.camera_plans cp using public.sports s, public.venues v where cp.sport_id = s.id and cp.venue_id = v.id and not (" +
+           " or ".join(f"(s.slug = {q(sl)} and v.slug = {q(vv)})" for sl, *_, vs in SPORTS for vv in vs) + ");")
+out.append("delete from public.venues where slug = 'laguna-yarinacocha';")
 print("\n".join(out))
