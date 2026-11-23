@@ -6,7 +6,7 @@ const es: PartialMessages = {
     appName: "Lima 2027 · HB Portal",
     shortName: "HB Portal",
     games: "Juegos Panamericanos y Parapanamericanos · Lima 2027",
-    hostBroadcaster: "Host Broadcaster",
+    hostBroadcaster: "Imagina · Host Broadcaster",
     insidePortal: "En el portal",
     save: "Guardar",
     saved: "Guardado",
@@ -311,7 +311,7 @@ const es: PartialMessages = {
       trReviewed: "Revisado por un hablante nativo", title: "Título", slug: "Dirección web (slug)", summary: "Resumen", position: "Orden", visibility: "Visible para",
       chapter: "Capítulo", body: "Texto", priority: "Prioridad", dueAt: "Fecha y hora (hora de Lima)", link: "Enlace",
       category: "Categoría", question: "Pregunta", answer: "Respuesta", term: "Término", definition: "Definición",
-      area: "Área", code: "Código", discipline: "Disciplina", phase: "Fase", startAt: "Inicio (hora de Lima)", endAt: "Fin (hora de Lima)", isMedal: "Sesión de medallas", medalEvents: "Pruebas con medalla", isOq: "Clasificatorio olímpico (OQ)", feedType: "Tipo de señal", channel: "Canal", channelKind: "Tipo de canal", contactInfo: "Contacto", group: "Grupo", parameter: "Parámetro", value: "Valor", cluster: "Clúster", address: "Dirección", productionLevel: "Nivel de producción", capacity: "Aforo", mapX: "Posición en el mapa – horizontal (0-100)", mapY: "Posición en el mapa – vertical (0-100)", venue: "Sede", sport: "Deporte", startDate: "Fecha de inicio", endDate: "Fecha de fin", notes: "Notas", configuration: "Configuración", fieldShape: "Dibujo del campo", fieldShapeDefault: "Usar el dibujo del deporte", description: "Descripción", recordedOn: "Fecha", subtype: "Tipo (opcional)", name: "Nombre", role: "Función", email: "Correo electrónico", phone: "Teléfono",
+      area: "Área", code: "Código", discipline: "Disciplina", phase: "Fase", startAt: "Inicio (hora de Lima)", endAt: "Fin (hora de Lima)", isMedal: "Sesión de medallas", medalEvents: "Pruebas con medalla", isOq: "Clasificatorio olímpico (OQ)", feedType: "Tipo de señal", channel: "Canal", channelKind: "Tipo de canal", contactInfo: "Contacto", group: "Grupo", parameter: "Parámetro", value: "Valor", cluster: "Clúster", address: "Dirección", productionLevel: "Nivel de producción", capacity: "Aforo", mapX: "Posición en el mapa – horizontal (0-100)", mapY: "Posición en el mapa – vertical (0-100)", venue: "Sede", sport: "Deporte", startDate: "Fecha de inicio", endDate: "Fecha de fin", notes: "Notas", configuration: "Configuración", fieldShape: "Dibujo del campo", fieldShapeCustom: "Dibujo propio importado", fieldShapeDefault: "Usar el dibujo del deporte", description: "Descripción", recordedOn: "Fecha", subtype: "Tipo (opcional)", name: "Nombre", role: "Función", email: "Correo electrónico", phone: "Teléfono",
     },
     help: {
       slug: "Minúsculas, números y guiones, p. ej. formatos-tecnicos. Aparece en la dirección de la página.",

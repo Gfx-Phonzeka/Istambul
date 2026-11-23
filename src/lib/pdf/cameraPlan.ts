@@ -53,7 +53,7 @@ export async function buildCameraPlanPdf(supabase: SupabaseClient, planId: strin
     pageSize: "A4",
     pageOrientation: "landscape",
     pageMargins: [36, 44, 36, 40],
-    info: { title: `${plan.venueTitle} – ${plan.sportTitle} – ${plan.title}`, author: "Medialuso – Host Broadcaster" },
+    info: { title: `${plan.venueTitle} – ${plan.sportTitle} – ${plan.title}`, author: `${EVENT.hbName} – Host Broadcaster` },
     defaultStyle: { font: "Roboto", fontSize: 9, color: "#16202e" },
     header: { text: `${EVENT.name} · ${t("nav.cameraMaps")}`, fontSize: 8, color: "#5b6676", margin: [36, 18, 36, 0] },
     footer: (page: number, pages: number) => ({

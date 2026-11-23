@@ -102,7 +102,27 @@ export const FIELD_DRAWINGS: Record<string, (props: P) => React.JSX.Element> = {
   generic: Generic, track: Track, pool: Pool, pitch: Pitch, court: Court, ring: Ring, mat: Mat, piste: Piste, circle: Circle,
 };
 
+/**
+ * Imported drawing (Lima plans): "svg:<width>x<height>:<svg markup>". The drawing is fitted into the 1000 × 600 canvas,
+ * centred; camera positions are stored in canvas coordinates. The markup is written by the import script or staff only.
+ */
+export function parseCustomShape(shape: string): { w: number; h: number; markup: string } | null {
+  const m = /^svg:(\d+(?:\.\d+)?)x(\d+(?:\.\d+)?):([\s\S]*)$/.exec(shape);
+  return m ? { w: Number(m[1]), h: Number(m[2]), markup: m[3].replace(/<script[\s\S]*?<\/script>/gi, "").replace(/\son\w+="[^"]*"/gi, "") } : null;
+}
+
 export function FieldDrawing({ shape, palette = SCREEN_PALETTE }: { shape: string; palette?: FieldPalette }) {
+  const custom = shape.startsWith("svg:") ? parseCustomShape(shape) : null;
+  if (custom) {
+    const s = Math.min(1000 / custom.w, 600 / custom.h);
+    const tx = (1000 - custom.w * s) / 2, ty = (600 - custom.h * s) / 2;
+    return (
+      <g>
+        <rect x={0} y={0} width={1000} height={600} fill="#ffffff" />
+        <g transform={`translate(${tx} ${ty}) scale(${s})`} dangerouslySetInnerHTML={{ __html: custom.markup }} />
+      </g>
+    );
+  }
   if (FOP_LAYOUTS[shape]) return <FopDrawing shape={shape} font={palette === PRINT_PALETTE ? "Roboto" : undefined} />;
   const Drawing = FIELD_DRAWINGS[shape] ?? Generic;
   return (

@@ -63,7 +63,7 @@ function parseValues(type: ContentType, raw: Record<string, unknown>): { values:
           values[col] = s;
           break;
         case "select":
-          if (!f.options?.some((o) => o.value === s)) return { error: "cms.errors.required", field: col };
+          if (!f.options?.some((o) => o.value === s) && !(f.name === "field_shape" && s.startsWith("svg:"))) return { error: "cms.errors.required", field: col };
           values[col] = s;
           break;
         default:

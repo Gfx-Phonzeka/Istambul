@@ -97,7 +97,7 @@ const BASE_UI: Partial<Record<GuideLang, Record<string, string>>> = {
 
 const ES_UI: Record<string, string> = {
   exportAll: "El manual completo", exportChapter: "Un capítulo", exportSections: "Secciones elegidas",
-  games: "Juegos Panamericanos y Parapanamericanos · Lima 2027", hb: "Medialuso · Host Broadcaster", pdfAll: "Manual completo", pdfChapter: "Capítulo", pdfSections: "Secciones elegidas", generated: "Generado el {date}", pageOf: "Página {n} de {total}", pdfConfidential: "Confidencial: solo para el equipo de producción del HB.", exportPdf: "Exportar PDF", exportTitle: "Exportar el manual en PDF", exportWhat: "Qué exportar", exportButton: "Descargar PDF", exportWorking: "Preparando…", exportLanguage: "El PDF se crea en el idioma de lectura elegido: {lang}.", cancel: "Cancelar", langName: "Español",
+  games: "Juegos Panamericanos y Parapanamericanos · Lima 2027", hb: "Imagina · Host Broadcaster", pdfAll: "Manual completo", pdfChapter: "Capítulo", pdfSections: "Secciones elegidas", generated: "Generado el {date}", pageOf: "Página {n} de {total}", pdfConfidential: "Confidencial: solo para el equipo de producción del HB.", exportPdf: "Exportar PDF", exportTitle: "Exportar el manual en PDF", exportWhat: "Qué exportar", exportButton: "Descargar PDF", exportWorking: "Preparando…", exportLanguage: "El PDF se crea en el idioma de lectura elegido: {lang}.", cancel: "Cancelar", langName: "Español",
   title: "Manual de Directrices de Producción", subtitle: "Cómo produce el Host Broadcaster cada sesión. Obligatorio para todos los equipos de producción y realización.",
   contents: "Índice", chapter: "Capítulo", previous: "Anterior", next: "Siguiente", onThisPage: "En esta página", updated: "Actualizado el {date}",
   language: "Idioma de lectura", openPoints: "Puntos abiertos (TBC)", openPointsHelp: "Puntos aún por confirmar, tal como están marcados en el texto. Solo los ven editores y administradores.",
@@ -109,8 +109,8 @@ const ES_UI: Record<string, string> = {
 export const GUIDE_UI: Record<GuideLang, Record<string, string>> = (() => {
   const all: Record<string, Record<string, string>> = { ...BASE_UI, es: ES_UI };
   if (EVENT.id === "lima") {
-    all.en = { ...all.en, games: "Pan American and Parapan American Games · Lima 2027" };
-    all.pt = { ...all.pt, games: "Jogos Pan-Americanos e Parapan-Americanos · Lima 2027" };
+    all.en = { ...all.en, games: "Pan American and Parapan American Games · Lima 2027", hb: "Imagina · Host Broadcaster" };
+    all.pt = { ...all.pt, games: "Jogos Pan-Americanos e Parapan-Americanos · Lima 2027", hb: "Imagina · Host Broadcaster" };
   }
   return Object.fromEntries((["en", "tr", "es", "pt"] as GuideLang[]).map((l) => [l, all[l] ?? all.en!])) as Record<GuideLang, Record<string, string>>;
 })();

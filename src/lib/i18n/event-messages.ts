@@ -8,7 +8,7 @@ const LIMA_EN: PartialMessages = {
   common: {
     appName: "Lima 2027 · HB Portal",
     games: "Pan American and Parapan American Games · Lima 2027",
-    hostBroadcaster: "Host Broadcaster",
+    hostBroadcaster: "Imagina · Host Broadcaster",
     portalFor: "Host Broadcaster portal for Right Holders, partners and the production team",
   },
   sectionInfo: {
@@ -33,7 +33,7 @@ const LIMA_EN: PartialMessages = {
     subtitle: "Feed grid, distribution channels, technical parameters and additional production.",
     tabs: { feeds: "Feed Grid", distribution: "Distribution", technical: "Technical Parameters", additional: "Additional Production" },
     cols: { time: "Time (PET)", feed: "Feed", type: "Type", venue: "Venue", channel: "Channel" },
-    ebuNote: "Medialuso’s responsibility ends with making the signal available.",
+    ebuNote: "The Host Broadcaster’s responsibility ends with making the signal available.",
     contact: "Distribution contact",
   },
 };

@@ -130,6 +130,7 @@ export function ContentEditor({
         return (
           <select {...common} className="select" value={v} onChange={(e) => set(col, e.target.value)}>
             {f.options!.map((o) => <option key={o.value} value={o.value}>{t(o.label)}</option>)}
+            {v.startsWith("svg:") && <option value={v}>{t("cms.fields.fieldShapeCustom")}</option>}
           </select>
         );
       case "reference":

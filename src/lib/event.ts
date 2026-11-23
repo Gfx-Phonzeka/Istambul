@@ -16,6 +16,7 @@ export interface EventConfig {
   utcOffsetHours: number;
   slug: string; // file-name prefix for downloads
   name: string; // "Istanbul 2027"
+  hbName: string; // Host Broadcaster company
   logo: { src: string; width: number; height: number };
   /** Right-holder service requests: "none" (handled by someone else) or "booking" (gateway to the booking site). */
   rhbRequests: "none" | "booking";
@@ -32,6 +33,7 @@ const EVENTS: Record<EventId, EventConfig> = {
     utcOffsetHours: 3,
     slug: "istanbul2027",
     name: "Istanbul 2027",
+    hbName: "Medialuso",
     logo: { src: "/brand/istanbul2027-logo.png", width: 214, height: 194 },
     rhbRequests: "none",
   },
@@ -44,6 +46,7 @@ const EVENTS: Record<EventId, EventConfig> = {
     utcOffsetHours: -5,
     slug: "lima2027",
     name: "Lima 2027",
+    hbName: "Imagina",
     logo: { src: "/brand/lima2027-logo.png", width: 420, height: 227 },
     rhbRequests: "booking",
     bookingUrl: "https://huin.tv:4443/",

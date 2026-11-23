@@ -36,7 +36,7 @@ export async function GET(req: NextRequest) {
   const now = utc(new Date().toISOString());
   const calName = sport && S.get(sport) ? `${EVENT.name} – ${tx(S.get(sport)!, "title", locale)}` : EVENT.name;
   const lines = [
-    "BEGIN:VCALENDAR", "VERSION:2.0", `PRODID:-//Medialuso//${EVENT.name} HB Portal//EN`, "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
+    "BEGIN:VCALENDAR", "VERSION:2.0", `PRODID:-//${EVENT.hbName}//${EVENT.name} HB Portal//EN`, "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
     `X-WR-CALNAME:${esc(calName)}`, `X-WR-TIMEZONE:${EVENT.tz}`,
   ];
   for (const s of sessions ?? []) {

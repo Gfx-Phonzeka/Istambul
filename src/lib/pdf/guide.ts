@@ -81,7 +81,7 @@ export async function buildGuidePdf(supabase: SupabaseClient, lang: GuideLang, s
   }
 
   const doc: TDocumentDefinitions = {
-    info: { title: `${L.title} – ${EVENT.name}`, author: "Medialuso – Host Broadcaster", creator: `${EVENT.name} HB Portal` },
+    info: { title: `${L.title} – ${EVENT.name}`, author: `${EVENT.hbName} – Host Broadcaster`, creator: `${EVENT.name} HB Portal` },
     pageSize: "A4",
     pageMargins: [50, 60, 50, 60],
     defaultStyle: { font: "Roboto", fontSize: 10, lineHeight: 1.25, color: "#16202e" },
