@@ -40,7 +40,7 @@ const MAP = {
   "Acuaticos_clavados": [["clavados"], ["centro-acuatico"]],
 };
 
-const cssBlocks = (css) => [...css.matchAll(/([^{}]+)\{([^}]*)\}/g)].map((m) => ({ sel: m[1].trim(), body: m[2].trim() }));
+const cssBlocks = (css) => [...css.replace(/\/\*[\s\S]*?\*\//g, "").matchAll(/([^{}]+)\{([^}]*)\}/g)].map((m) => ({ sel: m[1].trim(), body: m[2].trim() }));
 
 function cssVars(css) {
   const vars = {};
@@ -81,7 +81,7 @@ function extractCameras(html) {
 }
 
 function camType(t) {
-  const s = t.toLowerCase();
+  const s = t.toLowerCase().replace(/no ptz/g, "");
   if (/drone|dron|skycam|omnicam|4sky|cablecam|aérea|aereo|aéreo|suspendid/.test(s)) return "aerial";
   if (/underwater|subacu|sumergible|polecam/.test(s)) return /polecam|brazo sumergible/.test(s) ? "polecam" : "underwater";
   if (/steadicam|gimbal|estabilizada de flujo/.test(s)) return "steadicam";
@@ -89,7 +89,7 @@ function camType(t) {
   if (/trackcam|riel|rail/.test(s)) return "rail";
   if (/beauty|atmosf/.test(s)) return "beauty";
   if (/minicam|periscop|brazo mágico/.test(s)) return "minicam";
-  if (/ptz|robótica|robotica|robotizada|autónoma|autonoma|hothead/.test(s)) return "ptz";
+  if (/ptz|robótica|robotica|robotizada|hothead/.test(s)) return "ptz";
   if (/moto|barco|catamar|embarcaci|5g/.test(s)) return "rf";
   if (/handheld|hombro|portátil|portatil|rf|móvil|movil|itinerante/.test(s)) return "handheld";
   return "hard";
@@ -132,7 +132,7 @@ for (const { f, key } of files) {
       lens: [c.mount && !/trípode/i.test(c.mount) ? c.mount : null, c.lens].filter(Boolean).join(" · ").slice(0, 100) || null,
       function_es: [label, where].filter(Boolean).join(" — ").slice(0, 300),
       level: c.phase === "OB" && raw.some((r) => r.phase === "REMI") ? "2" : "1",
-      is_special: SPECIAL.test(kind),
+      is_special: SPECIAL.test(kind.replace(/no ptz/gi, "")),
       x: Math.round(((tx + x * s) / W) * 1000) / 1000,
       y: Math.round(((ty + y * s) / H) * 1000) / 1000,
       angle: angleFrom(c, c.fov),
