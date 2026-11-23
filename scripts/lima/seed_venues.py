@@ -25,8 +25,6 @@ VENUES = [
     ("polideportivo-callao", "a", "Polideportivo Callao", "Villa Deportiva Regional del Callao"),
     ("canchas-raquetbol", "a", "Canchas de Ráquetbol", "Villa Deportiva Regional del Callao"),
     ("coliseo-miguel-grau", "a", "Coliseo Miguel Grau", "Villa Deportiva Regional del Callao"),
-    ("estadio-miguel-grau", "a", "Estadio Miguel Grau", "Callao"),
-    ("estadio-alberto-gallardo", "a", "Estadio Alberto Gallardo", "San Martín de Porres"),
     ("pista-bmx-racing", "b", "Pista BMX Racing", "Complejo Panamericano Costa Verde · San Miguel"),
     ("pista-bmx-freestyle", "b", "Pista BMX Freestyle", "Complejo Panamericano Costa Verde · San Miguel"),
     ("skate-park", "b", "Skate Park", "Complejo Panamericano Costa Verde · San Miguel"),
