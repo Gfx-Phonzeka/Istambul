@@ -8,7 +8,7 @@ import { dictionaries, pick, translate, type Locale } from "@/lib/i18n";
 export type PdfScope = { kind: "all" } | { kind: "chapter"; id: string } | { kind: "sections"; ids: string[] };
 
 // pdfmake & jsdom are loaded lazily (server only, heavy).
-async function getPrinter() {
+export async function getPrinter() {
   const PdfPrinter = (await import("pdfmake")).default;
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const vfs = require("pdfmake/build/vfs_fonts.js") as Record<string, string>;
@@ -49,7 +49,7 @@ async function prepareHtml(html: string, supabase: SupabaseClient, videoLabel: s
   return out;
 }
 
-async function htmlToContent(html: string): Promise<Content> {
+export async function htmlToContent(html: string): Promise<Content> {
   const { JSDOM } = await import("jsdom");
   const htmlToPdfmake = (await import("html-to-pdfmake")).default as (h: string, o: object) => Content;
   const { window } = new JSDOM("");

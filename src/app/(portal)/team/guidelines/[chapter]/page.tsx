@@ -9,6 +9,8 @@ import { Card, PageHeader } from "@/components/ui";
 import { PreviewBanner } from "@/components/content/PreviewBanner";
 import { GuideToc } from "@/components/guide/GuideToc";
 import { GuideLangSwitch } from "@/components/guide/GuideLangSwitch";
+import { GuideExport } from "@/components/guide/GuideExport";
+import { GUIDE_UI } from "@/lib/guide";
 
 export default async function GuideChapterPage({ params, searchParams }: { params: Promise<{ chapter: string }>; searchParams: Promise<{ preview?: string }> }) {
   await requireTeam();
@@ -30,7 +32,7 @@ export default async function GuideChapterPage({ params, searchParams }: { param
         </aside>
         <div className="stack">
           <Link href={`/team/guidelines${q}`} className="small">← {ui("title")}</Link>
-          <PageHeader title={`${ci + 1}. ${tx(c, "title", lang)}`} actions={<GuideLangSwitch lang={lang} label={ui("language")} />} />
+          <PageHeader title={`${ci + 1}. ${tx(c, "title", lang)}`} actions={<div className="row"><GuideLangSwitch lang={lang} label={ui("language")} /><GuideExport lang={lang} labels={GUIDE_UI[lang]} defaultChapter={c.id} chapters={chapters.map((x) => ({ id: x.id, title: tx(x, "title", lang), sections: x.sections.map((s) => ({ id: s.id, title: tx(s, "title", lang) })) }))} /></div>} />
           {summary && <div className="prose">{summary.split("\n\n").map((p, i) => <p key={i}>{p}</p>)}</div>}
           <Card>
             <ol className="list">

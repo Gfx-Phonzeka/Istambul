@@ -7,6 +7,8 @@ import { openPoints, tx } from "@/lib/guide";
 import { Alert, Badge, Card, EmptyState, PageHeader } from "@/components/ui";
 import { PreviewBanner } from "@/components/content/PreviewBanner";
 import { GuideLangSwitch } from "@/components/guide/GuideLangSwitch";
+import { GuideExport } from "@/components/guide/GuideExport";
+import { GUIDE_UI } from "@/lib/guide";
 
 export const metadata = { title: "Production Guidelines" };
 
@@ -27,7 +29,7 @@ export default async function GuidelinesPage({ searchParams }: { searchParams: P
   return (
     <div className="stack">
       {preview && <PreviewBanner exitHref="/team/guidelines" />}
-      <PageHeader title={ui("title")} subtitle={ui("subtitle")} actions={<GuideLangSwitch lang={lang} label={ui("language")} />} />
+      <PageHeader title={ui("title")} subtitle={ui("subtitle")} actions={<div className="row"><GuideLangSwitch lang={lang} label={ui("language")} />{chapters.length > 0 && <GuideExport lang={lang} labels={GUIDE_UI[lang]} chapters={chapters.map((x) => ({ id: x.id, title: tx(x, "title", lang), sections: x.sections.map((s) => ({ id: s.id, title: tx(s, "title", lang) })) }))} />}</div>} />
       <Alert tone="info">{ui("confidential")}</Alert>
       {trPending && <Alert tone="warning">{ui("trReview")}</Alert>}
       {chapters.length === 0 ? <Card><EmptyState icon="book" action={{ label: t("team.title"), href: "/team" }}>{t("team.guidelinesSoon")}</EmptyState></Card> : (

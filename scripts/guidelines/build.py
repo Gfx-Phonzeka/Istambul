@@ -60,7 +60,8 @@ def to_html(lines, chapter_slugs):
         if line.startswith("|"):
             rows = []
             while lines[i].startswith("|"):
-                cells = [c.strip() for c in lines[i].strip().strip("|").split("|")]
+                row = re.sub(r"\[\[(\d+)\|", r"[[\1¦", lines[i].strip())  # keep [[n|label]] links in one cell
+                cells = [c.strip().replace("¦", "|") for c in row.strip("|").split("|")]
                 if not all(re.fullmatch(r":?-{3,}:?", c) for c in cells):
                     rows.append(cells)
                 i += 1

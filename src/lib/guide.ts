@@ -56,6 +56,8 @@ export function decorateGuideHtml(html: string): string {
 /** Interface labels of the guidelines pages, in the three reading languages. */
 export const GUIDE_UI: Record<GuideLang, Record<string, string>> = {
   en: {
+    exportAll: "The whole manual", exportChapter: "One chapter", exportSections: "Selected sections", 
+    games: "4th European Games · Istanbul 2027", hb: "Medialuso · Host Broadcaster", pdfAll: "Complete manual", pdfChapter: "Chapter", pdfSections: "Selected sections", generated: "Generated on {date}", pageOf: "Page {n} of {total}", pdfConfidential: "Confidential: for the HB production team only.", exportPdf: "Export PDF", exportTitle: "Export the guidelines as PDF", exportWhat: "What to export", exportButton: "Download PDF", exportWorking: "Preparing…", exportLanguage: "The PDF is created in the reading language selected: {lang}.", cancel: "Cancel", langName: "English",
     title: "Production Guidelines", subtitle: "How the Host Broadcaster produces every session. Mandatory for all production and directing teams.",
     contents: "Contents", chapter: "Chapter", previous: "Previous", next: "Next", onThisPage: "On this page", updated: "Updated {date}",
     language: "Reading language", openPoints: "Open points (TBC)", openPointsHelp: "Points still to be confirmed, as marked in the text. Visible to editors and admins only.",
@@ -63,6 +65,8 @@ export const GUIDE_UI: Record<GuideLang, Record<string, string>> = {
     tbcNone: "No open points.", backToTeam: "Team area",
   },
   pt: {
+    exportAll: "O manual completo", exportChapter: "Um capítulo", exportSections: "Secções escolhidas", 
+    games: "4.º Jogos Europeus · Istambul 2027", hb: "Medialuso · Host Broadcaster", pdfAll: "Manual completo", pdfChapter: "Capítulo", pdfSections: "Secções escolhidas", generated: "Gerado a {date}", pageOf: "Página {n} de {total}", pdfConfidential: "Confidencial: só para a equipa de produção do HB.", exportPdf: "Exportar PDF", exportTitle: "Exportar o manual em PDF", exportWhat: "O que exportar", exportButton: "Descarregar PDF", exportWorking: "A preparar…", exportLanguage: "O PDF é criado no idioma de leitura escolhido: {lang}.", cancel: "Cancelar", langName: "Português",
     title: "Manual de Diretrizes de Produção", subtitle: "Como o Host Broadcaster produz cada sessão. Obrigatório para todas as equipas de produção e realização.",
     contents: "Índice", chapter: "Capítulo", previous: "Anterior", next: "Seguinte", onThisPage: "Nesta página", updated: "Atualizado a {date}",
     language: "Idioma de leitura", openPoints: "Pontos em aberto (TBC)", openPointsHelp: "Pontos ainda por confirmar, tal como estão marcados no texto. Só editores e administradores veem esta lista.",
@@ -70,6 +74,8 @@ export const GUIDE_UI: Record<GuideLang, Record<string, string>> = {
     tbcNone: "Sem pontos em aberto.", backToTeam: "Área da equipa",
   },
   tr: {
+    exportAll: "Kılavuzun tamamı", exportChapter: "Bir bölüm", exportSections: "Seçilen kısımlar", 
+    games: "4. Avrupa Oyunları · Istanbul 2027", hb: "Medialuso · Ev Sahibi Yayıncı", pdfAll: "Kılavuzun tamamı", pdfChapter: "Bölüm", pdfSections: "Seçilen kısımlar", generated: "Oluşturulma: {date}", pageOf: "Sayfa {n} / {total}", pdfConfidential: "Gizli: yalnızca HB üretim ekibi içindir.", exportPdf: "PDF olarak dışa aktar", exportTitle: "Kılavuzu PDF olarak dışa aktar", exportWhat: "Ne dışa aktarılacak", exportButton: "PDF indir", exportWorking: "Hazırlanıyor…", exportLanguage: "PDF, seçilen okuma dilinde oluşturulur: {lang}.", cancel: "İptal", langName: "Türkçe",
     title: "Üretim Kılavuzu", subtitle: "Ev Sahibi Yayıncı her oturumu nasıl üretir. Tüm üretim ve yönetmenlik ekipleri için zorunludur.",
     contents: "İçindekiler", chapter: "Bölüm", previous: "Önceki", next: "Sonraki", onThisPage: "Bu sayfada", updated: "Güncelleme: {date}",
     language: "Okuma dili", openPoints: "Açık noktalar (TBC)", openPointsHelp: "Metinde işaretlendiği şekliyle henüz teyit edilmemiş noktalar. Yalnızca editörler ve yöneticiler görür.",
