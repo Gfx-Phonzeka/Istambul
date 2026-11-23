@@ -86,9 +86,6 @@ export default async function BroadcastPage({ searchParams }: { searchParams: Pr
     content = (
       <Card title={b ? pick(locale, b.title_en, b.title_tr) : t("broadcast.tabs.additional")}>
         {b ? <RichText html={withHeadingAnchors(pick(locale, b.body_en, b.body_tr)).html} /> : <p className="muted">—</p>}
-        <div style={{ marginTop: 16 }}>
-          <Link href="/requests" className="btn btn-primary"><Icon name="inbox" /> {t("broadcast.requestCta")}</Link>
-        </div>
       </Card>
     );
   }

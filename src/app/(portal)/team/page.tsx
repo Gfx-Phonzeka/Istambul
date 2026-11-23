@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { requireTeam } from "@/lib/auth";
+import { reportsAccess } from "@/lib/reports";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
 import { pick } from "@/lib/i18n";
@@ -22,6 +23,7 @@ export default async function TeamPage() {
   ]);
   const links = [
     { href: "/team/guidelines", icon: "book", label: t("team.links.guidelines"), hint: t("team.links.guidelinesHint") },
+    ...(reportsAccess(me).any ? [{ href: "/team/reports", icon: "file", label: t("reports.nav"), hint: t("reports.subtitle") }] : []),
     { href: "/requests", icon: "inbox", label: t("team.links.requests"), hint: t("team.links.requestsHint") },
     { href: "/camera-maps", icon: "camera", label: t("nav.cameraMaps"), hint: t("team.links.mapsHint") },
     { href: "/schedule", icon: "calendar", label: t("nav.schedule"), hint: t("team.links.scheduleHint") },

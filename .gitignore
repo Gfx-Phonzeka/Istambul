@@ -14,3 +14,4 @@ next-env.d.ts
 # Production Guidelines source texts: confidential team content, never in the public repository
 scripts/guidelines/*.md
 scripts/guidelines/guidelines.json
+*.local.json

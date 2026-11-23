@@ -6,7 +6,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 export const TEAM_FUNCTIONS = [
   "Producer", "Director", "Assistant director", "Camera operator", "EVS operator", "Graphics operator", "Audio",
   "Vision engineer", "Broadcast Venue Manager (BVM)", "Assistant BVM", "Venue Technical Manager (VTM)",
-  "Production Quality Control (PQC)", "Distribution (CDT)", "Other",
+  "Production Quality Control (PQC)", "Production coordinator", "Distribution (CDT)", "Other",
 ];
 
 export const TEAM_COLUMNS = [

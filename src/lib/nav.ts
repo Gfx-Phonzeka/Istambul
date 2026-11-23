@@ -28,7 +28,6 @@ export const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
   {
     title: "nav.groupSupport",
     items: [
-      { key: "requests", href: "/requests", icon: "inbox" },
       { key: "faq", href: "/faq", icon: "help" },
       { key: "glossary", href: "/glossary", icon: "list" },
       { key: "contacts", href: "/contacts", icon: "users" },

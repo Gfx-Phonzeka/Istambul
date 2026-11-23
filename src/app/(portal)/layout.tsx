@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
 import { NAV_GROUPS } from "@/lib/nav";
 import { signOut } from "@/lib/actions/auth";
+import { reportsAccess } from "@/lib/reports";
 
 export const dynamic = "force-dynamic";
 
@@ -25,6 +26,8 @@ export default async function PortalLayout({ children }: { children: React.React
       items: [
         { key: "team.navHome", href: "/team", icon: "broadcast" },
         { key: "team.links.guidelines", href: "/team/guidelines", icon: "book" },
+        ...(reportsAccess(profile).any ? [{ key: "reports.nav", href: "/team/reports", icon: "file" }] : []),
+        { key: "team.links.requests", href: "/requests", icon: "inbox" },
       ],
     });
   }
@@ -38,7 +41,6 @@ export default async function PortalLayout({ children }: { children: React.React
         ...(isAdmin(profile)
           ? [
               { key: "admin.users", href: "/admin/users", icon: "users" },
-              { key: "nav.requests", href: "/admin/requests", icon: "inbox" },
               { key: "admin.teamRequests", href: "/admin/team-requests", icon: "inbox" },
               { key: "team.admin.title", href: "/admin/team", icon: "users" },
               { key: "stats.title", href: "/admin/stats", icon: "activity" },

@@ -1,7 +1,6 @@
-import { AdminRequestList, type SP } from "@/components/requests/AdminRequestList";
+import { redirect } from "next/navigation";
 
-export const metadata = { title: "Service requests" };
-
-export default async function AdminRequests({ searchParams }: { searchParams: Promise<SP> }) {
-  return <AdminRequestList sp={await searchParams} scope="rhb" />;
+// Istanbul: right-holder service requests are handled by the EBU, so only team requests remain.
+export default function AdminRequests() {
+  redirect("/admin/team-requests");
 }

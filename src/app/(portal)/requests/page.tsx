@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
 import { pick } from "@/lib/i18n";
-import { requireApproved } from "@/lib/auth";
+import { requireTeam } from "@/lib/auth";
 import { formatDate, formatDateTime } from "@/lib/format";
 import { Badge, Card, EmptyState, PageHeader } from "@/components/ui";
 import { RequestForm } from "@/components/requests/RequestForm";
@@ -10,8 +10,9 @@ export const metadata = { title: "Service requests" };
 import { STATUS_TONE, TEAM_REQUEST_TYPES } from "@/lib/requests";
 
 export default async function RequestsPage() {
-  const me = await requireApproved();
-  const team = me.role === "production";
+  // Istanbul: only the production team (and staff) files requests here; right-holder requests go to the EBU.
+  const me = await requireTeam();
+  const team = true;
   const { t, locale } = await getT();
   const supabase = await createClient();
   const [{ data: requests }, { data: venues }, { data: sports }] = await Promise.all([
