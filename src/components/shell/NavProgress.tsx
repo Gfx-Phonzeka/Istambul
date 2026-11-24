@@ -10,6 +10,7 @@ export function NavProgress() {
   const pathname = usePathname();
   const search = useSearchParams();
   const [active, setActive] = useState(false);
+  const [, setTick] = useState(0);
 
   useEffect(() => { setActive(false); }, [pathname, search]);
 
@@ -29,11 +30,14 @@ export function NavProgress() {
     return () => document.removeEventListener("click", onClick, true);
   }, []);
 
+  // While a navigation is pending, a light re-render every 250 ms: the app router sometimes holds a page it
+  // already received until React renders again (seen as clicks that took 15 s), and this lets it through.
   // Safety net: never leave the bar on screen.
   useEffect(() => {
     if (!active) return;
+    const tick = setInterval(() => setTick((n) => n + 1), 250);
     const id = setTimeout(() => setActive(false), 15000);
-    return () => clearTimeout(id);
+    return () => { clearInterval(tick); clearTimeout(id); };
   }, [active]);
 
   return <div className={`nav-progress${active ? " is-active" : ""}`} role="progressbar" aria-hidden={!active} aria-label="Loading" />;
