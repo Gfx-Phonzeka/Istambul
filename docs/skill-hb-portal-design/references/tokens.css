@@ -1,0 +1,141 @@
+/*
+ * DESIGN TOKENS — the single place to change the look of the portal.
+ *
+ * Palette (phase 2):
+ *   Studio grey  #ECEEF1  canvas
+ *   Paper        #FFFFFF  cards
+ *   Gallery ink  #16202E  text + dark navigation rail (control-room dark)
+ *   Bosphorus    #0A6B70  the one accent: actions, active state, charts
+ *   Tally red    #D7372A  urgent / live / unread only (camera tally light)
+ *   Slate        #5B6676  secondary text
+ *
+ * Type: Instrument Sans (self-hosted, Latin + Latin-ext for Turkish).
+ *   Body at 100% width; display type and big numbers at 82% width.
+ */
+:root {
+  /* Colour palette */
+  --color-bg: #eceef1;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f3f4f6;
+  --color-border: #e1e4e9;
+  --color-border-strong: #c5cad3;
+  --color-text: #16202e;
+  --color-text-muted: #5b6676;
+  --color-text-inverse: #ffffff;
+
+  --color-primary: #0a6b70;
+  --color-primary-hover: #08585c;
+  --color-primary-soft: #dcedec;
+  --color-primary-contrast: #ffffff;
+
+  --color-ink: #16202e;
+  --color-ink-2: #222e40;
+  --color-ink-text: #c9d1dc;
+  --color-ink-muted: #8793a4;
+
+  --color-accent: #d7372a;
+  --color-success: #19754a;
+  --color-success-soft: #e0f1e7;
+  --color-warning: #8f5600;
+  --color-warning-soft: #fbefd9;
+  --color-danger: #c42f23;
+  --color-danger-soft: #fbe6e3;
+  --color-info: #2a5aa8;
+  --color-info-soft: #e4ecf8;
+  --color-focus: #0a6b70;
+
+  /* Typography */
+  --font-sans: "Instrument Sans Variable", "Instrument Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --stretch-display: 82%;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.375rem;
+  --text-2xl: 2rem;
+  --text-3xl: 2.5rem;
+  --text-4xl: 4rem;
+  --weight-normal: 400;
+  --weight-medium: 500;
+  --weight-bold: 600;
+  --weight-heavy: 700;
+  --leading: 1.55;
+
+  /* Spacing scale */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+
+  /* Radii by hierarchy: frame > card > control > chip */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --radius-pill: 999px;
+  /* Shadows only for things that float above the page */
+  --shadow-sm: none;
+  --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); /* Tailwind shadow-lg */
+
+  /* Layout */
+  --topbar-height: 72px;
+  --sidebar-width: 252px;
+  --rail-inset: 12px;
+  --bottomnav-height: 64px;
+  --content-max: 1240px;
+  --transition: 160ms ease;
+
+  /* Fixed z-index scale (no arbitrary values) */
+  --z-sticky: 10;      /* sticky toolbars inside content */
+  --z-floating: 20;    /* sticky action bars */
+  --z-header: 30;      /* top bar, bottom navigation */
+  --z-rail: 40;        /* navigation rail */
+  --z-overlay: 50;     /* drawer, popovers, menus */
+  --z-modal: 60;       /* dialogs */
+}
+
+/* Camera maps & schematic venue map */
+:root {
+  --field-bg: #f2f5f3;
+  --field-fill: #dde9e2;
+  --field-line: #6a8075;
+  --field-water: #d3e8ee;
+  --cam-l1: #16202e;
+  --cam-l2: #0a6b70;
+  --cam-l3: #a15c00;
+  --cam-special: #d7372a;
+  --cam-highlight: #f2b200;
+  --map-europe: #e3ebee;
+  --map-anatolia: #efebe3;
+  --map-water: #cfe2ea;
+}
+
+/* Instrument Sans Variable (OFL), self-hosted from /public/fonts; the Latin file is preloaded in the root layout. */
+@font-face {
+  font-family: "Instrument Sans Variable"; font-style: normal; font-display: swap; font-weight: 400 700; font-stretch: 75% 100%;
+  src: url("fonts/instrument-sans-latin-ext-wdth-normal.woff2") format("woff2-variations");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Instrument Sans Variable"; font-style: normal; font-display: swap; font-weight: 400 700; font-stretch: 75% 100%;
+  src: url("fonts/instrument-sans-latin-wdth-normal.woff2") format("woff2-variations");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Lima 2027: colours of the Games identity (navy, blue, purple, orange). */
+html[data-event="lima"] {
+  --color-primary: #2d5196;
+  --color-primary-hover: #233f78;
+  --color-primary-soft: #e2e9f6;
+  --color-focus: #2d5196;
+  --color-accent: #e8541e;
+  --color-ink: #1d1f4a;
+  --color-ink-2: #2a2c5e;
+  --color-ink-text: #cfd3ea;
+  --color-ink-muted: #9196bd;
+  --color-bg: #eef0f5;
+}
