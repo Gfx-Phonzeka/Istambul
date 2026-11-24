@@ -57,11 +57,12 @@ export default async function SchedulePage({ searchParams }: { searchParams: Pro
   const calRows = (cal ?? []) as unknown as { id: string; games: string; sport_id: string | null; venue_id: string | null; days: Record<string, DayCode>; location: string | null }[];
   const calGroups: CalendarGroup[] = [...new Set(calRows.map((r) => r.games))].map((g) => {
     const rs = calRows.filter((r) => r.games === g);
+    const ownLocations = rs.some((r) => r.location); // the official calendar's own "location" column, else the venue's cluster
     return {
       key: g, title: t(`schedule.calendar.games.${g}`), days: dayRange(rs, EVENT.calendarRanges?.[g]),
       rows: rs.map((r) => ({
         id: r.id, label: tx(r, "label", locale) || (r.sport_id ? S.get(r.sport_id) ?? "" : ""),
-        location: r.location || (r.venue_id && V.get(r.venue_id)?.location) || "",
+        location: ownLocations ? r.location ?? "" : (r.venue_id && V.get(r.venue_id)?.location) || "",
         venue: (r.venue_id && V.get(r.venue_id)?.title) || "", venueSlug: (r.venue_id && V.get(r.venue_id)?.slug) || null, days: r.days,
       })),
     };
