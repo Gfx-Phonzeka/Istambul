@@ -1,5 +1,6 @@
 /*
- * DESIGN TOKENS — the single place to change the look of the portal.
+ * HB PORTAL DESIGN TOKENS — colours, type, spacing inside components, radii, shadows.
+ * Visual only: no layout sizes, no positioning. Add data-event="lima" on <html> for the Lima 2027 colours.
  *
  * Palette (phase 2):
  *   Studio grey  #ECEEF1  canvas
@@ -81,38 +82,9 @@
   --shadow-sm: none;
   --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); /* Tailwind shadow-lg */
 
-  /* Layout */
-  --topbar-height: 72px;
-  --sidebar-width: 252px;
-  --rail-inset: 12px;
-  --bottomnav-height: 64px;
-  --content-max: 1240px;
   --transition: 160ms ease;
-
-  /* Fixed z-index scale (no arbitrary values) */
-  --z-sticky: 10;      /* sticky toolbars inside content */
-  --z-floating: 20;    /* sticky action bars */
-  --z-header: 30;      /* top bar, bottom navigation */
-  --z-rail: 40;        /* navigation rail */
-  --z-overlay: 50;     /* drawer, popovers, menus */
-  --z-modal: 60;       /* dialogs */
 }
 
-/* Camera maps & schematic venue map */
-:root {
-  --field-bg: #f2f5f3;
-  --field-fill: #dde9e2;
-  --field-line: #6a8075;
-  --field-water: #d3e8ee;
-  --cam-l1: #16202e;
-  --cam-l2: #0a6b70;
-  --cam-l3: #a15c00;
-  --cam-special: #d7372a;
-  --cam-highlight: #f2b200;
-  --map-europe: #e3ebee;
-  --map-anatolia: #efebe3;
-  --map-water: #cfe2ea;
-}
 
 /* Instrument Sans Variable (OFL), self-hosted from /public/fonts; the Latin file is preloaded in the root layout. */
 @font-face {
