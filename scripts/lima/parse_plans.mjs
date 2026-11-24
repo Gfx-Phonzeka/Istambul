@@ -57,6 +57,11 @@ const MAP = {
   "Skating_Velocidad": [["patinaje-velocidad"], ["pista-patinaje-velocidad"]],
   "Softbol": [["softbol"], ["estadio-softbol"]],
   "Remo_Coastal": [["remo-coastal"], ["playa-los-yuyos"]],
+  "Squash": [["squash"], ["car-voley"]],
+  "Surf": [["surf"], ["punta-rocas"]],
+  "Taekwondo": [["taekwondo"], ["coliseo-eduardo-dibos"]],
+  "Tenis": [["tenis"], ["centro-tenis"]],
+  "Tenis_Mesa": [["tenis-mesa"], ["polideportivo-3"]],
   "Hipica_Cross_Coutry": [["ecuestre"], ["escuela-equitacion-ejercito"], ["Cross country (concurso completo)", "Cross-country (eventing)", "Cross-country (CCE)"], 2],
 };
 
@@ -132,13 +137,13 @@ function camType(t) {
   if (/trackcam|riel|rail/.test(s)) return "rail";
   if (/beauty|atmosf/.test(s)) return "beauty";
   if (/ptz|robótica|robotica|robotizada|hothead/.test(s)) return "ptz";
-  if (/minicam|periscop|brazo mágico|refcam|subjetiva de árbitro/.test(s)) return "minicam";
+  if (/minicam|minicámara|micro cámara|mini pared|periscop|brazo mágico|refcam|subjetiva de árbitro/.test(s)) return "minicam";
   if (/moto|barco|catamar|embarcaci/.test(s)) return "rf";
   if (/handheld|hombro|portátil|portatil|\brf\b|móvil|movil|itinerante|5g/.test(s)) return "handheld";
   return "hard";
 }
 
-const SPECIAL = /ssm|usm|super|slo ?mo|drone|dron|skycam|omnicam|jib|grúa|underwater|subacu|trackcam|riel|polecam|periscop|brazo|ptz|robótic|robotiz|overhead|minicam|hothead|cablecam|moto|barco|catamar|steadicam/i;
+const SPECIAL = /ssm|usm|super ?slo|súper|supersl|slo ?mo|drone|dron|skycam|omnicam|jib|grúa|underwater|subacu|trackcam|riel|polecam|periscop|brazo|ptz|robótic|robotiz|overhead|minicam|hothead|cablecam|moto|barco|catamar|steadicam/i;
 
 function angleFrom(c, fov) {
   if (!fov) return null;

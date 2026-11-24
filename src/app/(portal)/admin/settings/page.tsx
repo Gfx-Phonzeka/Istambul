@@ -1,3 +1,4 @@
+import { CEREMONY_KEYS } from "@/lib/event";
 import { requireAdmin } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
@@ -13,11 +14,15 @@ export default async function SettingsPage() {
   await requireAdmin();
   const { t } = await getT();
   const supabase = await createClient();
-  const { data } = await supabase.from("settings").select("key,value").in("key", ["opening_ceremony", "closing_ceremony"]);
+  const { data } = await supabase.from("settings").select("key,value").in("key", CEREMONY_KEYS);
   const value = (key: string) => (data?.find((r) => r.key === key)?.value ?? {}) as { at?: string } & Record<string, string | undefined>;
   const forms = [
     { key: "opening_ceremony", title: t("admin.openingCeremony"), v: value("opening_ceremony") },
     { key: "closing_ceremony", title: t("admin.closingCeremony"), v: value("closing_ceremony") },
+    ...(CEREMONY_KEYS.includes("para_opening_ceremony") ? [
+      { key: "para_opening_ceremony", title: `${t("admin.openingCeremony")} · Parapan`, v: value("para_opening_ceremony") },
+      { key: "para_closing_ceremony", title: `${t("admin.closingCeremony")} · Parapan`, v: value("para_closing_ceremony") },
+    ] : []),
   ];
   return (
     <div className="stack">

@@ -1,3 +1,4 @@
+import { CEREMONY_KEYS } from "@/lib/event";
 import Link from "next/link";
 import { requireApproved } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
@@ -24,7 +25,7 @@ export default async function Dashboard() {
 
   const since = profile.previous_login_at ?? new Date(Date.now() - 14 * 86400000).toISOString();
   const [{ data: opening }, { data: announcements }, { data: deadlines }, { data: changes }] = await Promise.all([
-    supabase.from("settings").select("key,value").in("key", ["opening_ceremony", "closing_ceremony"]),
+    supabase.from("settings").select("key,value").in("key", CEREMONY_KEYS),
     supabase.from("announcements").select("*").eq("status", "published").order("published_at", { ascending: false }).limit(6),
     supabase.from("deadlines").select("*").eq("status", "published").gte("due_at", new Date(Date.now() - 86400000).toISOString()).order("due_at").limit(5),
     supabase.from("content_index").select(`kind,id,${cols("title")},href,published_at,content_updated_at` as "*")

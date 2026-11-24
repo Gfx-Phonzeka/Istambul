@@ -69,3 +69,8 @@ export function toEventLocalInput(iso: string | undefined | null): string {
 }
 
 export const isLima = EVENT.id === "lima";
+
+/** Ceremonies on the dashboard countdown (settings keys). Lima also has the Parapan American Games ceremonies. */
+export const CEREMONY_KEYS = EVENT.id === "lima"
+  ? ["opening_ceremony", "closing_ceremony", "para_opening_ceremony", "para_closing_ceremony"]
+  : ["opening_ceremony", "closing_ceremony"];

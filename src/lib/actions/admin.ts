@@ -48,7 +48,10 @@ export async function deleteUser(userId: string) {
   return run("admin_delete_user", { p_user: userId });
 }
 
-const CEREMONIES = { opening_ceremony: "Opening Ceremony", closing_ceremony: "Closing Ceremony" } as const;
+const CEREMONIES = {
+  opening_ceremony: "Opening Ceremony", closing_ceremony: "Closing Ceremony",
+  para_opening_ceremony: "Parapan Opening Ceremony", para_closing_ceremony: "Parapan Closing Ceremony",
+} as const;
 
 /** Saves the date and labels of the opening or closing ceremony (dashboard countdown). */
 export async function saveCeremony(form: FormData) {
