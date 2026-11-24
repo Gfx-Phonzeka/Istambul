@@ -38,7 +38,7 @@ export default async function SchedulePage({ searchParams }: { searchParams: Pro
     supabase.from("sports").select(`id,${cols("title")},position` as "*").order("position"),
     supabase.from("venues").select(`id,slug,cluster_id,${cols("title")}` as "*").order(`title_${DEFAULT_LOCALE}`),
     supabase.from("favorites").select("target_id").eq("kind", "sport"),
-    supabase.from("calendar_rows").select(`id,games,position,sport_id,venue_id,${cols("label")},days` as "*").order("position"),
+    supabase.from("calendar_rows").select(`id,games,position,sport_id,venue_id,location,${cols("label")},days` as "*").order("position"),
     supabase.from("clusters").select(`id,${cols("title")}` as "*"),
   ]);
   const CL = new Map((clusters ?? []).map((c) => [c.id, shortCluster(tx(c, "title", locale))]));
@@ -54,14 +54,14 @@ export default async function SchedulePage({ searchParams }: { searchParams: Pro
     };
   });
   // Competition calendar by day (no times), grouped by Games (Lima: Pan / Parapan)
-  const calRows = (cal ?? []) as unknown as { id: string; games: string; sport_id: string | null; venue_id: string | null; days: Record<string, DayCode> }[];
+  const calRows = (cal ?? []) as unknown as { id: string; games: string; sport_id: string | null; venue_id: string | null; days: Record<string, DayCode>; location: string | null }[];
   const calGroups: CalendarGroup[] = [...new Set(calRows.map((r) => r.games))].map((g) => {
     const rs = calRows.filter((r) => r.games === g);
     return {
       key: g, title: t(`schedule.calendar.games.${g}`), days: dayRange(rs, EVENT.calendarRanges?.[g]),
       rows: rs.map((r) => ({
         id: r.id, label: tx(r, "label", locale) || (r.sport_id ? S.get(r.sport_id) ?? "" : ""),
-        location: (r.venue_id && V.get(r.venue_id)?.location) || "",
+        location: r.location || (r.venue_id && V.get(r.venue_id)?.location) || "",
         venue: (r.venue_id && V.get(r.venue_id)?.title) || "", venueSlug: (r.venue_id && V.get(r.venue_id)?.slug) || null, days: r.days,
       })),
     };
