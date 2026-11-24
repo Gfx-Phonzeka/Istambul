@@ -431,6 +431,7 @@ const es: PartialMessages = {
     },
   },
   mediaHub: {
+    open: "Abrir",
     title: "Media Hub",
     subtitle: "Paquete gráfico y material promocional para tu cobertura.",
     allCategories: "Todos",
@@ -473,6 +474,7 @@ const es: PartialMessages = {
       replacePreview: "Sustituir vista previa",
       archived: "Versiones archivadas (solo administradores)",
       archivedHelp: "Las versiones anteriores se guardan aquí y los usuarios no las ven.",
+      waitUpload: "Espere a que termine de subir el archivo…",
       newFileHelp: "Elija ahora el archivo (PDF, video, audio, imagen u otro formato). Se adjunta al guardar. La imagen de vista previa se puede añadir después de guardar por primera vez.",
       saveFirst: "Guarda primero este elemento y después podrás subir sus archivos.",
     },

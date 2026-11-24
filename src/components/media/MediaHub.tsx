@@ -174,9 +174,14 @@ export function MediaHub({ items, termsAccepted, termsTitle, termsHtml, focusIte
                 ) : <p className="small muted" style={{ margin: 0 }}>{t("mediaHub.noFile")}</p>}
               </div>
               {i.version && (
-                <button type="button" className="btn btn-primary btn-block" onClick={() => downloadOne(i.id)}>
-                  <Icon name="download" size={18} /> {t("mediaHub.download")}
-                </button>
+                <div className="row" style={{ flexWrap: "nowrap" }}>
+                  {i.category === "documents" && (
+                    <a className="btn btn-block" href={`/api/media/${i.id}/download?inline=1`} target="_blank" rel="noreferrer">{t("mediaHub.open")}</a>
+                  )}
+                  <button type="button" className="btn btn-primary btn-block" onClick={() => downloadOne(i.id)}>
+                    <Icon name="download" size={18} /> {t("mediaHub.download")}
+                  </button>
+                </div>
               )}
             </article>
           ))}

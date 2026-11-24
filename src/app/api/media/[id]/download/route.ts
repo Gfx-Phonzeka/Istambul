@@ -17,7 +17,9 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     return new NextResponse("Not found", { status: 404 });
   }
   const row = (data as { file_path: string; file_name: string }[])[0];
-  const { data: signed } = await supabase.storage.from("media-files").createSignedUrl(row.file_path, 600, { download: row.file_name });
+  // ?inline=1 opens the file in the browser (documents); otherwise it is downloaded with its name.
+  const inline = req.nextUrl.searchParams.get("inline") === "1";
+  const { data: signed } = await supabase.storage.from("media-files").createSignedUrl(row.file_path, 600, inline ? undefined : { download: row.file_name });
   if (!signed?.signedUrl) return new NextResponse("Not found", { status: 404 });
   return NextResponse.redirect(signed.signedUrl);
 }

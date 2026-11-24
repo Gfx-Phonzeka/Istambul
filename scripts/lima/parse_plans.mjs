@@ -52,6 +52,11 @@ const MAP = {
   "Pentatlon": [["pentatlon"], ["estadio-atletico"]],
   "Racquetball": [["raquetbol"], ["canchas-raquetbol"]],
   "Pelota_vasca": [["pelota-vasca"], ["complejo-pelota-vasca"]],
+  "Rugby7": [["rugby"], ["estadio-rugby"]],
+  "Skateboarding": [["skateboarding"], ["skate-park"]],
+  "Skating_Velocidad": [["patinaje-velocidad"], ["pista-patinaje-velocidad"]],
+  "Softbol": [["softbol"], ["estadio-softbol"]],
+  "Remo_Coastal": [["remo-coastal"], ["playa-los-yuyos"]],
   "Hipica_Cross_Coutry": [["ecuestre"], ["escuela-equitacion-ejercito"], ["Cross country (concurso completo)", "Cross-country (eventing)", "Cross-country (CCE)"], 2],
 };
 

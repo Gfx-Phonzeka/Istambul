@@ -422,6 +422,7 @@ const pt: PartialMessages = {
     categories: { welcome: "Boas-vindas", ibc: "IBC", signal: "Sinal e formatos", graphics: "Grafismo", operations: "Operações", venues: "Sedes" },
   },
   mediaHub: {
+    open: "Abrir",
     title: "Media Hub",
     subtitle: "Pacote gráfico e material promocional para sua cobertura.",
     allCategories: "Todos",

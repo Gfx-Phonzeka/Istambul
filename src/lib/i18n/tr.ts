@@ -445,6 +445,7 @@ const tr: Messages = {
     },
   },
   mediaHub: {
+    open: "Aç",
     title: "Medya Merkezi",
     subtitle: "Yayınınız için grafik paketi ve tanıtım materyalleri.",
     allCategories: "Tümü",
@@ -487,6 +488,7 @@ const tr: Messages = {
       replacePreview: "Önizlemeyi değiştir",
       archived: "Arşivlenmiş sürümler (yalnızca yöneticiler)",
       archivedHelp: "Önceki sürümler burada saklanır ve kullanıcılar tarafından görülmez.",
+      waitUpload: "Dosyanın yüklenmesinin bitmesini bekleyin…",
       newFileHelp: "Dosyayı şimdi seçin (PDF, video, ses, görsel veya başka bir biçim). Kaydettiğinizde eklenir. Önizleme görseli ilk kayıttan sonra eklenebilir.",
       saveFirst: "Önce bu öğeyi kaydedin, ardından dosyalarını yükleyebilirsiniz.",
     },

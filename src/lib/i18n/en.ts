@@ -443,6 +443,7 @@ const en = {
     },
   },
   mediaHub: {
+    open: "Open",
     title: "Media Hub",
     subtitle: "Graphics package and promotional material for your coverage.",
     allCategories: "All",
@@ -485,6 +486,7 @@ const en = {
       replacePreview: "Replace preview",
       archived: "Archived versions (administrators only)",
       archivedHelp: "Previous versions are kept here and are not visible to users.",
+      waitUpload: "Wait for the file to finish uploading…",
       newFileHelp: "Choose the file now (PDF, video, audio, image or any other format). It is attached when you save. A preview image can be added after the first save.",
       saveFirst: "Save this item first, then you can upload its files.",
     },

@@ -36,6 +36,7 @@ export function ContentEditor({
   const router = useRouter();
   // New Media Hub item: the file can be chosen before the first save; it becomes version 1 once the item exists.
   const [newFile, setNewFile] = useState<UploadedFile | null>(null);
+  const [uploading, setUploading] = useState(false);
   const [uploadPrefix] = useState(() => `assets/new-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`);
   const type = CONTENT_TYPES[typeKey];
   const [values, setValues] = useState<Values>(initial);
@@ -307,7 +308,7 @@ export function ContentEditor({
               <button type="button" className="btn btn-sm btn-ghost" onClick={() => setNewFile(null)}>{t("reports.remove")}</button>
             </div>
           ) : (
-            <ResumableUpload bucket="media-files" prefix={uploadPrefix} label={t("mediaHub.admin.uploadFile")} onUploaded={(f) => { setNewFile(f); setDirty(true); }} />
+            <ResumableUpload bucket="media-files" prefix={uploadPrefix} label={t("mediaHub.admin.uploadFile")} onBusy={setUploading} onUploaded={(f) => { setNewFile(f); setDirty(true); }} />
           )}
         </section>
       )}
@@ -319,8 +320,9 @@ export function ContentEditor({
           {id && <ConfirmButton className="btn btn-ghost" onConfirm={onDelete} disabled={pending} style={{ color: "var(--color-danger)" }} message={t("cms.deleteConfirm")}>{t("cms.delete")}</ConfirmButton>}
           {id && hasDraft && <button type="button" className="btn" onClick={onDiscard} disabled={pending}>{t("cms.discardDraft")}</button>}
           {id && status === "published" && <button type="button" className="btn" onClick={onUnpublish} disabled={pending}>{t("cms.unpublish")}</button>}
-          <button type="button" className="btn" onClick={onSave} disabled={pending}>{status === "published" ? t("cms.saveDraft") : t("cms.save")}</button>
-          <button type="button" className="btn btn-primary" onClick={onPublish} disabled={pending}>
+          {uploading && <span className="small muted" role="status">{t("mediaHub.admin.waitUpload")}</span>}
+          <button type="button" className="btn" onClick={onSave} disabled={pending || uploading}>{status === "published" ? t("cms.saveDraft") : t("cms.save")}</button>
+          <button type="button" className="btn btn-primary" onClick={onPublish} disabled={pending || uploading}>
             {status === "published" ? t("cms.publishChanges") : t("cms.publish")}
           </button>
         </div>

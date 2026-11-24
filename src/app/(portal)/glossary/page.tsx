@@ -25,7 +25,7 @@ export default async function GlossaryPage({ searchParams }: { searchParams: Pro
     text: `${g.term} ${g.def} ${g.term_en}`,
     node: (
       <div className="card glossary-item" id={`t-${g.id}`}>
-        <dt><strong>{g.term}</strong>{locale === "tr" && g.term_tr && g.term_tr !== g.term_en && <span className="muted small"> · {g.term_en}</span>}{" "}
+        <dt><strong>{g.term}</strong>{locale !== "en" && g.term_en && g.term !== g.term_en && <span className="muted small"> · {g.term_en}</span>}{" "}
           {g.status !== "published" && <Badge tone="warning">{t("cms.status.draft")}</Badge>}</dt>
         <dd>{g.def}</dd>
       </div>

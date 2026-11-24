@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as tus from "tus-js-client";
 import { createClient } from "@/lib/supabase/client";
 import { useI18n } from "@/lib/i18n/client";
@@ -43,13 +43,16 @@ function probe(file: File): Promise<{ duration?: number; width?: number; height?
  * Resumable upload straight from the browser to Supabase Storage (TUS protocol).
  * If the connection drops or the page is reloaded, choosing the same file again resumes where it stopped.
  */
-export function ResumableUpload({ bucket, prefix, accept, label, onUploaded }: {
+export function ResumableUpload({ bucket, prefix, accept, label, onUploaded, onBusy }: {
   bucket: string; prefix: string; accept?: string; label: string; onUploaded: (f: UploadedFile) => Promise<void> | void;
+  /** Told when an upload starts or ends (forms can wait for the file before saving). */
+  onBusy?: (busy: boolean) => void;
 }) {
   const { t } = useI18n();
   const inputRef = useRef<HTMLInputElement>(null);
   const uploadRef = useRef<tus.Upload | null>(null);
   const [state, setState] = useState<"idle" | "uploading" | "paused" | "done" | "error">("idle");
+  useEffect(() => { onBusy?.(state === "uploading" || state === "paused"); }, [state]); // eslint-disable-line react-hooks/exhaustive-deps
   const [progress, setProgress] = useState({ sent: 0, total: 0 });
   const [error, setError] = useState<string | null>(null);
   const [resumed, setResumed] = useState(false);
