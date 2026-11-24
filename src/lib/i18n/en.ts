@@ -679,6 +679,8 @@ const en = {
   schedule: {
     calendar: {
       discipline: "Discipline · venue",
+      cols: { discipline: "Discipline", location: "Location", venue: "Venue" },
+      subjectToChange: "*Subject to change",
       games: { pan: "Pan American Games", para: "Parapan American Games", main: "Competition calendar" },
       legend: { X: "Competition", F: "Women", M: "Men", P: "Competition with medal ceremonies", T: "Classification / training", C: "Ceremony" },
       note: "Competition days from the official calendars (subject to change). Session times will be published here when available.",

@@ -681,6 +681,8 @@ const tr: Messages = {
   schedule: {
     calendar: {
       discipline: "Disiplin · tesis",
+      cols: { discipline: "Disiplin", location: "Konum", venue: "Tesis" },
+      subjectToChange: "*Değişebilir",
       games: { pan: "Pan Amerikan Oyunları", para: "Parapan Amerikan Oyunları", main: "Yarışma takvimi" },
       legend: { X: "Yarışma", F: "Kadınlar", M: "Erkekler", P: "Madalya törenli yarışma", T: "Sınıflandırma / antrenman", C: "Tören" },
       note: "Resmî takvimlere göre yarışma günleri (değişebilir). Seans saatleri açıklandığında burada yayınlanacaktır.",

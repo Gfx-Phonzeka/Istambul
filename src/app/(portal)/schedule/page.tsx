@@ -12,13 +12,17 @@ import { intlLocale } from "@/lib/i18n";
 import { todayIn } from "@/lib/reports";
 
 /** Every day from the first to the last date used by a group of calendar rows. */
-function dayRange(rows: { days: Record<string, string> }[]): string[] {
+function dayRange(rows: { days: Record<string, string> }[], fixed?: [string, string]): string[] {
   const all = rows.flatMap((r) => Object.keys(r.days)).sort();
-  if (!all.length) return [];
+  const [first, last] = fixed ?? [all[0], all[all.length - 1]];
+  if (!first || !last) return [];
   const out: string[] = [];
-  for (let d = new Date(all[0] + "T00:00:00Z"); d <= new Date(all[all.length - 1] + "T00:00:00Z"); d.setUTCDate(d.getUTCDate() + 1)) out.push(d.toISOString().slice(0, 10));
+  for (let d = new Date(first + "T00:00:00Z"); d <= new Date(last + "T00:00:00Z"); d.setUTCDate(d.getUTCDate() + 1)) out.push(d.toISOString().slice(0, 10));
   return out;
 }
+
+/** Short location of a cluster: "Clúster C · VIDENA" → "VIDENA". */
+const shortCluster = (title: string) => (title.includes("·") ? title.split("·").pop()!.trim() : title);
 
 export const metadata = { title: "Competition schedule" };
 
@@ -29,15 +33,17 @@ export default async function SchedulePage({ searchParams }: { searchParams: Pro
   const supabase = await createClient();
   let q = supabase.from("schedule_sessions").select("*").order("start_at");
   if (!preview) q = q.eq("status", "published");
-  const [{ data }, { data: sports }, { data: venues }, { data: favs }, { data: cal }] = await Promise.all([
+  const [{ data }, { data: sports }, { data: venues }, { data: favs }, { data: cal }, { data: clusters }] = await Promise.all([
     q,
     supabase.from("sports").select(`id,${cols("title")},position` as "*").order("position"),
-    supabase.from("venues").select(`id,slug,${cols("title")}` as "*").order(`title_${DEFAULT_LOCALE}`),
+    supabase.from("venues").select(`id,slug,cluster_id,${cols("title")}` as "*").order(`title_${DEFAULT_LOCALE}`),
     supabase.from("favorites").select("target_id").eq("kind", "sport"),
     supabase.from("calendar_rows").select(`id,games,position,sport_id,venue_id,${cols("label")},days` as "*").order("position"),
+    supabase.from("clusters").select(`id,${cols("title")}` as "*"),
   ]);
+  const CL = new Map((clusters ?? []).map((c) => [c.id, shortCluster(tx(c, "title", locale))]));
   const S = new Map((sports ?? []).map((s) => [s.id, tx(s, "title", locale)]));
-  const V = new Map((venues ?? []).map((v) => [v.id, { title: tx(v, "title", locale), slug: v.slug }]));
+  const V = new Map((venues ?? []).map((v) => [v.id, { title: tx(v, "title", locale), slug: v.slug, location: CL.get(v.cluster_id) ?? "" }]));
   const rows: SessionRow[] = (data ?? []).map((raw) => {
     const s = withDraft(raw, preview);
     return {
@@ -52,9 +58,10 @@ export default async function SchedulePage({ searchParams }: { searchParams: Pro
   const calGroups: CalendarGroup[] = [...new Set(calRows.map((r) => r.games))].map((g) => {
     const rs = calRows.filter((r) => r.games === g);
     return {
-      key: g, title: t(`schedule.calendar.games.${g}`), days: dayRange(rs),
+      key: g, title: t(`schedule.calendar.games.${g}`), days: dayRange(rs, EVENT.calendarRanges?.[g]),
       rows: rs.map((r) => ({
         id: r.id, label: tx(r, "label", locale) || (r.sport_id ? S.get(r.sport_id) ?? "" : ""),
+        location: (r.venue_id && V.get(r.venue_id)?.location) || "",
         venue: (r.venue_id && V.get(r.venue_id)?.title) || "", venueSlug: (r.venue_id && V.get(r.venue_id)?.slug) || null, days: r.days,
       })),
     };
@@ -71,7 +78,8 @@ export default async function SchedulePage({ searchParams }: { searchParams: Pro
           today={todayIn(EVENT.tz)}
           intl={intlLocale(locale)}
           labels={{
-            discipline: t("schedule.calendar.discipline"),
+            cols: { discipline: t("schedule.calendar.cols.discipline"), location: t("schedule.calendar.cols.location"), venue: t("schedule.calendar.cols.venue") },
+            subjectToChange: t("schedule.calendar.subjectToChange"),
             legend: Object.fromEntries((["X", "F", "M", "P", "T", "C"] as DayCode[]).map((c) => [c, t(`schedule.calendar.legend.${c}`)])) as Record<DayCode, string>,
             note: t("schedule.calendar.note"),
           }}

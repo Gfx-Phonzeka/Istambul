@@ -62,6 +62,16 @@ const MAP = {
   "Taekwondo": [["taekwondo"], ["coliseo-eduardo-dibos"]],
   "Tenis": [["tenis"], ["centro-tenis"]],
   "Tenis_Mesa": [["tenis-mesa"], ["polideportivo-3"]],
+  "Tiro_con_arco": [["tiro-arco"], ["estadio-rugby"]],
+  "Tiro_skeet": [["tiro-deportivo"], ["poligono-tiro"], null, null, [
+    ["camerasPrecision", "group-precision", ["Galería de precisión (rifle y pistola)", "Precision range (rifle and pistol)", "Galeria de precisão (carabina e pistola)"], 1],
+    ["camerasSkeet", "group-skeet", ["Skeet (plato)", "Skeet (shotgun)", "Skeet (prato)"], 2],
+  ]],
+  "Triatlo": [["triatlon"], ["playa-agua-dulce"]],
+  "Vela": [["vela"], ["yacht-club-paracas"]],
+  "Voleibol_Playa": [["voley-playa"], ["canchas-voley-playa"]],
+  "Voleibol_Sala": [["voleibol"], ["polideportivo-callao"]],
+  "Waterpolo": [["polo-acuatico"], ["centro-acuatico"]],
   "Hipica_Cross_Coutry": [["ecuestre"], ["escuela-equitacion-ejercito"], ["Cross country (concurso completo)", "Cross-country (eventing)", "Cross-country (CCE)"], 2],
 };
 
@@ -122,9 +132,20 @@ function cleanSvg(inner, w, h, vars = {}, classStyle = {}) {
   return { w: Number(w), h: Number(h), markup: s.replace(/\n\s*/g, "\n").trim() };
 }
 
-function extractCameras(html) {
-  const m = /const (cameras|CAMERA_DATABASE) = (\[[\s\S]*?\]);/.exec(html);
+function extractCameras(html, name = "cameras|CAMERA_DATABASE") {
+  const m = new RegExp(`const (${name}) = (\\[[\\s\\S]*?\\]);`).exec(html);
   return vm.runInNewContext(`(${m[2]})`);
+}
+
+/** A file with several fields of play (one SVG group and one camera list each): keeps only the group `keep`. */
+function onlyGroup(html, groups, keep) {
+  let out = html;
+  for (const g of groups) {
+    out = g === keep
+      ? out.replace(new RegExp(`<g id="${g}"[^>]*>`), "<g>")
+      : out.replace(new RegExp(`<g id="${g}"[^>]*>[\\s\\S]*?</g>`), "");
+  }
+  return out;
 }
 
 function camType(t) {
@@ -137,7 +158,7 @@ function camType(t) {
   if (/trackcam|riel|rail/.test(s)) return "rail";
   if (/beauty|atmosf/.test(s)) return "beauty";
   if (/ptz|robótica|robotica|robotizada|hothead/.test(s)) return "ptz";
-  if (/minicam|minicámara|micro cámara|mini pared|periscop|brazo mágico|refcam|subjetiva de árbitro/.test(s)) return "minicam";
+  if (/minicam|minicámara|micro cámara|mini pared|mini rede|mini red\b|periscop|brazo mágico|refcam|subjetiva de árbitro/.test(s)) return "minicam";
   if (/moto|barco|catamar|embarcaci/.test(s)) return "rf";
   if (/handheld|hombro|portátil|portatil|\brf\b|móvil|movil|itinerante|5g/.test(s)) return "handheld";
   return "hard";
@@ -210,6 +231,19 @@ for (const { f, key } of files) {
   if (seen.has(key) || !MAP[key]) continue;
   seen.add(key);
   const html = fs.readFileSync(path.join(dir, f), "utf8");
+  const split = MAP[key][4];
+  if (split) {
+    const [sports, venues] = MAP[key];
+    for (const [varName, gid, title, order] of split) {
+      const svg = extractSvg(onlyGroup(html, split.map((x) => x[1]), gid));
+      const raw = extractCameras(html, varName);
+      const cams = fit(raw.map((c, i) => toCamera(c, i, raw)), svg.w, svg.h);
+      for (const sport of sports) for (const venue of venues)
+        plans.push({ source: key, sport, venue, position: order, title_es: title[0], title_en: title[1], title_pt: title[2], field_shape: `svg:${svg.w}x${svg.h}:${svg.markup}`,
+          cameras: cams.map(({ phase, ...c }, j) => ({ ...c, position: j + 1 })) });
+    }
+    continue;
+  }
   const svg = extractSvg(html);
   const raw = extractCameras(html);
   const cams = fit(raw.map((c, i) => toCamera(c, i, raw)), svg.w, svg.h);

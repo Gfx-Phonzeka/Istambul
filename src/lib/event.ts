@@ -23,6 +23,8 @@ export interface EventConfig {
   bookingUrl?: string;
   /** Integrated Channel (24/7 ready-to-air channel): editors build the daily grid, right holders read it. */
   integratedChannel: boolean;
+  /** Days shown by the competition calendar of each Games ([first, last]); otherwise the span of the data. */
+  calendarRanges?: Record<string, [string, string]>;
 }
 
 const EVENTS: Record<EventId, EventConfig> = {
@@ -54,6 +56,7 @@ const EVENTS: Record<EventId, EventConfig> = {
     rhbRequests: "booking",
     bookingUrl: "https://huin.tv:4443/",
     integratedChannel: true,
+    calendarRanges: { pan: ["2027-07-20", "2027-08-08"] },
   },
 };
 

@@ -655,6 +655,8 @@ const es: PartialMessages = {
   schedule: {
     calendar: {
       discipline: "Disciplina · sede",
+      cols: { discipline: "Disciplina", location: "Ubicación", venue: "Sede" },
+      subjectToChange: "*Sujeto a cambios",
       games: { pan: "Juegos Panamericanos", para: "Juegos Parapanamericanos", main: "Calendario de competencias" },
       legend: { X: "Competencia", F: "Femenino", M: "Masculino", P: "Competencia con ceremonias de premiación", T: "Clasificación / entrenamiento", C: "Ceremonia" },
       note: "Días de competencia según los calendarios oficiales (sujetos a cambios). Los horarios de las sesiones se publicarán aquí cuando estén disponibles.",

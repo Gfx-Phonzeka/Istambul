@@ -726,35 +726,41 @@ html[data-event="lima"] .public-brand .brand-logo { width: 96px; }
 @media (max-width: 900px) { html[data-event="lima"] .topbar-brand .brand-mark.brand-logo { width: 68px; } }
 
 /* Competition calendar by day (no times) */
-.cal-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--color-border); border-radius: var(--radius-md); }
-.cal-scroll:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
-.cal-grid { border-collapse: separate; border-spacing: 0; width: max-content; min-width: 100%; font-size: 0.8125rem; }
-.cal-grid th, .cal-grid td { border-bottom: 1px solid var(--color-border); padding: 0; }
-.cal-grid td { width: 28px; min-width: 28px; height: 30px; border-left: 1px solid var(--color-border); text-align: center; color: #fff; font-size: 0.625rem; }
-.cal-grid .cal-name { position: sticky; left: 0; z-index: 1; background: var(--color-surface); text-align: left; padding: 4px 10px; min-width: 190px; max-width: 240px; border-right: 1px solid var(--color-border-strong); }
-.cal-grid thead .cal-name { vertical-align: bottom; font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
-.cal-label { display: block; font-weight: 600; line-height: 1.2; }
-.cal-venue { display: block; font-size: 0.75rem; color: var(--color-text-muted); line-height: 1.2; }
-.cal-venue a { color: inherit; }
-.cal-day { width: 28px; min-width: 28px; padding: 4px 0 !important; text-align: center; font-weight: 500; line-height: 1.1; border-left: 1px solid var(--color-border); }
-.cal-day span { display: block; }
-.cal-mon { font-size: 0.625rem; text-transform: uppercase; color: var(--color-text-muted); min-height: 1em; }
-.cal-wd { font-size: 0.625rem; color: var(--color-text-muted); }
-.cal-num { font-variant-numeric: tabular-nums; }
-.cal-day.is-weekend { background: var(--color-surface-muted); }
-.cal-day.is-today { background: var(--color-primary); color: var(--color-primary-contrast); }
-.cal-day.is-today span { color: inherit; }
-.cal-grid td.is-today { box-shadow: inset 2px 0 0 var(--color-primary), inset -2px 0 0 var(--color-primary); }
-.cal-grid tbody tr:hover .cal-name, .cal-grid tbody tr:hover td:not([class*="cal-"]) { background: var(--color-surface-muted); }
-.cal-X { background: #7b3f98; }
-.cal-F { background: #e0338a; }
-.cal-M { background: #2f9e74; }
-.cal-P { background: #0b84b5; }
-.cal-T { background: repeating-linear-gradient(135deg, #f3c9e0 0 4px, #fbe8f2 4px 8px); }
-.cal-C { background: #c7a43a; }
+.cal-card { padding: 0; overflow: hidden; }
+.cal-head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-3); flex-wrap: wrap; padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--color-border); }
+.cal-head h2 { margin: 0; font-size: 1.125rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--color-primary); }
+.cal-period { font-size: 0.875rem; font-weight: 600; letter-spacing: 0.12em; color: var(--color-text-muted); }
+.cal-scroll { position: relative; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.cal-scroll:focus-visible { outline: 2px solid var(--color-focus); outline-offset: -2px; }
+.cal-grid { border-collapse: separate; border-spacing: 0; width: max-content; min-width: 100%; font-size: 0.6875rem; }
+.cal-grid th, .cal-grid td { padding: 0; }
+.cal-grid thead th { font-size: 0.625rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-text-muted); padding: 8px 6px; text-align: left; white-space: nowrap; border-bottom: 1px solid var(--color-border); }
+.cal-grid tbody tr:nth-child(even) > * { background: var(--color-surface-muted); }
+.cal-grid tbody tr:hover > * { background: color-mix(in srgb, var(--color-primary) 8%, var(--color-surface)); }
+.cal-name { position: sticky; left: 0; z-index: 1; background: var(--color-surface); min-width: 150px; max-width: 190px; padding: 3px 8px 3px 12px !important; font-weight: 700; text-transform: uppercase; font-size: 0.625rem; letter-spacing: 0.02em; line-height: 1.15; text-align: left; }
+.cal-loc, .cal-venue { padding: 3px 8px !important; text-transform: uppercase; font-size: 0.5625rem; font-weight: 600; letter-spacing: 0.02em; line-height: 1.15; color: var(--color-text-muted); white-space: normal; }
+.cal-loc { min-width: 76px; max-width: 96px; }
+.cal-venue { min-width: 110px; max-width: 150px; }
+.cal-venue a { color: inherit; text-decoration: none; }
+.cal-venue a:hover { color: var(--color-primary); text-decoration: underline; }
+.cal-grid thead .cal-name { z-index: 2; }
+.cal-day { width: 26px; min-width: 26px; text-align: center !important; font-variant-numeric: tabular-nums; font-size: 0.75rem !important; color: var(--color-text) !important; letter-spacing: 0 !important; padding: 8px 0 !important; }
+.cal-day.is-weekend { color: var(--color-text-muted) !important; }
+.cal-day.is-today { background: var(--color-primary); color: var(--color-primary-contrast) !important; border-radius: 6px 6px 0 0; }
+.cal-day.is-month, .cal-cell.is-month { box-shadow: inset 2px 0 0 var(--color-border-strong); }
+.cal-cell { width: 26px; min-width: 26px; text-align: center; vertical-align: middle; padding: 2px 0 !important; }
+.cal-cell.is-today { background: color-mix(in srgb, var(--color-primary) 12%, transparent) !important; }
+.cal-tile { display: inline-block; width: 20px; height: 20px; border-radius: 4px; background: var(--color-surface); border: 1px solid var(--color-border); vertical-align: middle; }
+.cal-tile.cal-X, .cal-tile.cal-F, .cal-tile.cal-M, .cal-tile.cal-P, .cal-tile.cal-T, .cal-tile.cal-C { border-color: transparent; }
+.cal-X { background: #7b3f98 !important; }
+.cal-F { background: #e0338a !important; }
+.cal-M { background: #2f9e74 !important; }
+.cal-P { background: #0b84b5 !important; }
+.cal-T { background: repeating-linear-gradient(135deg, #f3c9e0 0 4px, #fbe8f2 4px 8px) !important; }
+.cal-C { background: #7fb2c8 !important; }
 .cal-legend { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); list-style: none; padding: 0; margin: 0; }
 .cal-legend li { display: flex; align-items: center; gap: 6px; }
-.cal-swatch { display: inline-grid; place-items: center; width: 16px; height: 16px; border-radius: 3px; color: #fff; font-size: 0.5rem; }
+.cal-legend .cal-tile { width: 14px; height: 14px; border-radius: 3px; }
 
 /* Integrated Channel */
 .chip-row { display: flex; flex-wrap: wrap; gap: var(--space-2); }
@@ -779,3 +785,7 @@ html[data-event="lima"] .public-brand .brand-logo { width: 96px; }
 .tl-block strong { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.75rem; }
 .tl-block span { opacity: 0.9; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .prose td img { width: 100%; display: block; margin-bottom: 6px; }
+@media (max-width: 720px) {
+  .cal-grid .cal-loc, .cal-grid .cal-venue { display: none; }
+  .cal-name { min-width: 120px; max-width: 140px; }
+}
