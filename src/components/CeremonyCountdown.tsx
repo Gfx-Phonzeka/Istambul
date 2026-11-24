@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n/client";
 import { tx } from "@/lib/i18n";
 import { formatDateTime } from "@/lib/format";
+import { EVENT } from "@/lib/event";
 
 export interface Ceremony { at: string; label_en: string; label_tr?: string }
 
@@ -39,7 +40,7 @@ export function CeremonyCountdown({ ceremonies }: { ceremonies: Ceremony[] }) {
     <section className="onair" aria-label={t("dashboard.countdownTo")}>
       <div>
         <h2 className="onair-title">{over ? label : `${t("dashboard.countdownTo")} ${label}`}</h2>
-        <p className="onair-meta">{formatDateTime(shown.at, locale)} (TRT, UTC+3)</p>
+        <p className="onair-meta">{formatDateTime(shown.at, locale)} ({EVENT.id === "lima" ? "PET" : "TRT"}, UTC{EVENT.utcOffset.replace(":00", "").replace(/^([+-])0/, "$1")})</p>
       </div>
       {over ? (
         <p className="countdown-value onair-done">{t(list.length > 1 ? "dashboard.finished" : "dashboard.started")}</p>
