@@ -29,7 +29,7 @@ export async function signIn(_: FormState, form: FormData): Promise<FormState> {
     const store = await cookies();
     const locale = normalizeLocale(store.get(LOCALE_COOKIE)?.value);
     const time = new Intl.DateTimeFormat(intlLocale(locale), { timeStyle: "short", timeZone: EVENT.tz }).format(new Date(result.until!));
-    return { error: "auth.locked", errorVars: { time: `${time} (TRT)` } };
+    return { error: "auth.locked", errorVars: { time: `${time} (${EVENT.id === "lima" ? "PET" : "TRT"})` } };
   }
   if (result.status === "invalid") {
     const n = result.remaining ?? 0;
