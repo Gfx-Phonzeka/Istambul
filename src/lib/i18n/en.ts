@@ -55,6 +55,7 @@ const en = {
     channel: "Integrated Channel",
     groupMain: "Portal",
     groupInfo: "Games Information",
+    groupBooking: "Booking",
     groupSupport: "Support",
     groupTeam: "Production Team",
     dashboard: "Home",
@@ -66,7 +67,7 @@ const en = {
     schedule: "Competition Schedule",
     scheduleShort: "Schedule",
     broadcast: "Broadcast & Distribution",
-    requests: "Service Requests",
+    requests: "Booking",
     faq: "FAQ",
     glossary: "Glossary",
     contacts: "Contacts",
@@ -423,6 +424,7 @@ const en = {
   },
   kinds: { guide: "Production Guidelines", session: "Session", venue: "Venue", camera_map: "Camera map", briefing: "Briefing", media: "Media Hub", handbook: "Handbook", news: "Notice", faq: "FAQ", glossary: "Glossary", contacts: "Contact", legal: "Legal", section: "Section" },
   briefings: {
+    seeAll: "See all",
     subtitle: "Information videos from the Host Broadcaster, with English and Turkish subtitles.",
     empty: "No briefing videos published yet.",
     progress: "{n} of {total} watched",
@@ -904,7 +906,7 @@ const en = {
     },
   },
   booking: {
-    title: "Service Requests",
+    title: "Booking",
     subtitle: "Bookings with the Host Broadcaster are made on the booking site.",
     intro: "Unilateral facilities and services are booked on the Host Broadcaster's booking site. Open it with the button below.",
     open: "Open the booking site",

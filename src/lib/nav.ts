@@ -27,11 +27,11 @@ export const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
       ...(EVENT.integratedChannel ? [{ key: "channel", href: "/channel", icon: "play" }] : []),
     ],
   },
+  // Lima: Booking (the way into the booking site) has its own zone. Istanbul: handled by the EBU, so no entry.
+  ...(EVENT.rhbRequests === "booking" ? [{ title: "nav.groupBooking", items: [{ key: "requests", href: "/requests", icon: "inbox" }] }] : []),
   {
     title: "nav.groupSupport",
     items: [
-      // Lima: Service Requests is the way into the booking site. Istanbul: handled by the EBU, so no entry.
-      ...(EVENT.rhbRequests === "booking" ? [{ key: "requests", href: "/requests", icon: "inbox" }] : []),
       { key: "faq", href: "/faq", icon: "help" },
       { key: "glossary", href: "/glossary", icon: "list" },
       { key: "contacts", href: "/contacts", icon: "users" },

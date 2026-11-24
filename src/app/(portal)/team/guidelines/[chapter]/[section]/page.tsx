@@ -17,8 +17,7 @@ export default async function GuideSectionPage({ params, searchParams }: { param
   const me = await requireTeam();
   const { chapter: cslug, section: sslug } = await params;
   const preview = await isPreview(await searchParams);
-  const { t, locale } = await getT();
-  const { chapters, lang, ui } = await getGuideContext(preview);
+  const [{ t, locale }, { chapters, lang, ui }, body] = await Promise.all([getT(), getGuideContext(preview), getGuideBody(cslug, sslug, preview)]);
   const ci = chapters.findIndex((c) => c.slug === cslug);
   if (ci < 0) notFound();
   const chapter = chapters[ci];
@@ -31,7 +30,6 @@ export default async function GuideSectionPage({ params, searchParams }: { param
   const pos = flat.findIndex((x) => x.id === section.id);
   const prev = flat[pos - 1];
   const next = flat[pos + 1];
-  const body = await getGuideBody(section.id, preview);
   const { html, headings } = withHeadingAnchors(decorateGuideHtml(tx({ ...section, ...body }, "body", lang)));
   const staff = isStaff(me);
   const toc = <GuideToc chapters={chapters} lang={lang} current={section.id} preview={preview} labels={{ contents: ui("contents"), draft: t("cms.status.draft") }} />;

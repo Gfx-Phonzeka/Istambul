@@ -57,6 +57,7 @@ const tr: Messages = {
     channel: "Integrated Channel",
     groupMain: "Portal",
     groupInfo: "Oyunlar hakkında bilgi",
+    groupBooking: "Booking",
     groupSupport: "Destek",
     groupTeam: "Üretim Ekibi",
     dashboard: "Ana sayfa",
@@ -425,6 +426,7 @@ const tr: Messages = {
   },
   kinds: { guide: "Üretim Kılavuzu", session: "Seans", venue: "Mekân", camera_map: "Kamera planı", briefing: "Video", media: "Medya Merkezi", handbook: "El kitabı", news: "Duyuru", faq: "SSS", glossary: "Sözlük", contacts: "İletişim", legal: "Yasal", section: "Bölüm" },
   briefings: {
+    seeAll: "Tümünü gör",
     subtitle: "Ev Sahibi Yayıncının İngilizce ve Türkçe altyazılı bilgilendirme videoları.",
     empty: "Henüz bilgilendirme videosu yayınlanmadı.",
     progress: "{total} videodan {n} tanesi izlendi",

@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
-import { tx, DEFAULT_LOCALE } from "@/lib/i18n";
+import { tx, cols, DEFAULT_LOCALE } from "@/lib/i18n";
 import { isPreview } from "@/lib/preview";
 import { withDraft } from "@/lib/content/render";
 import { signPaths } from "@/lib/media";
@@ -26,6 +26,9 @@ export default async function VenuesPage({ searchParams }: { searchParams: Promi
     supabase.from("venue_files").select("venue_id,file_path,position").eq("kind", "photo").order("position"),
     supabase.from("camera_plans").select("id,venue_id").eq("status", "published"),
   ]);
+  // Ceremonies (calendar rows without a sport) are listed with the venue's sports.
+  const { data: cer } = await supabase.from("calendar_rows").select(`id,venue_id,${cols("label")},days` as "*").is("sport_id", null).order("position");
+  const ceremonies = (cer ?? []) as unknown as { id: string; venue_id: string; days: Record<string, string> }[];
   const firstPhoto = new Map<string, string>();
   (photos ?? []).forEach((p) => { if (!firstPhoto.has(p.venue_id)) firstPhoto.set(p.venue_id, p.file_path); });
   const signed = await signPaths(supabase, "venues", [...firstPhoto.values()]);
@@ -40,7 +43,9 @@ export default async function VenuesPage({ searchParams }: { searchParams: Promi
       x: Number(v.map_x), y: Number(v.map_y), n: i + 1, address: v.address, level: v.production_level, capacity: v.capacity,
       photo: firstPhoto.has(v.id) ? signed[firstPhoto.get(v.id)!] ?? null : null,
       sports: (vs ?? []).filter((x) => x.venue_id === v.id && sportMap.has(x.sport_id))
-        .map((x) => ({ id: x.sport_id, title: sportMap.get(x.sport_id)!, dates: dateRange(x.start_date, x.end_date, locale) })),
+        .map((x) => ({ id: x.sport_id, title: sportMap.get(x.sport_id)!, dates: dateRange(x.start_date, x.end_date, locale) }))
+        .concat(ceremonies.filter((c) => c.venue_id === v.id && Object.keys(c.days ?? {})[0])
+          .map((c) => { const d = Object.keys(c.days)[0]; return { id: c.id, title: tx(c, "label", locale), dates: dateRange(d, d, locale) }; })),
       plans: (plans ?? []).filter((p) => p.venue_id === v.id).length,
       draft: v.status !== "published",
     };

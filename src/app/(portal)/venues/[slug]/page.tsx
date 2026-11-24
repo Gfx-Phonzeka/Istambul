@@ -25,13 +25,18 @@ export default async function VenuePage({ params, searchParams }: { params: Prom
   const v = withDraft(data, preview);
   let vsq = supabase.from("venue_sports").select("*").eq("venue_id", v.id).order("start_date");
   if (!preview) vsq = vsq.eq("status", "published");
-  const [{ data: cluster }, { data: vs }, { data: sports }, { data: files }, plans] = await Promise.all([
+  const [{ data: cluster }, { data: vs }, { data: sports }, { data: files }, plans, { data: cer }] = await Promise.all([
     supabase.from("clusters").select(`${cols("title")}` as "*").eq("id", v.cluster_id).maybeSingle(),
     vsq,
     supabase.from("sports").select(`id,${cols("title")}` as "*"),
     supabase.from("venue_files").select("*").eq("venue_id", v.id).order("position"),
     loadPlans(supabase, locale, preview),
+    // Ceremonies held at this venue (calendar rows without a sport), e.g. Estadio Nacional
+    supabase.from("calendar_rows").select(`id,${cols("label")},days` as "*").eq("venue_id", v.id).is("sport_id", null).order("position"),
   ]);
+  const ceremonies = ((cer ?? []) as unknown as { id: string; days: Record<string, string> }[])
+    .map((c) => ({ id: c.id, label: tx(c, "label", locale), day: Object.keys(c.days ?? {})[0] }))
+    .filter((c) => c.day);
   const myPlans = plans.filter((p) => p.venue_id === v.id);
   const { data: cams } = myPlans.length
     ? await supabase.from("cameras").select("id,plan_id,number,type,level,is_special,x,y,angle").in("plan_id", myPlans.map((p) => p.id))
@@ -72,8 +77,14 @@ export default async function VenuePage({ params, searchParams }: { params: Prom
 
       <div className="grid grid-2">
         <Card title={t("venues.sportsAndDates")}>
-          {(vs ?? []).length === 0 ? <p className="muted small">—</p> : (
+          {(vs ?? []).length === 0 && ceremonies.length === 0 ? <p className="muted small">—</p> : (
             <ul className="list">
+              {ceremonies.map((c) => (
+                <li key={c.id} className="row-between">
+                  <strong>{c.label}</strong>
+                  <span className="muted small">{dateRange(c.day, c.day, locale)}</span>
+                </li>
+              ))}
               {(vs ?? []).map((x) => (
                 <li key={x.id} className="row-between">
                   <span className="row" style={{ gap: 4 }}><FavoriteButton kind="sport" id={x.sport_id} initial={fav("sport", x.sport_id)} compact label={sportName(x.sport_id)} /><strong>{sportName(x.sport_id)}</strong></span>

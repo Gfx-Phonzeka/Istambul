@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
 import { withDraft } from "@/lib/content/render";
-import { GUIDE_LANG_COOKIE, GUIDE_UI, loadGuide, resolveGuideLang, type GuideChapter, type GuideSection } from "@/lib/guide";
+import { GUIDE_LANGS, GUIDE_LANG_COOKIE, GUIDE_UI, loadGuide, resolveGuideLang, type GuideChapter, type GuideSection } from "@/lib/guide";
 
 /** Guidelines tree + reading language for the current (team) user. Preview mode includes drafts. */
 export async function getGuideContext(preview: boolean, opts: { withBodies?: boolean } = {}) {
@@ -17,10 +17,13 @@ export async function getGuideContext(preview: boolean, opts: { withBodies?: boo
   return { chapters, lang, ui: fmt, locale };
 }
 
-/** Texts of one section (all three languages), with pending changes in preview mode. */
-export async function getGuideBody(id: string, preview: boolean): Promise<Pick<GuideSection, "body_en" | "body_pt" | "body_tr">> {
+/** Texts of one section (every reading language), found by chapter + section slug so it can load alongside the tree. */
+export async function getGuideBody(chapterSlug: string, sectionSlug: string, preview: boolean): Promise<Partial<GuideSection>> {
   const supabase = await createClient();
-  const { data } = await supabase.from("guide_sections").select("body_en,body_pt,body_tr,draft").eq("id", id).maybeSingle();
-  const row = withDraft((data ?? { body_en: "", draft: null }) as GuideSection, preview);
-  return { body_en: row.body_en, body_pt: row.body_pt, body_tr: row.body_tr };
+  const cols = GUIDE_LANGS.map((l) => `body_${l}`).join(",");
+  const { data } = await supabase.from("guide_sections").select(`${cols},draft,guide_chapters!inner(slug)`)
+    .eq("slug", sectionSlug).eq("guide_chapters.slug", chapterSlug).limit(1).maybeSingle();
+  if (!data) return {};
+  const row = withDraft(data as unknown as GuideSection, preview);
+  return Object.fromEntries(GUIDE_LANGS.map((l) => [`body_${l}`, row[`body_${l}`]]));
 }

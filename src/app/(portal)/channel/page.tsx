@@ -50,8 +50,8 @@ export default async function ChannelPage({ searchParams }: { searchParams: Prom
           </>
         }
       />
-      <div className="grid grid-3">
-        {(["readyToAir", "primeTime", "summary"] as const).map((k) => (
+      <div className="grid grid-2">
+        {(["readyToAir", "summary"] as const).map((k) => (
           <div key={k} className="card stack-sm">
             <strong>{t(`channel.facts.${k}.title`)}</strong>
             <span className="small muted">{t(`channel.facts.${k}.text`)}</span>

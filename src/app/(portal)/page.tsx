@@ -1,6 +1,7 @@
 import { CEREMONY_KEYS } from "@/lib/event";
 import Link from "next/link";
-import { requireApproved } from "@/lib/auth";
+import { BriefingsHighlight } from "@/components/media/BriefingsHighlight";
+import { isTeam, requireApproved } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
 import { tx, cols } from "@/lib/i18n";
@@ -58,6 +59,7 @@ export default async function Dashboard() {
       ))}
 
       {ceremonies.length > 0 && <CeremonyCountdown ceremonies={ceremonies} />}
+      {isTeam(profile) && <BriefingsHighlight supabase={supabase} userId={profile.id} locale={locale} t={t} />}
 
       <div className="grid grid-2">
         <Card title={t("dashboard.announcements")} actions={<Link href="/news" className="small">{t("common.viewAll")}</Link>}>

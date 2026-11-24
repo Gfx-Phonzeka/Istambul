@@ -778,3 +778,4 @@ html[data-event="lima"] .public-brand .brand-logo { width: 96px; }
 .tl-block { position: absolute; top: 6px; bottom: 6px; border-radius: 6px; color: #fff; padding: 3px 6px; overflow: hidden; display: flex; flex-direction: column; justify-content: center; font-size: 0.6875rem; line-height: 1.2; box-shadow: 0 1px 2px rgba(0,0,0,0.15); }
 .tl-block strong { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.75rem; }
 .tl-block span { opacity: 0.9; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.prose td img { width: 100%; display: block; margin-bottom: 6px; }

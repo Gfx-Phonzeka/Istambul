@@ -58,6 +58,7 @@ export default async function BriefingsPage({ searchParams }: { searchParams: Pr
                       {v.duration_seconds ? <span className="duration">{formatDuration(v.duration_seconds)}</span> : null}
                       <div className="media-badges">
                         {watched.has(v.id) ? <Badge tone="success">✓ {t("briefings.watched")}</Badge> : <Badge>{t("briefings.notWatched")}</Badge>}
+                        {v.visibility === "production" && <Badge tone="success">{t("dashboard.productionOnly")}</Badge>}
                         {v.status !== "published" && <Badge tone="warning">{t("cms.status.draft")}</Badge>}
                       </div>
                     </div>

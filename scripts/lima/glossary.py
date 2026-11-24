@@ -152,9 +152,9 @@ T = [  # (term ES, term EN, term PT, definition ES, definition EN, definition PT
  "O responsável técnico de um local. Nos Jogos, o chefe técnico da unidade móvel cumpre esta função."),
 # Lima 2027 (WBM I presentation)
 ("Canal Integrado", "Integrated Channel", "Canal Integrado",
- "Canal 24/7 listo para emitir del Host Broadcaster: emisión continua todos los días de competencia, prime time en vivo de 16:00 a 22:30 y resumen diario cada noche.",
- "The Host Broadcaster's 24/7 ready-to-air channel: continuous broadcast every competition day, live prime time from 16:00 to 22:30 and a daily summary every night.",
- "Canal 24/7 pronto para exibir do Host Broadcaster: transmissão contínua todos os dias de competição, horário nobre ao vivo das 16:00 às 22:30 e resumo diário todas as noites."),
+ "Canal 24/7 listo para emitir del Host Broadcaster: emisión continua todos los días de competencia y resumen diario cada noche.",
+ "The Host Broadcaster's 24/7 ready-to-air channel: continuous broadcast every competition day and a daily summary every night.",
+ "Canal 24/7 pronto para exibir do Host Broadcaster: transmissão contínua todos os dias de competição e resumo diário todas as noites."),
 ("SRT (Secure Reliable Transport)", "SRT (Secure Reliable Transport)", "SRT (Secure Reliable Transport)",
  "Protocolo de transporte de vídeo por IP. En Lima 2027, 13 señales dedicadas en H.264 a 20 Mbps, cifradas, con un Stream ID por señal.",
  "IP video transport protocol. At Lima 2027, 13 dedicated signals in H.264 at 20 Mbps, encrypted, with one Stream ID per signal.",

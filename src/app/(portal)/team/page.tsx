@@ -8,6 +8,7 @@ import { excerpt } from "@/lib/content/render";
 import { formatDate } from "@/lib/format";
 import { Alert, Badge, Card, EmptyState, PageHeader } from "@/components/ui";
 import { Icon } from "@/components/ui/Icon";
+import { BriefingsHighlight } from "@/components/media/BriefingsHighlight";
 
 export const metadata = { title: "Production team" };
 
@@ -23,6 +24,7 @@ export default async function TeamPage() {
   ]);
   const links = [
     { href: "/team/guidelines", icon: "book", label: t("team.links.guidelines"), hint: t("team.links.guidelinesHint") },
+    { href: "/briefings", icon: "play", label: t("nav.briefings"), hint: t("briefings.subtitle") },
     ...(reportsAccess(me).any ? [{ href: "/team/reports", icon: "file", label: t("reports.nav"), hint: t("reports.subtitle") }] : []),
     { href: "/team/requests", icon: "inbox", label: t("team.links.requests"), hint: t("team.links.requestsHint") },
     { href: "/camera-maps", icon: "camera", label: t("nav.cameraMaps"), hint: t("team.links.mapsHint") },
@@ -32,6 +34,7 @@ export default async function TeamPage() {
     <div className="stack">
       <PageHeader title={t("team.title")} subtitle={t("team.subtitle")} />
       <Alert tone="info">{t("team.confidential")}</Alert>
+      <BriefingsHighlight supabase={supabase} userId={me.id} locale={locale} t={t} />
       <div className="grid grid-2">
         <Card title={t("team.messages")} actions={<Link href="/news" className="small">{t("team.allNews")}</Link>}>
           {(messages ?? []).length === 0 ? <EmptyState icon="megaphone">{t("team.noMessages")}</EmptyState> : (
