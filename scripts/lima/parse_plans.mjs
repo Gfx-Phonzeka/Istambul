@@ -41,8 +41,13 @@ const MAP = {
   "Acuaticos_clavados": [["clavados"], ["centro-acuatico"]],
   "Gimnasia_trampolin": [["trampolin"], ["polideportivo-villa-el-salvador"]],
   "Golf": [["golf"], ["lima-golf-club"]],
-  "Hipica_Dressage": [["ecuestre"], ["escuela-equitacion-ejercito"], ["Adiestramiento", "Dressage", "Adestramento"]],
-  "Hipica_Cross_Coutry": [["ecuestre"], ["escuela-equitacion-ejercito"], ["Cross country (concurso completo)", "Cross-country (eventing)", "Cross-country (CCE)"]],
+  "Hipica_Dressage": [["ecuestre"], ["escuela-equitacion-ejercito"], ["Adiestramiento", "Dressage", "Adestramento"], 1],
+  "Hipica_Salto": [["ecuestre"], ["escuela-equitacion-ejercito"], ["Salto", "Jumping", "Saltos"], 3],
+  "Hockey_Cesped": [["hockey"], ["estadio-hockey"]],
+  "Judo": [["judo"], ["coliseo-eduardo-dibos"]],
+  "Karate": [["karate"], ["coliseo-eduardo-dibos"]],
+  "Lucha": [["lucha"], ["coliseo-miguel-grau"]],
+  "Hipica_Cross_Coutry": [["ecuestre"], ["escuela-equitacion-ejercito"], ["Cross country (concurso completo)", "Cross-country (eventing)", "Cross-country (CCE)"], 2],
 };
 
 // One file holds the Para sports plans, drawn by script: fopType → [sport, venue]
@@ -109,6 +114,7 @@ function extractCameras(html) {
 
 function camType(t) {
   const s = t.toLowerCase().replace(/no ptz/g, "");
+  if (/ptz|robótica|robotica/.test(s) && !/drone|dron\b|riel|rail|trackcam/.test(s)) return "ptz";
   if (/drone|dron|skycam|omnicam|4sky|cablecam|aérea|aereo|aéreo|suspendid/.test(s)) return "aerial";
   if (/underwater|subacu|sumergible|polecam/.test(s)) return /polecam|brazo sumergible/.test(s) ? "polecam" : "underwater";
   if (/steadicam|gimbal|estabilizada de flujo/.test(s)) return "steadicam";
@@ -116,7 +122,7 @@ function camType(t) {
   if (/trackcam|riel|rail/.test(s)) return "rail";
   if (/beauty|atmosf/.test(s)) return "beauty";
   if (/ptz|robótica|robotica|robotizada|hothead/.test(s)) return "ptz";
-  if (/minicam|periscop|brazo mágico/.test(s)) return "minicam";
+  if (/minicam|periscop|brazo mágico|refcam|subjetiva de árbitro/.test(s)) return "minicam";
   if (/moto|barco|catamar|embarcaci/.test(s)) return "rf";
   if (/handheld|hombro|portátil|portatil|\brf\b|móvil|movil|itinerante|5g/.test(s)) return "handheld";
   return "hard";
@@ -194,7 +200,7 @@ for (const { f, key } of files) {
   const cams = fit(raw.map((c, i) => toCamera(c, i, raw)), svg.w, svg.h);
   const mixed = cams.some((c) => c.phase === "REMI") && cams.some((c) => c.phase === "OB");
   const shape = `svg:${svg.w}x${svg.h}:${svg.markup}`;
-  const [sports, venues, title] = MAP[key];
+  const [sports, venues, title, order] = MAP[key];
   const variants = mixed
     ? [
         { title: ["Eliminatorias · REMI", "Preliminaries · REMI", "Eliminatórias · REMI"], cameras: cams.filter((c) => c.phase === "REMI") },
@@ -202,7 +208,7 @@ for (const { f, key } of files) {
       ]
     : [{ title: title ?? ALL, cameras: cams }];
   for (const sport of sports) for (const venue of venues) variants.forEach((v, i) => {
-    plans.push({ source: key, sport, venue, position: title ? plans.filter((p) => p.sport === sport).length + 1 : i + 1, title_es: v.title[0], title_en: v.title[1], title_pt: v.title[2], field_shape: shape,
+    plans.push({ source: key, sport, venue, position: order ?? i + 1, title_es: v.title[0], title_en: v.title[1], title_pt: v.title[2], field_shape: shape,
       cameras: v.cameras.map(({ phase, ...c }, j) => ({ ...c, position: j + 1, level: mixed && i === 0 ? "1" : c.level })) });
   });
 }

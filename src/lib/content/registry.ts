@@ -45,7 +45,7 @@ export const FIELD_SHAPES = ["generic", "track", "pool", "pitch", "court", "ring
 ] as const;
 
 export const BRIEFING_CATEGORIES = ["welcome", "ibc", "signal", "graphics", "operations", "venues"] as const;
-export const MEDIA_CATEGORIES = ["graphics", "bumpers", "curtains", "promos", "music"] as const;
+export const MEDIA_CATEGORIES = ["documents", "graphics", "bumpers", "curtains", "promos", "music"] as const;
 
 const visibility: Field = {
   name: "visibility",
@@ -54,6 +54,7 @@ const visibility: Field = {
   required: true,
   options: [
     { value: "all", label: "cms.visibility.all" },
+    { value: "rhb", label: "cms.visibility.rhb" },
     { value: "partners", label: "cms.visibility.partners" },
     { value: "production", label: "cms.visibility.production" },
     { value: "internal", label: "cms.visibility.internal" },

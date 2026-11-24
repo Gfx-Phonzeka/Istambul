@@ -19,7 +19,7 @@ export interface HubItem {
   };
 }
 
-const CATEGORIES = ["all", "graphics", "bumpers", "curtains", "promos", "music"];
+const CATEGORIES = ["all", "documents", "graphics", "bumpers", "curtains", "promos", "music"];
 
 type SavePicker = (o: { suggestedName: string; types?: unknown[] }) => Promise<{ createWritable(): Promise<WritableStream> }>;
 
@@ -56,9 +56,14 @@ export function MediaHub({ items, termsAccepted, termsTitle, termsHtml, focusIte
     else { setPendingAction(() => action); setTermsOpen(true); }
   };
 
-  const downloadOne = (id: string) => requireTerms(() => { window.location.href = `/api/media/${id}/download`; });
+  // Documents (PDF and other files) are information, not broadcast material: no terms needed.
+  const isDoc = (id: string) => items.find((i) => i.id === id)?.category === "documents";
+  const downloadOne = (id: string) => {
+    const go = () => { window.location.href = `/api/media/${id}/download`; };
+    if (isDoc(id)) go(); else requireTerms(go);
+  };
 
-  const downloadSelection = () => requireTerms(async () => {
+  const downloadSelection = () => ([...selected].every(isDoc) ? (f: () => void) => f() : requireTerms)(async () => {
     const ids = [...selected];
     setZip({ done: 0, total: ids.length });
     try {
@@ -139,6 +144,7 @@ export function MediaHub({ items, termsAccepted, termsTitle, termsHtml, focusIte
                   {i.badge === "new" && <Badge tone="success">{t("mediaHub.badgeNew")}</Badge>}
                   {i.badge === "updated" && <Badge tone="info">{t("mediaHub.badgeUpdated")}</Badge>}
                   {i.draft && <Badge tone="warning">{t("cms.status.draft")}</Badge>}
+                  {i.visibility === "rhb" && <Badge tone="info">{t("dashboard.rhbOnly")}</Badge>}
                   {i.visibility === "partners" && <Badge tone="info">{t("dashboard.partnersOnly")}</Badge>}
                 {i.visibility === "production" && <Badge tone="success">{t("dashboard.productionOnly")}</Badge>}
                 </div>

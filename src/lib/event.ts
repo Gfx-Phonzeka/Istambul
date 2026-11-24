@@ -21,6 +21,8 @@ export interface EventConfig {
   /** Right-holder service requests: "none" (handled by someone else) or "booking" (gateway to the booking site). */
   rhbRequests: "none" | "booking";
   bookingUrl?: string;
+  /** Integrated Channel (24/7 ready-to-air channel): editors build the daily grid, right holders read it. */
+  integratedChannel: boolean;
 }
 
 const EVENTS: Record<EventId, EventConfig> = {
@@ -36,6 +38,7 @@ const EVENTS: Record<EventId, EventConfig> = {
     hbName: "Medialuso",
     logo: { src: "/brand/istanbul2027-logo.png", width: 214, height: 194 },
     rhbRequests: "none",
+    integratedChannel: false,
   },
   lima: {
     id: "lima",
@@ -50,6 +53,7 @@ const EVENTS: Record<EventId, EventConfig> = {
     logo: { src: "/brand/lima2027-logo.png", width: 420, height: 227 },
     rhbRequests: "booking",
     bookingUrl: "https://huin.tv:4443/",
+    integratedChannel: true,
   },
 };
 

@@ -30,6 +30,7 @@ export default async function NewsItem({ params, searchParams }: { params: Promi
         <div>
           <div className="row" style={{ marginBottom: 6 }}>
             {a.priority === "urgent" && <Badge tone="danger">{t("dashboard.urgent")}</Badge>}
+            {a.visibility === "rhb" && <Badge tone="info">{t("dashboard.rhbOnly")}</Badge>}
             {a.visibility === "partners" && <Badge tone="info">{t("dashboard.partnersOnly")}</Badge>}
             <span className="muted small">{formatDateTime(a.published_at ?? a.created_at, locale)}</span>
           </div>

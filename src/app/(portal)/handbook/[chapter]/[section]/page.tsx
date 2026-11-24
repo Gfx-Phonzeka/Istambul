@@ -55,6 +55,7 @@ export default async function SectionPage({ params, searchParams }: { params: Pr
               <h1 style={{ marginBottom: 4 }}>{ci + 1}.{si + 1} {tx(section, "title", locale)}</h1>
               <div className="row small muted">
                 {section.content_updated_at && <span>{t("handbook.updated", { date: formatDate(section.content_updated_at, locale) })}</span>}
+                {section.visibility === "rhb" && <Badge tone="info">{t("dashboard.rhbOnly")}</Badge>}
                 {section.visibility === "partners" && <Badge tone="info">{t("dashboard.partnersOnly")}</Badge>}
                 {section.visibility === "production" && <Badge tone="success">{t("dashboard.productionOnly")}</Badge>}
                 {section.visibility === "internal" && <Badge tone="warning">{t("dashboard.internalOnly")}</Badge>}

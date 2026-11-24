@@ -24,6 +24,7 @@ export const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
       { key: "cameraMaps", href: "/camera-maps", icon: "camera" },
       { key: "schedule", href: "/schedule", icon: "calendar" },
       { key: "broadcast", href: "/broadcast", icon: "broadcast" },
+      ...(EVENT.integratedChannel ? [{ key: "channel", href: "/channel", icon: "play" }] : []),
     ],
   },
   {

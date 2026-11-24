@@ -34,6 +34,7 @@ export default async function NewsPage({ searchParams }: { searchParams: Promise
             <Link key={a.id} href={`/news/${a.id}${preview ? "?preview=1" : ""}`} className={`card card-link${a.priority === "urgent" ? " card-urgent" : ""}`}>
               <div className="row" style={{ marginBottom: 4 }}>
                 {a.priority === "urgent" && <Badge tone="danger">{t("dashboard.urgent")}</Badge>}
+                {a.visibility === "rhb" && <Badge tone="info">{t("dashboard.rhbOnly")}</Badge>}
                 {a.visibility === "partners" && <Badge tone="info">{t("dashboard.partnersOnly")}</Badge>}
                 {a.visibility === "production" && <Badge tone="success">{t("dashboard.productionOnly")}</Badge>}
                 {a.visibility === "internal" && <Badge tone="warning">{t("dashboard.internalOnly")}</Badge>}

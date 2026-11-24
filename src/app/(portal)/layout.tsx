@@ -1,3 +1,4 @@
+import { EVENT } from "@/lib/event";
 import { cols } from "@/lib/i18n";
 import { AppShell } from "@/components/shell/AppShell";
 import { requireApproved, isStaff, isAdmin, isTeam } from "@/lib/auth";
@@ -39,6 +40,7 @@ export default async function PortalLayout({ children }: { children: React.React
         { key: "admin.overview", href: "/admin", icon: "settings" },
         { key: "cms.title", href: "/admin/content", icon: "file" },
         { key: "import.title", href: "/admin/import", icon: "download" },
+        ...(EVENT.integratedChannel ? [{ key: "channel.admin.nav", href: "/admin/channel", icon: "play" }] : []),
         ...(isAdmin(profile)
           ? [
               { key: "admin.users", href: "/admin/users", icon: "users" },

@@ -755,3 +755,10 @@ html[data-event="lima"] .public-brand .brand-logo { width: 96px; }
 .cal-legend { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); list-style: none; padding: 0; margin: 0; }
 .cal-legend li { display: flex; align-items: center; gap: 6px; }
 .cal-swatch { display: inline-grid; place-items: center; width: 16px; height: 16px; border-radius: 3px; color: #fff; font-size: 0.5rem; }
+
+/* Integrated Channel */
+.chip-row { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.chip-row a.chip { text-decoration: none; }
+.channel-grid tr.is-onair td { background: var(--color-success-soft); }
+.channel-editor-form { display: grid; gap: var(--space-3); grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr)); align-items: end; }
+.channel-editor-form .span-all { grid-column: 1 / -1; }

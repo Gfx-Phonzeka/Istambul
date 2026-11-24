@@ -40,6 +40,7 @@ export default async function HandbookIndex({ searchParams }: { searchParams: Pr
                 {c.sections.map((s, si) => (
                   <li key={s.id}>
                     <Link prefetch={false} href={`/handbook/${c.slug}/${s.slug}${q}`}>{ci + 1}.{si + 1} {tx(s, "title", locale)}</Link>{" "}
+                    {s.visibility === "rhb" && <Badge tone="info">{t("dashboard.rhbOnly")}</Badge>}
                     {s.visibility === "partners" && <Badge tone="info">{t("dashboard.partnersOnly")}</Badge>}
                 {s.visibility === "production" && <Badge tone="success">{t("dashboard.productionOnly")}</Badge>}
                     {s.visibility === "internal" && <Badge tone="warning">{t("dashboard.internalOnly")}</Badge>}

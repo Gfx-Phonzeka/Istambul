@@ -32,6 +32,7 @@ export default async function FaqPage({ searchParams }: { searchParams: Promise<
           <summary>
             {question}{" "}
             {f.status !== "published" && <Badge tone="warning">{t("cms.status.draft")}</Badge>}
+            {f.visibility === "rhb" && <Badge tone="info">{t("dashboard.rhbOnly")}</Badge>}
             {f.visibility === "partners" && <Badge tone="info">{t("dashboard.partnersOnly")}</Badge>}
           </summary>
           <RichText html={answer} />
