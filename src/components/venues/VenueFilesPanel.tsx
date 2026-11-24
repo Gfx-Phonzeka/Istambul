@@ -5,22 +5,23 @@ import { useI18n } from "@/lib/i18n/client";
 import { ResumableUpload } from "@/components/media/ResumableUpload";
 import { addVenueFile, deleteVenueFile, updateVenueFile } from "@/lib/actions/venues";
 import { ConfirmButton } from "@/components/ui/ConfirmButton";
+import { LOCALES } from "@/lib/i18n";
 
-export interface VenueFileRow { id: string; kind: "photo" | "document"; title_en: string | null; title_tr: string | null; file_name: string; url: string | null }
+export interface VenueFileRow { id: string; kind: "photo" | "document"; title_en: string | null; title_tr: string | null; file_name: string; url: string | null; [k: `title_${string}`]: string | null }
 
 function FileRow({ f }: { f: VenueFileRow }) {
   const { t } = useI18n();
   const router = useRouter();
-  const [en, setEn] = useState(f.title_en ?? "");
-  const [tr, setTr] = useState(f.title_tr ?? "");
+  const [titles, setTitles] = useState<Record<string, string>>(Object.fromEntries(LOCALES.map((l) => [l, f[`title_${l}`] ?? ""])));
   const [pending, start] = useTransition();
   return (
     <li className="row">
       {f.kind === "photo" && f.url && <img src={f.url} alt="" width={80} height={45} loading="lazy" style={{ width: 80, height: 45, objectFit: "cover", borderRadius: 4 }} />}
-      <input className="input" style={{ flex: 1, minWidth: 140 }} value={en} onChange={(e) => setEn(e.target.value)} placeholder={`${t("cms.fields.title")} (EN)`} />
-      <input className="input" style={{ flex: 1, minWidth: 140 }} value={tr} onChange={(e) => setTr(e.target.value)} placeholder={`${t("cms.fields.title")} (TR)`} />
+      {LOCALES.map((l) => (
+        <input key={l} className="input" style={{ flex: 1, minWidth: 140 }} value={titles[l]} onChange={(e) => setTitles((x) => ({ ...x, [l]: e.target.value }))} placeholder={`${t("cms.fields.title")} (${l.toUpperCase()})`} aria-label={`${t("cms.fields.title")} (${l.toUpperCase()})`} />
+      ))}
       <span className="muted small">{f.file_name}</span>
-      <button type="button" className="btn btn-sm" disabled={pending} onClick={() => start(async () => { await updateVenueFile(f.id, en, tr); router.refresh(); })}>{t("common.save")}</button>
+      <button type="button" className="btn btn-sm" disabled={pending} onClick={() => start(async () => { await updateVenueFile(f.id, titles); router.refresh(); })}>{t("common.save")}</button>
       <ConfirmButton className="btn btn-sm btn-ghost" style={{ color: "var(--color-danger)" }} disabled={pending} message={t("cms.deleteConfirm")}
         onConfirm={() => start(async () => { await deleteVenueFile(f.id); router.refresh(); })}>{t("cms.delete")}</ConfirmButton>
     </li>

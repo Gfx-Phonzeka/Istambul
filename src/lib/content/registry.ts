@@ -287,6 +287,8 @@ CONTENT_TYPES.broadcast_feed = {
     { name: "start_at", label: "cms.fields.startAt", kind: "datetime", required: true },
     { name: "end_at", label: "cms.fields.endAt", kind: "datetime", required: true },
     { name: "channel", label: "cms.fields.channel", kind: "text", required: true },
+    { name: "transport", label: "cms.fields.transport", kind: "select", options: ["satellite", "srt", "satellite_srt"].map((v) => ({ value: v, label: `broadcast.transport.${v}` })) },
+    { name: "reception", label: "cms.fields.reception", kind: "text" },
     { name: "notes", label: "cms.fields.notes", kind: "text", bilingual: true },
     visibility,
   ],
@@ -299,7 +301,7 @@ CONTENT_TYPES.distribution_channel = {
   fields: [
     {
       name: "kind", label: "cms.fields.channelKind", kind: "select", required: true,
-      options: ["satellite", "fibre", "streaming", "other"].map((k) => ({ value: k, label: `broadcast.channelKinds.${k}` })),
+      options: ["satellite", "srt", "fibre", "streaming", "other"].map((k) => ({ value: k, label: `broadcast.channelKinds.${k}` })),
     },
     title,
     { name: "body", label: "cms.fields.body", kind: "richtext", bilingual: true, required: true },

@@ -47,6 +47,11 @@ const MAP = {
   "Judo": [["judo"], ["coliseo-eduardo-dibos"]],
   "Karate": [["karate"], ["coliseo-eduardo-dibos"]],
   "Lucha": [["lucha"], ["coliseo-miguel-grau"]],
+  "Halterofilia": [["levantamiento-pesas"], ["coliseo-mariscal-caceres"]],
+  "Patinaje_artistico": [["patinaje-artistico"], ["velodromo"]],
+  "Pentatlon": [["pentatlon"], ["estadio-atletico"]],
+  "Racquetball": [["raquetbol"], ["canchas-raquetbol"]],
+  "Pelota_vasca": [["pelota-vasca"], ["complejo-pelota-vasca"]],
   "Hipica_Cross_Coutry": [["ecuestre"], ["escuela-equitacion-ejercito"], ["Cross country (concurso completo)", "Cross-country (eventing)", "Cross-country (CCE)"], 2],
 };
 

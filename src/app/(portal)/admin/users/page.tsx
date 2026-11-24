@@ -4,6 +4,7 @@ import { getT } from "@/lib/i18n/server";
 import { formatDate, formatDateTime } from "@/lib/format";
 import { Badge, EmptyState, PageHeader, Tabs } from "@/components/ui";
 import { UserActions, type AdminUserRow } from "./UserActions";
+import { CreateUser } from "./CreateUser";
 
 export const metadata = { title: "Users" };
 
@@ -33,7 +34,7 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
     <div className="stack">
       <PageHeader
         title={t("admin.users")}
-        actions={<a className="btn" href={`/api/admin/users/export?status=${current}`}>{t("admin.exportExcel")}</a>}
+        actions={<><CreateUser /><a className="btn" href={`/api/admin/users/export?status=${current}`}>{t("admin.exportExcel")}</a></>}
       />
       <Tabs items={TABS.map((s) => ({ href: `/admin/users?status=${s}`, label: `${t(`admin.tabs.${s}`)} (${count(s)})`, active: s === current }))} />
       <form className="row" role="search">

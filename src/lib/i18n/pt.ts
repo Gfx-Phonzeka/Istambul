@@ -198,6 +198,7 @@ const pt: PartialMessages = {
     memberSince: "Membro desde",
   },
   admin: {
+    createUser: { button: "Criar usuário", title: "Criar usuário", help: "A conta é criada já aprovada, com o papel que escolher. Nenhum e-mail é enviado: entregue você mesmo o e-mail e a senha à pessoa.", role: "Papel", language: "Idioma", generate: "Nova senha", submit: "Criar conta", done: "Conta criada e aprovada.", copyHint: "Copie agora os dados de acesso (a senha não volta a ser mostrada):" },
     teamRequests: "Solicitações da equipe",
     title: "Backoffice",
     overview: "Resumo",
@@ -309,6 +310,8 @@ const pt: PartialMessages = {
       faq_category: "categoria", faq: "pergunta", glossary_term: "termo", contact_area: "área", contact: "contato", legal_page: "página",
     },
     fields: {
+      transport: "Transporte",
+      reception: "Dados de recepção",
       trReviewed: "Revisado por um falante nativo", title: "Título", slug: "Endereço web (slug)", summary: "Resumo", position: "Ordem", visibility: "Visível para",
       chapter: "Capítulo", body: "Texto", priority: "Prioridade", dueAt: "Data e hora (horário de Lima)", link: "Link",
       category: "Categoria", question: "Pergunta", answer: "Resposta", term: "Termo", definition: "Definição",
@@ -600,7 +603,8 @@ const pt: PartialMessages = {
     subtitle: "Grade de sinais, canais de distribuição, parâmetros técnicos e produção adicional.",
     tabs: { feeds: "Grade de sinais", distribution: "Distribuição", technical: "Parâmetros técnicos", additional: "Produção adicional" },
     feedTypes: { multilateral: "Multilateral", iso: "Sinal ISO", highlights: "Highlights", ceremony: "Cerimônia", other: "Outro" },
-    channelKinds: { satellite: "Satélite", fibre: "Fibra", streaming: "Streaming", other: "Outro" },
+    transport: { satellite: "Satélite", srt: "SRT", satellite_srt: "Satélite + SRT" },
+    channelKinds: { satellite: "Satélite", srt: "SRT", fibre: "Fibra", streaming: "Streaming", other: "Outro" },
     paramGroups: { video: "Vídeo", audio: "Áudio", graphics: "Grafismo", timecode: "Timecode", other: "Outro" },
     allTypes: "Todos os tipos de sinal",
     allChannels: "Todos os canais",

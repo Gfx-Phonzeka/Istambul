@@ -5,12 +5,17 @@ import { useI18n } from "@/lib/i18n/client";
 import { getPlanCameras, saveCameras, type CameraInput } from "@/lib/actions/venues";
 import { translateFields } from "@/lib/actions/translate";
 import { CameraMap } from "./CameraMap";
+import { LOCALES } from "@/lib/i18n";
+import { usesTranslationPair } from "@/lib/content/registry";
 import { CameraLegend } from "./PlanViewer";
 import { useUnsavedGuard } from "@/lib/hooks/useUnsavedGuard";
 
 export const CAMERA_TYPES = ["hard", "handheld", "rf", "crane", "polecam", "rail", "aerial", "beauty", "steadicam", "minicam", "underwater", "ptz", "other"];
 
 type Cam = CameraInput & { key: string };
+
+/** Empty or stored function texts for every portal language. */
+export const fnFields = (c?: Record<string, unknown>) => Object.fromEntries(LOCALES.map((l) => [`function_${l}`, ((c?.[`function_${l}`] as string) ?? "")])) as Record<`function_${string}`, string>;
 
 let seq = 0;
 const newKey = () => `new-${Date.now()}-${seq++}`;
@@ -33,10 +38,10 @@ export function CameraEditor({ planId, shape, initial, otherPlans }: {
     angle: c.angle === "" || Number.isNaN(Number(c.angle)) ? null : Number(c.angle),
   })), [cams]);
 
-  const update = (key: string, patch: Partial<Cam>) => { setCams((list) => list.map((c) => (c.key === key ? { ...c, ...patch } : c))); setDirty(true); };
+  const update = (key: string, patch: Partial<Cam>) => { setCams((list) => list.map((c) => (c.key === key ? ({ ...c, ...patch } as Cam) : c))); setDirty(true); };
   const nextNumber = () => String(cams.reduce((m, c) => Math.max(m, Number.parseInt(c.number, 10) || 0), 0) + 1);
   const add = () => {
-    const c: Cam = { key: newKey(), number: nextNumber(), type: "hard", lens: "", function_en: "", function_tr: "", level: "1", is_special: false, x: 0.5, y: 0.5, angle: "" };
+    const c: Cam = { key: newKey(), number: nextNumber(), type: "hard", lens: "", ...fnFields(), level: "1", is_special: false, x: 0.5, y: 0.5, angle: "" };
     setCams((l) => [...l, c]); setSelected(c.key); setDirty(true);
   };
   const duplicate = (c: Cam) => {
@@ -50,7 +55,7 @@ export function CameraEditor({ planId, shape, initial, otherPlans }: {
   };
 
   const translateFunctions = () => start(async () => {
-    const items = cams.filter((c) => c.function_en.trim() && !c.function_tr.trim()).map((c) => ({ key: c.key, text: c.function_en, html: false }));
+    const items = cams.filter((c) => c.function_en?.trim() && !c.function_tr?.trim()).map((c) => ({ key: c.key, text: c.function_en, html: false }));
     if (!items.length) { setMsg({ tone: "success", text: t("translate.nothing") }); return; }
     const r = await translateFields(items);
     if (!r.ok) { setMsg({ tone: "danger", text: t(`translate.errors.${r.error}`) }); return; }
@@ -66,7 +71,7 @@ export function CameraEditor({ planId, shape, initial, otherPlans }: {
       // Keep the editor in place and take the saved rows (with their new ids) from the server.
       setCams((r.cameras ?? []).map((c) => ({
         key: String(c.id), id: String(c.id), number: String(c.number), type: String(c.type), lens: (c.lens as string) ?? "",
-        function_en: (c.function_en as string) ?? "", function_tr: (c.function_tr as string) ?? "", level: String(c.level),
+        ...fnFields(c), level: String(c.level),
         is_special: Boolean(c.is_special), x: Number(c.x), y: Number(c.y), angle: c.angle == null ? "" : String(c.angle),
       })));
       setDirty(false);
@@ -85,7 +90,7 @@ export function CameraEditor({ planId, shape, initial, otherPlans }: {
       while (used.has(number.toLowerCase())) number = `${number}b`;
       used.add(number.toLowerCase());
       return {
-        key: newKey(), number, type: c.type, lens: c.lens ?? "", function_en: c.function_en ?? "", function_tr: c.function_tr ?? "",
+        key: newKey(), number, type: c.type, lens: c.lens ?? "", ...fnFields(c),
         level: c.level, is_special: c.is_special, x: Number(c.x), y: Number(c.y), angle: c.angle == null ? "" : String(c.angle),
       };
     });
@@ -98,7 +103,7 @@ export function CameraEditor({ planId, shape, initial, otherPlans }: {
       <div className="row-between">
         <h2 className="card-title" style={{ margin: 0 }}>{t("cameraMaps.admin.cameras")} ({cams.length})</h2>
         <div className="row">
-          <button type="button" className="btn btn-sm" onClick={translateFunctions} disabled={pending}>⇄ {t("translate.cameraFunctions")}</button>
+          {usesTranslationPair && <button type="button" className="btn btn-sm" onClick={translateFunctions} disabled={pending}>⇄ {t("translate.cameraFunctions")}</button>}
           <button type="button" className="btn btn-sm" onClick={add}>+ {t("cameraMaps.admin.addCamera")}</button>
           <button type="button" className="btn btn-sm btn-primary" onClick={save} disabled={pending || !dirty}>{t("cameraMaps.admin.saveCameras")}</button>
         </div>
@@ -115,7 +120,7 @@ export function CameraEditor({ planId, shape, initial, otherPlans }: {
           <thead>
             <tr>
               <th>{t("cameraMaps.cols.number")}</th><th>{t("cameraMaps.cols.type")}</th><th>{t("cameraMaps.cols.lens")}</th>
-              <th>{t("cameraMaps.cols.function")} (EN)</th><th>{t("cameraMaps.cols.function")} (TR)</th><th>{t("cameraMaps.cols.level")}</th>
+              {LOCALES.map((l) => <th key={l}>{t("cameraMaps.cols.function")} ({l.toUpperCase()})</th>)}<th>{t("cameraMaps.cols.level")}</th>
               <th>{t("cameraMaps.cols.special")}</th><th>{t("cameraMaps.cols.angle")}</th><th />
             </tr>
           </thead>
@@ -129,8 +134,9 @@ export function CameraEditor({ planId, shape, initial, otherPlans }: {
                   </select>
                 </td>
                 <td><input className="input" style={{ width: 90 }} value={c.lens} onChange={(e) => update(c.key, { lens: e.target.value })} aria-label={t("cameraMaps.cols.lens")} /></td>
-                <td><input className="input" value={c.function_en} onChange={(e) => update(c.key, { function_en: e.target.value })} aria-label={`${t("cameraMaps.cols.function")} EN`} /></td>
-                <td><input className="input" value={c.function_tr} onChange={(e) => update(c.key, { function_tr: e.target.value })} aria-label={`${t("cameraMaps.cols.function")} TR`} /></td>
+                {LOCALES.map((l) => (
+                  <td key={l}><input className="input" value={c[`function_${l}`] ?? ""} onChange={(e) => update(c.key, { [`function_${l}`]: e.target.value })} aria-label={`${t("cameraMaps.cols.function")} ${l.toUpperCase()}`} /></td>
+                ))}
                 <td>
                   <select className="select" style={{ width: 64 }} value={c.level} onChange={(e) => update(c.key, { level: e.target.value })} aria-label={t("cameraMaps.cols.level")}>
                     {["1", "2", "3"].map((l) => <option key={l} value={l}>{l}</option>)}

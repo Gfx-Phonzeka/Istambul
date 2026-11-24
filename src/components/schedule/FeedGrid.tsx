@@ -8,7 +8,7 @@ import { useUrlState } from "@/lib/hooks/useUrlState";
 
 export interface FeedRow {
   id: string; code: string; type: string; title: string; venue: string; venueSlug: string | null; sport: string;
-  start: string; end: string; channel: string; notes: string; draft: boolean;
+  start: string; end: string; channel: string; notes: string; draft: boolean; transport: string | null; reception: string | null;
 }
 
 const TRT = EVENT.tz;
@@ -59,7 +59,7 @@ export function FeedGrid({ feeds }: { feeds: FeedRow[] }) {
                       <td><strong>{f.title}</strong>{f.notes && <div className="small muted">{f.notes}</div>}<div className="small muted">{f.code}</div></td>
                       <td><Badge tone={TONE[f.type]}>{t(`broadcast.feedTypes.${f.type}`)}</Badge> {f.draft && <Badge tone="warning">{t("cms.status.draft")}</Badge>}</td>
                       <td className="small">{f.venueSlug ? <a href={`/venues/${f.venueSlug}`}>{f.venue}</a> : "—"}</td>
-                      <td><code className="small">{f.channel}</code></td>
+                      <td><code className="small">{f.channel}</code>{f.transport && <div><Badge tone="info">{t(`broadcast.transport.${f.transport}`)}</Badge></div>}{f.reception && <div className="small muted">{f.reception}</div>}</td>
                     </tr>
                   ))}
                 </tbody>

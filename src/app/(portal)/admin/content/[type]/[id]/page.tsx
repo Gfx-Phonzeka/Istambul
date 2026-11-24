@@ -5,7 +5,7 @@ import { requireStaff, isAdmin } from "@/lib/auth";
 import { signPaths } from "@/lib/media";
 import { MediaVersionsPanel, type VersionRow } from "@/components/media/MediaVersionsPanel";
 import { BriefingFilesPanel } from "@/components/media/BriefingFilesPanel";
-import { CameraEditor } from "@/components/venues/CameraEditor";
+import { fnFields, CameraEditor } from "@/components/venues/CameraEditor";
 import { DrawingPanel, type DrawingRow } from "@/components/venues/DrawingPanel";
 import { VenueFilesPanel, type VenueFileRow } from "@/components/venues/VenueFilesPanel";
 import { createClient } from "@/lib/supabase/server";
@@ -144,7 +144,7 @@ export default async function EditContent({ params, searchParams }: { params: Pr
           planId={String(row.id)}
           shape={shape}
           initial={(cams ?? []).map((c) => ({
-            key: c.id, id: c.id, number: c.number, type: c.type, lens: c.lens ?? "", function_en: c.function_en ?? "", function_tr: c.function_tr ?? "",
+            key: c.id, id: c.id, number: c.number, type: c.type, lens: c.lens ?? "", ...fnFields(c),
             level: c.level, is_special: c.is_special, x: Number(c.x), y: Number(c.y), angle: c.angle == null ? "" : String(c.angle),
           }))}
           otherPlans={(others ?? []).map((p) => ({ id: p.id, label: `${vn.get(p.venue_id) ?? ""} · ${sn.get(p.sport_id) ?? ""} · ${p.title}` }))}
@@ -171,7 +171,7 @@ export default async function EditContent({ params, searchParams }: { params: Pr
         previewUrl={previewUrl}
       />
       {extra}
-      {!row && ["media_asset", "briefing_video", "venue", "camera_plan"].includes(key) && <p className="muted small">{t("mediaHub.admin.saveFirst")}</p>}
+      {!row && ["briefing_video", "venue", "camera_plan"].includes(key) && <p className="muted small">{t("mediaHub.admin.saveFirst")}</p>}
     </div>
   );
 }

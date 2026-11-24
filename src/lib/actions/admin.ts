@@ -20,6 +20,20 @@ async function run(fn: string, args: Record<string, unknown>, sendEmails = false
 export async function reviewUser(userId: string, decision: "approve" | "reject", role: string | null, reason: string) {
   return run("admin_review_user", { p_user: userId, p_decision: decision, p_role: role, p_reason: reason }, true);
 }
+export interface NewUserInput { email: string; password: string; first_name: string; last_name: string; organization: string; country: string; job_title: string; role: string; lang: string }
+
+/** Creates an approved account with a role (no registration or approval step). */
+export async function createUser(input: NewUserInput): Promise<Result> {
+  await requireAdmin();
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("admin_create_user", { p: input });
+  if (error) return { ok: false, error: error.message };
+  const r = data as { ok: boolean; error?: string };
+  if (!r.ok) return { ok: false, error: r.error };
+  revalidatePath("/admin/users");
+  return { ok: true };
+}
+
 export async function setUserRole(userId: string, role: string) {
   return run("admin_set_user_role", { p_user: userId, p_role: role });
 }

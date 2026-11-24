@@ -11,6 +11,8 @@ import { useI18n } from "@/lib/i18n/client";
 import { Badge } from "@/components/ui";
 import { ConfirmButton } from "@/components/ui/ConfirmButton";
 import { useUnsavedGuard } from "@/lib/hooks/useUnsavedGuard";
+import { ResumableUpload, fmtBytes, type UploadedFile } from "@/components/media/ResumableUpload";
+import { addMediaVersion } from "@/lib/actions/media";
 
 const RichTextEditor = dynamic(() => import("./RichTextEditor").then((m) => m.RichTextEditor), {
   ssr: false,
@@ -32,6 +34,9 @@ export function ContentEditor({
 }) {
   const { t } = useI18n();
   const router = useRouter();
+  // New Media Hub item: the file can be chosen before the first save; it becomes version 1 once the item exists.
+  const [newFile, setNewFile] = useState<UploadedFile | null>(null);
+  const [uploadPrefix] = useState(() => `assets/new-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`);
   const type = CONTENT_TYPES[typeKey];
   const [values, setValues] = useState<Values>(initial);
   const [dirty, setDirty] = useState(false);
@@ -76,6 +81,12 @@ export function ContentEditor({
       return null;
     }
     setDirty(false);
+    if (!id && newFile && typeKey === "media_asset") {
+      const ext = newFile.name.includes(".") ? newFile.name.split(".").pop()!.toUpperCase() : "";
+      const v = await addMediaVersion(res.id, { file_path: newFile.path, file_name: newFile.name, file_size: newFile.size, mime: newFile.mime, format: ext,
+        duration_seconds: newFile.duration ? String(Math.round(newFile.duration)) : "", resolution: newFile.width && newFile.height ? `${newFile.width}×${newFile.height}` : "" });
+      if (!v.ok) setMsg({ tone: "danger", text: `${t("common.error")} (${v.error})` });
+    }
     return res.id;
   };
 
@@ -285,6 +296,21 @@ export function ContentEditor({
           );
         })}
       </div>
+
+      {!id && typeKey === "media_asset" && (
+        <section className="card stack-sm" aria-labelledby="new-file">
+          <h2 id="new-file" className="card-title" style={{ margin: 0 }}>{t("mediaHub.admin.file")}</h2>
+          <p className="hint" style={{ margin: 0 }}>{t("mediaHub.admin.newFileHelp")}</p>
+          {newFile ? (
+            <div className="row">
+              <strong>{newFile.name}</strong><span className="muted small">{fmtBytes(newFile.size)}</span>
+              <button type="button" className="btn btn-sm btn-ghost" onClick={() => setNewFile(null)}>{t("reports.remove")}</button>
+            </div>
+          ) : (
+            <ResumableUpload bucket="media-files" prefix={uploadPrefix} label={t("mediaHub.admin.uploadFile")} onUploaded={(f) => { setNewFile(f); setDirty(true); }} />
+          )}
+        </section>
+      )}
 
       <div className="editor-actions">
         <Link href={`/admin/content/${typeKey}`} className="btn btn-ghost">← {t("cms.backToList")}</Link>

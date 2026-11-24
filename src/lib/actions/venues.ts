@@ -4,13 +4,16 @@ import { flushEmails } from "@/lib/email";
 import { revalidatePath } from "next/cache";
 import { requireStaff } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
+import { LOCALES } from "@/lib/i18n";
 
 type Result = { ok: boolean; error?: string };
 const UUID = /^[0-9a-f-]{36}$/;
 const safePath = (p: string) => typeof p === "string" && p.length < 500 && !p.includes("..") && !p.startsWith("/");
 
 export interface CameraInput {
-  id?: string; number: string; type: string; lens: string; function_en: string; function_tr: string;
+  id?: string; number: string; type: string; lens: string;
+  /** function_<locale> for each portal language (Istanbul: en/tr · Lima: es/en/pt) */
+  [fn: `function_${string}`]: string;
   level: string; is_special: boolean; x: number; y: number; angle: string;
 }
 
@@ -80,11 +83,12 @@ export async function addVenueFile(venueId: string, kind: "photo" | "document", 
   return { ok: true };
 }
 
-export async function updateVenueFile(id: string, title_en: string, title_tr: string): Promise<Result> {
+export async function updateVenueFile(id: string, titles: Record<string, string>): Promise<Result> {
   await requireStaff();
   if (!UUID.test(id)) return { ok: false, error: "invalid" };
   const supabase = await createClient();
-  const { error } = await supabase.from("venue_files").update({ title_en: title_en.trim().slice(0, 200) || null, title_tr: title_tr.trim().slice(0, 200) || null }).eq("id", id);
+  const row = Object.fromEntries(LOCALES.map((l) => [`title_${l}`, String(titles?.[l] ?? "").trim().slice(0, 200) || null]));
+  const { error } = await supabase.from("venue_files").update(row).eq("id", id);
   if (error) return { ok: false, error: error.message };
   revalidatePath("/", "layout");
   return { ok: true };

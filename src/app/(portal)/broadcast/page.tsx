@@ -36,7 +36,7 @@ export default async function BroadcastPage({ searchParams }: { searchParams: Pr
       return {
         id: f.id, code: f.code, type: f.feed_type, title: tx(f, "title", locale), venue: v ? tx(v, "title", locale) : "",
         venueSlug: v?.slug ?? null, sport: s ? tx(s, "title", locale) : "", start: f.start_at, end: f.end_at, channel: f.channel,
-        notes: tx(f, "notes", locale), draft: f.status !== "published",
+        notes: tx(f, "notes", locale), draft: f.status !== "published", transport: f.transport ?? null, reception: f.reception ?? null,
       };
     });
     content = feeds.length ? <FeedGrid feeds={feeds} /> : <Card><EmptyState icon="broadcast" action={{ label: t("common.contactHost"), href: "/contacts" }}>{t("broadcast.noFeeds")}</EmptyState></Card>;

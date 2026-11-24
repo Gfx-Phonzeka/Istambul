@@ -45,6 +45,8 @@ export const COLUMNS: Record<Dataset, Col[]> = {
     { key: "venue", header: "Venue (code or name, optional)", width: 22 },
     { key: "sport", header: "Sport (code or name, optional)", width: 18 },
     { key: "channel", header: "Channel", required: true, width: 18 },
+    { key: "transport", header: "Transport (satellite/srt/both)", width: 14 },
+    { key: "reception", header: "Reception data (satellite channel / SRT stream ID)", width: 30 },
     ...ml("notes", "Notes", 20),
   ],
 };
@@ -176,9 +178,12 @@ export async function buildPreview(supabase: SupabaseClient, dataset: Dataset, r
       const ve = r.venue ? find(venues, r.venue) : null, sp = r.sport ? find(sports, r.sport) : null;
       if (r.venue && !ve) return err(`venue_unknown:${r.venue}`);
       if (r.sport && !sp) return err(`sport_unknown:${r.sport}`);
+      const tr = (r.transport ?? "").trim().toLowerCase().replace(/[^a-z+]/g, "");
+      const transport = !tr ? null : /^(sat|satellite|satelite)$/.test(tr) ? "satellite" : tr === "srt" ? "srt" : /both|ambos|ambas|satsrt|satellitesrt|sat\+srt/.test(tr) ? "satellite_srt" : "invalid";
+      if (transport === "invalid") return err(`transport_invalid:${r.transport}`);
       clean.push({
         code, feed_type: type, ...mlValues(r, "title"), venue_id: ve?.id ?? null, sport_id: sp?.id ?? null,
-        start_at: start, end_at: end, channel: r.channel, ...mlValues(r, "notes"),
+        start_at: start, end_at: end, channel: r.channel, transport, reception: r.reception || null, ...mlValues(r, "notes"),
       });
     }
   });
@@ -218,13 +223,13 @@ export async function buildTemplate(supabase: SupabaseClient, dataset: Dataset):
   ws.getRow(1).font = { bold: true };
   ws.views = [{ state: "frozen", ySplit: 1 }];
   const ist = (iso: string) => {
-    const d = new Date(new Date(iso).getTime() + 3 * 3600000).toISOString();
+    const d = new Date(new Date(iso).getTime() + EVENT.utcOffsetHours * 3600000).toISOString();
     return { date: d.slice(0, 10), time: d.slice(11, 16) };
   };
   for (const r of rows ?? []) {
     const s = ist(r.start_at), e = ist(r.end_at);
     ws.addRow({
-      ...r, date: s.date, start: s.time, end: e.time, sport: r.sport_id ? S.get(r.sport_id) : "", venue: r.venue_id ? V.get(r.venue_id) : "",
+      ...r, transport: r.transport === "satellite_srt" ? "both" : r.transport ?? "", date: s.date, start: s.time, end: e.time, sport: r.sport_id ? S.get(r.sport_id) : "", venue: r.venue_id ? V.get(r.venue_id) : "",
       is_medal: r.is_medal ? "yes" : dataset === "sessions" ? "no" : undefined, is_oq: r.is_oq ? "yes" : dataset === "sessions" ? "no" : undefined,
     });
   }
@@ -239,7 +244,8 @@ export async function buildTemplate(supabase: SupabaseClient, dataset: Dataset):
   [
     "Fill one line per item. Columns marked * are required.",
     "Code identifies each line: a line whose code already exists updates it; a new code creates a new line.",
-    "Dates as YYYY-MM-DD, times as HH:MM in Istanbul time (TRT, UTC+3). An end time earlier than the start means the next day.",
+    `Dates as YYYY-MM-DD, times as HH:MM in ${CITY} time (UTC${EVENT.utcOffset}). An end time earlier than the start means the next day.`,
+    ...(dataset === "feeds" ? ["Transport: satellite, srt or both. Reception data: the satellite channel or the SRT stream ID of the signal (reception parameters are on the portal's Distribution tab)."] : []),
     "Sport and venue: use the codes from the 'Codes' sheet (or the exact names).",
     "Yes/no columns accept: yes, no, sim, não, evet, hayır, 1, 0, x.",
     "Before anything is changed, the portal shows a preview of new, changed and removed lines and any errors.",
