@@ -593,6 +593,10 @@ const tr: Messages = {
     },
   },
   channel: {
+    pdfDay: "PDF of the day",
+    pdfAll: "PDF of all days",
+    viewList: "Daily list",
+    viewTimeline: "Timeline",
     title: "Integrated Channel",
     subtitle: "Daily grid of the Host Broadcaster's 24/7 ready-to-air channel. Times in Lima time (UTC{tz}).",
     empty: "The channel grid has not been published yet. It will appear here, day by day.",
@@ -613,6 +617,11 @@ const tr: Messages = {
       continuity: "Continuity",
     },
     admin: {
+      excelTitle: "Excel import",
+      excelHelp: "Download the template (it contains the current grid), fill it in and import it. Every day in the file is replaced and stays in draft until you publish it.",
+      template: "Excel template",
+      import: "Import",
+      imported: "Imported {count} programmes on {days} day(s), as draft.",
       nav: "Integrated Channel grid",
       title: "Integrated Channel · grid",
       subtitle: "Build the channel's daily grid. Right holders only see published days. Times in Lima time (UTC{tz}).",
@@ -640,6 +649,7 @@ const tr: Messages = {
       copy: "Copy as draft",
       copied: "Grid copied as draft.",
       errors: {
+        import: "The file could not be read or has errors",
         forbidden: "You don't have permission to do this.",
         day: "Choose a valid day.",
         time: "Use times as HH:MM.",

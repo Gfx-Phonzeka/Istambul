@@ -567,6 +567,10 @@ const es: PartialMessages = {
     done: "Traducción automática añadida. Revísala y después guarda o publica.",
   },
   channel: {
+    pdfDay: "PDF del día",
+    pdfAll: "PDF de todos los días",
+    viewList: "Lista diaria",
+    viewTimeline: "Timeline",
     title: "Canal Integrado",
     subtitle: "Grilla diaria del canal 24/7 listo para emitir del Host Broadcaster. Horarios en hora de Lima (UTC{tz}).",
     empty: "La grilla del canal aún no está publicada. Aparecerá aquí, día por día.",
@@ -587,6 +591,11 @@ const es: PartialMessages = {
       continuity: "Continuidad",
     },
     admin: {
+      excelTitle: "Importar desde Excel",
+      excelHelp: "Descargue la plantilla (incluye la grilla actual), complétela e impórtela. Cada día del archivo se reemplaza y queda en borrador hasta que lo publique.",
+      template: "Plantilla Excel",
+      import: "Importar",
+      imported: "Se importaron {count} programas en {days} día(s), como borrador.",
       nav: "Grilla del Canal Integrado",
       title: "Canal Integrado · grilla",
       subtitle: "Construya la grilla diaria del canal. Los RHB solo ven los días publicados. Horarios en hora de Lima (UTC{tz}).",
@@ -614,6 +623,7 @@ const es: PartialMessages = {
       copy: "Copiar como borrador",
       copied: "Grilla copiada como borrador.",
       errors: {
+        import: "No se pudo leer el archivo o tiene errores",
         forbidden: "No tiene permiso para hacer esto.",
         day: "Elija un día válido.",
         time: "Use horas en formato HH:MM.",

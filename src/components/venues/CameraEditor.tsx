@@ -6,6 +6,7 @@ import { getPlanCameras, saveCameras, type CameraInput } from "@/lib/actions/ven
 import { translateFields } from "@/lib/actions/translate";
 import { CameraMap } from "./CameraMap";
 import { LOCALES } from "@/lib/i18n";
+import { fnFields } from "@/lib/camera-fields";
 import { usesTranslationPair } from "@/lib/content/registry";
 import { CameraLegend } from "./PlanViewer";
 import { useUnsavedGuard } from "@/lib/hooks/useUnsavedGuard";
@@ -14,8 +15,6 @@ export const CAMERA_TYPES = ["hard", "handheld", "rf", "crane", "polecam", "rail
 
 type Cam = CameraInput & { key: string };
 
-/** Empty or stored function texts for every portal language. */
-export const fnFields = (c?: Record<string, unknown>) => Object.fromEntries(LOCALES.map((l) => [`function_${l}`, ((c?.[`function_${l}`] as string) ?? "")])) as Record<`function_${string}`, string>;
 
 let seq = 0;
 const newKey = () => `new-${Date.now()}-${seq++}`;

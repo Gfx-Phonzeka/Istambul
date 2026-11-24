@@ -497,6 +497,10 @@ const pt: PartialMessages = {
     aerial: "Aérea / cablecam", beauty: "Beauty shot", steadicam: "Steadicam", minicam: "Minicâmera", underwater: "Subaquática", ptz: "PTZ / robótica", other: "Outra",
   },
   channel: {
+    pdfDay: "PDF do dia",
+    pdfAll: "PDF de todos os dias",
+    viewList: "Lista diária",
+    viewTimeline: "Timeline",
     title: "Canal Integrado",
     subtitle: "Grade diária do canal 24/7 pronto para exibir do Host Broadcaster. Horários no horário de Lima (UTC{tz}).",
     empty: "A grade do canal ainda não foi publicada. Ela vai aparecer aqui, dia a dia.",
@@ -517,6 +521,11 @@ const pt: PartialMessages = {
       continuity: "Continuidade",
     },
     admin: {
+      excelTitle: "Importar do Excel",
+      excelHelp: "Baixe o modelo (traz a grade atual), preencha e importe. Cada dia do arquivo é substituído e fica em rascunho até ser publicado.",
+      template: "Modelo Excel",
+      import: "Importar",
+      imported: "{count} programas importados em {days} dia(s), como rascunho.",
       nav: "Grade do Canal Integrado",
       title: "Canal Integrado · grade",
       subtitle: "Monte a grade diária do canal. Os RHB só veem os dias publicados. Horários no horário de Lima (UTC{tz}).",
@@ -544,6 +553,7 @@ const pt: PartialMessages = {
       copy: "Copiar como rascunho",
       copied: "Grade copiada como rascunho.",
       errors: {
+        import: "Não foi possível ler o arquivo ou ele tem erros",
         forbidden: "Você não tem permissão para fazer isto.",
         day: "Escolha um dia válido.",
         time: "Use horários no formato HH:MM.",

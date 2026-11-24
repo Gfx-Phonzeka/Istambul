@@ -1,6 +1,10 @@
 // Integrated Channel: daily grid of the Host Broadcaster's 24/7 ready-to-air channel.
 export const CHANNEL_KINDS = ["live", "delayed", "highlights", "summary", "feature", "ceremony", "continuity"] as const;
 export type ChannelKind = (typeof CHANNEL_KINDS)[number];
+/** Colour of each programme type (timeline, PDF). */
+export const KIND_COLOR: Record<ChannelKind, string> = {
+  live: "#2f9e74", ceremony: "#c7a43a", delayed: "#0b84b5", highlights: "#7b3f98", summary: "#e8541e", feature: "#5b6676", continuity: "#94a3b8",
+};
 export const HHMM = /^([01][0-9]|2[0-3]):[0-5][0-9]$/;
 
 export interface ChannelSlot {
@@ -28,3 +32,6 @@ export function nowIn(tz: string) {
   const p = Object.fromEntries(new Intl.DateTimeFormat("en-GB", { timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).formatToParts(new Date()).map((x) => [x.type, x.value]));
   return { day: `${p.year}-${p.month}-${p.day}`, time: `${p.hour}:${p.minute}` };
 }
+
+/** Minutes since midnight of an HH:MM time. */
+export const minutes = (hhmm: string) => Number(hhmm.slice(0, 2)) * 60 + Number(hhmm.slice(3, 5));

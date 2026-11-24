@@ -78,3 +78,23 @@ export async function copyChannelDay(from: string, to: string): Promise<Result> 
   done();
   return { ok: true };
 }
+
+/** Imports the grid from the Excel template: every day in the file is replaced by the file's lines (as draft). */
+export async function importChannelGrid(form: FormData): Promise<Result & { days?: number; count?: number; errors?: string[] }> {
+  const supabase = await staffClient();
+  if (!supabase) return { ok: false, error: "forbidden" };
+  const file = form.get("file");
+  if (!(file instanceof File) || file.size === 0 || file.size > 10 * 1024 * 1024) return { ok: false, error: "file" };
+  const { parseChannelFile } = await import("@/lib/channel-data");
+  let parsed;
+  try { parsed = await parseChannelFile(supabase, await file.arrayBuffer()); } catch { return { ok: false, error: "file" }; }
+  if (parsed.errors.length) return { ok: false, error: "rows", errors: parsed.errors.slice(0, 30) };
+  if (!parsed.rows.length) return { ok: false, error: "empty" };
+  const days = [...new Set(parsed.rows.map((r) => String(r.day)))];
+  const { error: delErr } = await supabase.from("channel_slots").delete().in("day", days);
+  if (delErr) return { ok: false, error: "generic" };
+  const { error } = await supabase.from("channel_slots").insert(parsed.rows);
+  if (error) return { ok: false, error: "generic" };
+  done();
+  return { ok: true, days: days.length, count: parsed.rows.length };
+}

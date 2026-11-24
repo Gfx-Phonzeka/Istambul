@@ -6,7 +6,7 @@ import { useI18n } from "@/lib/i18n/client";
 import { LOCALES, tx } from "@/lib/i18n";
 import { LANG_NAMES } from "@/lib/event";
 import { CHANNEL_KINDS, dayLabel, type ChannelSlot } from "@/lib/channel";
-import { copyChannelDay, deleteChannelSlot, publishChannelDay, saveChannelSlot } from "@/lib/actions/channel";
+import { copyChannelDay, deleteChannelSlot, importChannelGrid, publishChannelDay, saveChannelSlot } from "@/lib/actions/channel";
 import { Alert, Badge, EmptyState } from "@/components/ui";
 import { ConfirmButton } from "@/components/ui/ConfirmButton";
 
@@ -128,6 +128,23 @@ export function ChannelEditor({ day, days, summary, slots, sports, venues, intl 
             <button type="submit" className="btn btn-primary" disabled={pending}>{form.id ? t("common.save") : t("channel.admin.add")}</button>
             {form.id && <button type="button" className="btn" onClick={() => setForm(empty())}>{t("common.cancel")}</button>}
           </div>
+        </form>
+      </section>
+
+      <section className="card stack-sm" aria-labelledby="xl-title">
+        <h2 id="xl-title" style={{ margin: 0 }}>{t("channel.admin.excelTitle")}</h2>
+        <p className="small muted" style={{ margin: 0 }}>{t("channel.admin.excelHelp")}</p>
+        <div className="row">
+          <a className="btn btn-sm" href="/api/channel/template">{t("channel.admin.template")}</a>
+          <a className="btn btn-sm" href={`/api/channel/pdf?lang=${locale}&day=${day}`}>{t("channel.pdfDay")}</a>
+        </div>
+        <form className="row" onSubmit={(e) => { e.preventDefault(); const fd = new FormData(e.currentTarget); start(async () => {
+          const r = await importChannelGrid(fd);
+          if (r.ok) { setMsg({ tone: "success", text: t("channel.admin.imported", { days: r.days ?? 0, count: r.count ?? 0 }) }); router.refresh(); }
+          else setMsg({ tone: "danger", text: `${t(`channel.admin.errors.${r.error === "rows" || r.error === "file" ? "import" : r.error ?? "generic"}`)}${r.errors?.length ? ` — ${r.errors.join("; ")}` : ""}` });
+        }); }}>
+          <input type="file" name="file" accept=".xlsx" required className="input" style={{ width: "auto" }} aria-label={t("channel.admin.excelTitle")} />
+          <button type="submit" className="btn btn-sm btn-primary" disabled={pending}>{t("channel.admin.import")}</button>
         </form>
       </section>
 
