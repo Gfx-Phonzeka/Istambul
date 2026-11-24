@@ -98,7 +98,7 @@ export function CameraMapsOverview({ plans, clusters, sports }: {
       ) : (
         <div className="media-grid">
           {shown.map((p) => (
-            <Link key={p.id} href={`/camera-maps/${p.id}`} className="card card-link media-card">
+            <Link prefetch={false} key={p.id} href={`/camera-maps/${p.id}`} className="card card-link media-card">
               <div className="plan-thumb">
                 <CameraMap shape={p.shape} cameras={p.cameras} title={p.title} />
                 <div className="media-badges">

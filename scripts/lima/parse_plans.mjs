@@ -7,6 +7,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import vm from "node:vm";
+import { createRequire } from "node:module";
 
 const dir = process.argv[2];
 const W = 1000, H = 600;
@@ -38,6 +39,28 @@ const MAP = {
   "Badminton": [["badminton"], ["polideportivo-3"]],
   "Atletismo": [["atletismo", "para-atletismo"], ["estadio-atletico"]],
   "Acuaticos_clavados": [["clavados"], ["centro-acuatico"]],
+  "Gimnasia_trampolin": [["trampolin"], ["polideportivo-villa-el-salvador"]],
+  "Golf": [["golf"], ["lima-golf-club"]],
+  "Hipica_Dressage": [["ecuestre"], ["escuela-equitacion-ejercito"], ["Adiestramiento", "Dressage", "Adestramento"]],
+  "Hipica_Cross_Coutry": [["ecuestre"], ["escuela-equitacion-ejercito"], ["Cross country (concurso completo)", "Cross-country (eventing)", "Cross-country (CCE)"]],
+};
+
+// One file holds the Para sports plans, drawn by script: fopType → [sport, venue]
+const PARA = {
+  parapowerlifting: ["para-powerlifting", "velodromo"],
+  archery: ["para-tiro-arco", "estadio-rugby"],
+  blind_football: ["futbol-ciegos", "estadio-rugby"],
+  boccia: ["boccia", "polideportivo-villa-el-salvador"],
+  wheelchair_rugby: ["rugby-silla", "polideportivo-villa-el-salvador"],
+  wheelchair_tennis: ["tenis-silla", "centro-tenis"],
+  track_cycling: ["para-ciclismo-pista", "velodromo"],
+  wheelchair_basketball: ["baloncesto-silla", "polideportivo-1"],
+  para_badminton: ["para-badminton", "polideportivo-3"],
+  table_tennis: ["para-tenis-mesa", "polideportivo-3"],
+  goalball: ["golbol", "polideportivo-2"],
+  judo: ["para-judo", "coliseo-eduardo-dibos"],
+  taekwondo: ["para-taekwondo", "coliseo-eduardo-dibos"],
+  sitting_volleyball: ["voleibol-sentado", "polideportivo-callao"],
 };
 
 const cssBlocks = (css) => [...css.replace(/\/\*[\s\S]*?\*\//g, "").matchAll(/([^{}]+)\{([^}]*)\}/g)].map((m) => ({ sel: m[1].trim(), body: m[2].trim() }));
@@ -62,6 +85,10 @@ function extractSvg(html) {
   }
   const svgs = [...html.matchAll(/<svg viewBox="0 0 (\d+) (\d+)"[^>]*>([\s\S]*?)<\/svg>/g)].filter((m) => Number(m[1]) >= 700);
   const [, w, h, inner] = svgs[0];
+  return cleanSvg(inner, w, h, vars, classStyle);
+}
+
+function cleanSvg(inner, w, h, vars = {}, classStyle = {}) {
   let s = inner
     .replace(/<!--[\s\S]*?-->/g, "")
     .replace(/<g id="(fov-group|cameras-group|camera-nodes-group)"><\/g>/g, "")
@@ -88,10 +115,10 @@ function camType(t) {
   if (/jib|grúa|grua/.test(s)) return "crane";
   if (/trackcam|riel|rail/.test(s)) return "rail";
   if (/beauty|atmosf/.test(s)) return "beauty";
-  if (/minicam|periscop|brazo mágico/.test(s)) return "minicam";
   if (/ptz|robótica|robotica|robotizada|hothead/.test(s)) return "ptz";
-  if (/moto|barco|catamar|embarcaci|5g/.test(s)) return "rf";
-  if (/handheld|hombro|portátil|portatil|rf|móvil|movil|itinerante/.test(s)) return "handheld";
+  if (/minicam|periscop|brazo mágico/.test(s)) return "minicam";
+  if (/moto|barco|catamar|embarcaci/.test(s)) return "rf";
+  if (/handheld|hombro|portátil|portatil|\brf\b|móvil|movil|itinerante|5g/.test(s)) return "handheld";
   return "hard";
 }
 
@@ -108,6 +135,51 @@ function angleFrom(c, fov) {
   return Math.round(((Math.atan2(-dy, dx) * 180) / Math.PI + 360) % 360);
 }
 
+async function renderPara(file) {
+  const { chromium } = createRequire(import.meta.url)("playwright");
+  const browser = await chromium.launch();
+  const page = await browser.newPage();
+  await page.route(/^https?:/, (r) => r.abort());
+  await page.goto("file://" + path.resolve(file));
+  const out = await page.evaluate(() => {
+    isPPTWhiteTheme = true; // eslint-disable-line no-undef
+    return SPORTS_DATABASE.map((sport, i) => { // eslint-disable-line no-undef
+      selectSport(i); // eslint-disable-line no-undef
+      const svg = document.getElementById("fop-svg");
+      const [, , w, h] = svg.getAttribute("viewBox").split(/\s+/).map(Number);
+      const inner = ["svg-defs", "fop-background-layer", "fop-markings-layer"].map((id) => document.getElementById(id).outerHTML).join("\n");
+      return { fopType: sport.fopType, w, h, inner, cameras: sport.cameras };
+    });
+  });
+  await browser.close();
+  return out;
+}
+
+function toCamera(c, i, raw) {
+  const name = c.name ?? `C${c.id}`;
+  const num = /^C(?:ámara)?\s*(\d+)/i.exec(name)?.[1] ?? String(c.id).replace(/^C/, "");
+  const label = (c.name ? name.replace(/^C\d+\s*/, "").replace(/^Cámara \d+\s*\((.*)\)$/, "$1") : c.config) ?? "";
+  const mount = c.mount ?? c.montaje;
+  const where = c.loc ?? c.pos ?? c.posicion ?? "";
+  const kind = [c.type, label, mount, c.config].filter(Boolean).join(" ");
+  const x = c.cx ?? c.x, y = c.cy ?? c.y;
+  return {
+    position: i + 1, number: num, type: camType(kind),
+    lens: [mount && !/trípode/i.test(mount) ? mount : null, c.lens ?? c.optica].filter(Boolean).join(" · ").slice(0, 100) || null,
+    function_es: [label, where].filter(Boolean).join(" — ").slice(0, 300),
+    level: c.phase === "OB" && raw.some((r) => r.phase === "REMI") ? "2" : "1",
+    is_special: SPECIAL.test(kind.replace(/no ptz/gi, "")),
+    x, y, angle: angleFrom(c, c.fov ?? c.fovPath),
+    phase: c.phase ?? null,
+  };
+}
+
+function fit(cams, w, h) {
+  const s = Math.min(W / w, H / h), tx = (W - w * s) / 2, ty = (H - h * s) / 2;
+  return cams.map((c) => ({ ...c, x: Math.round(((tx + c.x * s) / W) * 1000) / 1000, y: Math.round(((ty + c.y * s) / H) * 1000) / 1000 }));
+}
+
+const ALL = ["Todas las sesiones", "All sessions", "Todas as sessões"];
 const files = fs.readdirSync(dir).filter((f) => f.endsWith(".html"))
   .map((f) => ({ f, key: f.replace(/^[0-9a-f]{8}-/, "").replace(/\.html$/, ""), t: fs.statSync(path.join(dir, f)).mtimeMs }))
   .sort((a, b) => b.t - a.t);
@@ -118,40 +190,32 @@ for (const { f, key } of files) {
   seen.add(key);
   const html = fs.readFileSync(path.join(dir, f), "utf8");
   const svg = extractSvg(html);
-  const s = Math.min(W / svg.w, H / svg.h), tx = (W - svg.w * s) / 2, ty = (H - svg.h * s) / 2;
   const raw = extractCameras(html);
-  const cams = raw.map((c, i) => {
-    const name = c.name ?? `C${c.id}`;
-    const num = /^C(\d+)/.exec(name)?.[1] ?? String(c.id);
-    const label = (c.name ? name.replace(/^C\d+\s*/, "") : c.config) ?? "";
-    const where = c.loc ?? c.pos ?? "";
-    const kind = [c.type, c.name, c.mount, c.config].filter(Boolean).join(" ");
-    const x = c.cx ?? c.x, y = c.cy ?? c.y;
-    return {
-      position: i + 1, number: num, type: camType(kind),
-      lens: [c.mount && !/trípode/i.test(c.mount) ? c.mount : null, c.lens].filter(Boolean).join(" · ").slice(0, 100) || null,
-      function_es: [label, where].filter(Boolean).join(" — ").slice(0, 300),
-      level: c.phase === "OB" && raw.some((r) => r.phase === "REMI") ? "2" : "1",
-      is_special: SPECIAL.test(kind.replace(/no ptz/gi, "")),
-      x: Math.round(((tx + x * s) / W) * 1000) / 1000,
-      y: Math.round(((ty + y * s) / H) * 1000) / 1000,
-      angle: angleFrom(c, c.fov),
-      phase: c.phase ?? null,
-    };
-  });
+  const cams = fit(raw.map((c, i) => toCamera(c, i, raw)), svg.w, svg.h);
   const mixed = cams.some((c) => c.phase === "REMI") && cams.some((c) => c.phase === "OB");
   const shape = `svg:${svg.w}x${svg.h}:${svg.markup}`;
-  const [sports, venues] = MAP[key];
+  const [sports, venues, title] = MAP[key];
   const variants = mixed
     ? [
         { title: ["Eliminatorias · REMI", "Preliminaries · REMI", "Eliminatórias · REMI"], cameras: cams.filter((c) => c.phase === "REMI") },
         { title: ["Finales · OB Van", "Finals · OB van", "Finais · OB Van"], cameras: cams },
       ]
-    : [{ title: ["Todas las sesiones", "All sessions", "Todas as sessões"], cameras: cams }];
+    : [{ title: title ?? ALL, cameras: cams }];
   for (const sport of sports) for (const venue of venues) variants.forEach((v, i) => {
-    plans.push({ source: key, sport, venue, position: i + 1, title_es: v.title[0], title_en: v.title[1], title_pt: v.title[2], field_shape: shape,
+    plans.push({ source: key, sport, venue, position: title ? plans.filter((p) => p.sport === sport).length + 1 : i + 1, title_es: v.title[0], title_en: v.title[1], title_pt: v.title[2], field_shape: shape,
       cameras: v.cameras.map(({ phase, ...c }, j) => ({ ...c, position: j + 1, level: mixed && i === 0 ? "1" : c.level })) });
   });
+}
+const paraFile = files.find((x) => x.key === "Parapan_Lima27");
+if (paraFile) {
+  for (const p of await renderPara(path.join(dir, paraFile.f))) {
+    const [sport, venue] = PARA[p.fopType] ?? [];
+    if (!sport) { console.error("unmapped para sport:", p.fopType); continue; }
+    const svg = cleanSvg(p.inner.replace(/<g[^>]*>/g, "<g>").replace(/<defs[^>]*><\/defs>/g, ""), p.w, p.h);
+    const cams = fit(p.cameras.map((c, i) => toCamera(c, i, p.cameras)), svg.w, svg.h);
+    plans.push({ source: "Parapan_Lima27", sport, venue, position: 1, title_es: ALL[0], title_en: ALL[1], title_pt: ALL[2],
+      field_shape: `svg:${svg.w}x${svg.h}:${svg.markup}`, cameras: cams.map(({ phase, ...c }) => c) });
+  }
 }
 const missing = Object.keys(MAP).filter((k) => !seen.has(k));
 if (missing.length) console.error("missing:", missing.join(", "));

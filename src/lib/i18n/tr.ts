@@ -587,6 +587,12 @@ const tr: Messages = {
     },
   },
   schedule: {
+    calendar: {
+      discipline: "Disiplin · tesis",
+      games: { pan: "Pan Amerikan Oyunları", para: "Parapan Amerikan Oyunları", main: "Yarışma takvimi" },
+      legend: { X: "Yarışma", F: "Kadınlar", M: "Erkekler", P: "Madalya törenli yarışma", T: "Sınıflandırma / antrenman", C: "Tören" },
+      note: "Resmî takvimlere göre yarışma günleri (değişebilir). Seans saatleri açıklandığında burada yayınlanacaktır.",
+    },
     subtitle: "Güne, spora ve mekâna göre yarışma seansları. Saatler varsayılan olarak Istanbul saatidir (TRT, UTC+3).",
     empty: "Henüz seans yayınlanmadı.",
     noMatch: "Filtrelerinizle eşleşen seans yok.",

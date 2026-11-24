@@ -49,9 +49,9 @@ export async function loadGuide(supabase: SupabaseClient, opts: { includeDrafts?
   }));
 }
 
-const TBC = /\[(?:TBC|A CONFIRMAR)(?::\s*([^\]]*))?\]/g;
+const TBC = /\[(?:TBC|A CONFIRMAR|POR CONFIRMAR)(?::\s*([^\]]*))?\]/g;
 
-/** Open points ([TBC: …] / [A CONFIRMAR: …]) found in a text, for the editors' overview. */
+/** Open points ([TBC: …] / [A CONFIRMAR: …] / [POR CONFIRMAR: …]) found in a text, for the editors' overview. */
 export function openPoints(html: string): string[] {
   return [...(html ?? "").matchAll(TBC)].map((m) => (m[1] ?? "").trim());
 }

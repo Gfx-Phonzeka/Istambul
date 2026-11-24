@@ -6,6 +6,19 @@ import { withDraft } from "@/lib/content/render";
 import { Card, EmptyState, PageHeader } from "@/components/ui";
 import { ScheduleView, type SessionRow } from "@/components/schedule/ScheduleView";
 import { PreviewBanner } from "@/components/content/PreviewBanner";
+import { CompetitionCalendar, type CalendarGroup, type DayCode } from "@/components/schedule/CompetitionCalendar";
+import { EVENT } from "@/lib/event";
+import { intlLocale } from "@/lib/i18n";
+import { todayIn } from "@/lib/reports";
+
+/** Every day from the first to the last date used by a group of calendar rows. */
+function dayRange(rows: { days: Record<string, string> }[]): string[] {
+  const all = rows.flatMap((r) => Object.keys(r.days)).sort();
+  if (!all.length) return [];
+  const out: string[] = [];
+  for (let d = new Date(all[0] + "T00:00:00Z"); d <= new Date(all[all.length - 1] + "T00:00:00Z"); d.setUTCDate(d.getUTCDate() + 1)) out.push(d.toISOString().slice(0, 10));
+  return out;
+}
 
 export const metadata = { title: "Competition schedule" };
 
@@ -16,11 +29,12 @@ export default async function SchedulePage({ searchParams }: { searchParams: Pro
   const supabase = await createClient();
   let q = supabase.from("schedule_sessions").select("*").order("start_at");
   if (!preview) q = q.eq("status", "published");
-  const [{ data }, { data: sports }, { data: venues }, { data: favs }] = await Promise.all([
+  const [{ data }, { data: sports }, { data: venues }, { data: favs }, { data: cal }] = await Promise.all([
     q,
     supabase.from("sports").select(`id,${cols("title")},position` as "*").order("position"),
     supabase.from("venues").select(`id,slug,${cols("title")}` as "*").order(`title_${DEFAULT_LOCALE}`),
     supabase.from("favorites").select("target_id").eq("kind", "sport"),
+    supabase.from("calendar_rows").select(`id,games,position,sport_id,venue_id,${cols("label")},days` as "*").order("position"),
   ]);
   const S = new Map((sports ?? []).map((s) => [s.id, tx(s, "title", locale)]));
   const V = new Map((venues ?? []).map((v) => [v.id, { title: tx(v, "title", locale), slug: v.slug }]));
@@ -33,13 +47,37 @@ export default async function SchedulePage({ searchParams }: { searchParams: Pro
       notes: tx(s, "notes", locale), draft: s.status !== "published",
     };
   });
+  // Competition calendar by day (no times), grouped by Games (Lima: Pan / Parapan)
+  const calRows = (cal ?? []) as unknown as { id: string; games: string; sport_id: string | null; venue_id: string | null; days: Record<string, DayCode> }[];
+  const calGroups: CalendarGroup[] = [...new Set(calRows.map((r) => r.games))].map((g) => {
+    const rs = calRows.filter((r) => r.games === g);
+    return {
+      key: g, title: t(`schedule.calendar.games.${g}`), days: dayRange(rs),
+      rows: rs.map((r) => ({
+        id: r.id, label: tx(r, "label", locale) || (r.sport_id ? S.get(r.sport_id) ?? "" : ""),
+        venue: (r.venue_id && V.get(r.venue_id)?.title) || "", venueSlug: (r.venue_id && V.get(r.venue_id)?.slug) || null, days: r.days,
+      })),
+    };
+  });
   const usedSports = new Set(rows.map((r) => r.sportId));
   const usedVenues = new Set(rows.map((r) => r.venueId));
   return (
     <div className="stack">
       {preview && <PreviewBanner exitHref="/schedule" />}
       <PageHeader title={t("nav.schedule")} subtitle={t("schedule.subtitle")} />
-      {rows.length === 0 ? <Card><EmptyState icon="calendar" action={{ label: t("common.contactHost"), href: "/contacts" }}>{t("schedule.empty")}</EmptyState></Card> : (
+      {calGroups.length > 0 && (
+        <CompetitionCalendar
+          groups={calGroups}
+          today={todayIn(EVENT.tz)}
+          intl={intlLocale(locale)}
+          labels={{
+            discipline: t("schedule.calendar.discipline"),
+            legend: Object.fromEntries((["X", "F", "M", "P", "T", "C"] as DayCode[]).map((c) => [c, t(`schedule.calendar.legend.${c}`)])) as Record<DayCode, string>,
+            note: t("schedule.calendar.note"),
+          }}
+        />
+      )}
+      {rows.length === 0 ? (calGroups.length > 0 ? null : <Card><EmptyState icon="calendar" action={{ label: t("common.contactHost"), href: "/contacts" }}>{t("schedule.empty")}</EmptyState></Card>) : (
         <ScheduleView
           sessions={rows}
           focus={sp.session ?? null}
@@ -48,7 +86,7 @@ export default async function SchedulePage({ searchParams }: { searchParams: Pro
           venues={(venues ?? []).filter((v) => usedVenues.has(v.id)).map((v) => ({ id: v.id, title: V.get(v.id)!.title }))}
         />
       )}
-      <p className="muted small">{t("common.exampleNote")}</p>
+      {rows.length > 0 && <p className="muted small">{t("common.exampleNote")}</p>}
     </div>
   );
 }

@@ -37,7 +37,7 @@ export default async function GuideChapterPage({ params, searchParams }: { param
           <Card>
             <ol className="list">
               {c.sections.map((s, si) => (
-                <li key={s.id}><Link href={`/team/guidelines/${c.slug}/${s.slug}${q}`}>{ci + 1}.{si + 1} {tx(s, "title", lang)}</Link></li>
+                <li key={s.id}><Link prefetch={false} href={`/team/guidelines/${c.slug}/${s.slug}${q}`}>{ci + 1}.{si + 1} {tx(s, "title", lang)}</Link></li>
               ))}
             </ol>
           </Card>

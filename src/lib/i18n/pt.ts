@@ -17,7 +17,7 @@ const pt: PartialMessages = {
     showAll: "Ver tudo",
     createNew: "Criar novo",
     openMediaHub: "Abrir o Media Hub",
-    fillRequestForm: "Ir para Service Requests",
+    fillRequestForm: "Ir para Solicitações de serviço",
     browseFaq: "Ver as perguntas frequentes",
     viewNotices: "Ver todos os avisos",
     viewSchedule: "Ver o calendário de competição",
@@ -67,7 +67,7 @@ const pt: PartialMessages = {
     schedule: "Calendário de competição",
     scheduleShort: "Calendário",
     broadcast: "Sinal e distribuição",
-    requests: "Service Requests",
+    requests: "Solicitações de serviço",
     faq: "Perguntas frequentes",
     glossary: "Glossário",
     contacts: "Contatos",
@@ -492,6 +492,12 @@ const pt: PartialMessages = {
     aerial: "Aérea / cablecam", beauty: "Beauty shot", steadicam: "Steadicam", minicam: "Minicâmera", underwater: "Subaquática", ptz: "PTZ / robótica", other: "Outra",
   },
   schedule: {
+    calendar: {
+      discipline: "Disciplina · local",
+      games: { pan: "Jogos Pan-Americanos", para: "Jogos Parapan-Americanos", main: "Calendário de competições" },
+      legend: { X: "Competição", F: "Feminino", M: "Masculino", P: "Competição com cerimônias de premiação", T: "Classificação / treino", C: "Cerimônia" },
+      note: "Dias de competição segundo os calendários oficiais (sujeitos a alterações). Os horários das sessões serão publicados aqui quando estiverem disponíveis.",
+    },
     subtitle: "Sessões de competição por dia, esporte e sede. Por padrão, no horário de Lima (PET, UTC−5).",
     empty: "Ainda não há sessões publicadas.",
     noMatch: "Nenhuma sessão corresponde aos seus filtros.",
@@ -528,7 +534,7 @@ const pt: PartialMessages = {
     cols: { time: "Hora (PET)", feed: "Sinal", type: "Tipo", venue: "Sede", channel: "Canal" },
     ebuNote: "A responsabilidade do Host Broadcaster termina ao disponibilizar o sinal.",
     contact: "Contato de distribuição",
-    requestCta: "Ir para Service Requests",
+    requestCta: "Ir para Solicitações de serviço",
   },
   requests: {
     subtitle: "Peça serviços. Você pode acompanhar o status das suas solicitações abaixo.",
@@ -620,7 +626,7 @@ const pt: PartialMessages = {
     },
   },
   booking: {
-    title: "Service Requests",
+    title: "Solicitações de serviço",
     subtitle: "As reservas com o Host Broadcaster são feitas no site de booking.",
     intro: "As facilidades e os serviços unilaterais são reservados no site de booking do Host Broadcaster. Abra-o com o botão abaixo.",
     open: "Abrir o site de booking",

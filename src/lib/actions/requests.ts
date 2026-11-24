@@ -23,7 +23,7 @@ export async function createRequest(_: RequestFormState, form: FormData): Promis
     return { error: `requests.errors.${m ? m[1] : "generic"}` };
   }
   after(flushEmails);
-  revalidatePath("/requests");
+  revalidatePath("/team/requests");
   return { ok: true, reference: String(data) };
 }
 

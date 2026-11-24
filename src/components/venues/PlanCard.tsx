@@ -8,7 +8,7 @@ export function PlanCard({ plan, cameras, labels, badge, showVenue = true, previ
   labels: { cameras: string; specials: string; isNew: string; isUpdated: string; draft: string; level: string };
 }) {
   return (
-    <Link href={`/camera-maps/${plan.id}${preview ? "?preview=1" : ""}`} className="card card-link media-card">
+    <Link prefetch={false} href={`/camera-maps/${plan.id}${preview ? "?preview=1" : ""}`} className="card card-link media-card">
       <div className="plan-thumb">
         <CameraMap shape={plan.shape} cameras={cameras} title={plan.title} />
         <div className="media-badges">

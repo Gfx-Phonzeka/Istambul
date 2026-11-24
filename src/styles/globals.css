@@ -724,3 +724,34 @@ html[data-event="lima"] .brand-logo { width: 78px; padding: 3px 5px; }
 html[data-event="lima"] .topbar-brand .brand-logo { width: 68px; }
 html[data-event="lima"] .public-brand .brand-logo { width: 96px; }
 @media (max-width: 900px) { html[data-event="lima"] .topbar-brand .brand-mark.brand-logo { width: 68px; } }
+
+/* Competition calendar by day (no times) */
+.cal-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--color-border); border-radius: var(--radius-md); }
+.cal-scroll:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+.cal-grid { border-collapse: separate; border-spacing: 0; width: max-content; min-width: 100%; font-size: 0.8125rem; }
+.cal-grid th, .cal-grid td { border-bottom: 1px solid var(--color-border); padding: 0; }
+.cal-grid td { width: 28px; min-width: 28px; height: 30px; border-left: 1px solid var(--color-border); text-align: center; color: #fff; font-size: 0.625rem; }
+.cal-grid .cal-name { position: sticky; left: 0; z-index: 1; background: var(--color-surface); text-align: left; padding: 4px 10px; min-width: 190px; max-width: 240px; border-right: 1px solid var(--color-border-strong); }
+.cal-grid thead .cal-name { vertical-align: bottom; font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.cal-label { display: block; font-weight: 600; line-height: 1.2; }
+.cal-venue { display: block; font-size: 0.75rem; color: var(--color-text-muted); line-height: 1.2; }
+.cal-venue a { color: inherit; }
+.cal-day { width: 28px; min-width: 28px; padding: 4px 0 !important; text-align: center; font-weight: 500; line-height: 1.1; border-left: 1px solid var(--color-border); }
+.cal-day span { display: block; }
+.cal-mon { font-size: 0.625rem; text-transform: uppercase; color: var(--color-text-muted); min-height: 1em; }
+.cal-wd { font-size: 0.625rem; color: var(--color-text-muted); }
+.cal-num { font-variant-numeric: tabular-nums; }
+.cal-day.is-weekend { background: var(--color-surface-muted); }
+.cal-day.is-today { background: var(--color-primary); color: var(--color-primary-contrast); }
+.cal-day.is-today span { color: inherit; }
+.cal-grid td.is-today { box-shadow: inset 2px 0 0 var(--color-primary), inset -2px 0 0 var(--color-primary); }
+.cal-grid tbody tr:hover .cal-name, .cal-grid tbody tr:hover td:not([class*="cal-"]) { background: var(--color-surface-muted); }
+.cal-X { background: #7b3f98; }
+.cal-F { background: #e0338a; }
+.cal-M { background: #2f9e74; }
+.cal-P { background: #0b84b5; }
+.cal-T { background: repeating-linear-gradient(135deg, #f3c9e0 0 4px, #fbe8f2 4px 8px); }
+.cal-C { background: #c7a43a; }
+.cal-legend { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); list-style: none; padding: 0; margin: 0; }
+.cal-legend li { display: flex; align-items: center; gap: 6px; }
+.cal-swatch { display: inline-grid; place-items: center; width: 16px; height: 16px; border-radius: 3px; color: #fff; font-size: 0.5rem; }

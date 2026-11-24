@@ -35,7 +35,7 @@ export default async function ChapterPage({ params, searchParams }: { params: Pr
           <Card>
             <ol className="list">
               {c.sections.map((s, si) => (
-                <li key={s.id}><Link href={`/handbook/${c.slug}/${s.slug}${q}`}>{ci + 1}.{si + 1} {tx(s, "title", locale)}</Link></li>
+                <li key={s.id}><Link prefetch={false} href={`/handbook/${c.slug}/${s.slug}${q}`}>{ci + 1}.{si + 1} {tx(s, "title", locale)}</Link></li>
               ))}
             </ol>
           </Card>

@@ -585,6 +585,12 @@ const en = {
     },
   },
   schedule: {
+    calendar: {
+      discipline: "Discipline · venue",
+      games: { pan: "Pan American Games", para: "Parapan American Games", main: "Competition calendar" },
+      legend: { X: "Competition", F: "Women", M: "Men", P: "Competition with medal ceremonies", T: "Classification / training", C: "Ceremony" },
+      note: "Competition days from the official calendars (subject to change). Session times will be published here when available.",
+    },
     subtitle: "Competition sessions by day, sport and venue. Times in Istanbul time (TRT, UTC+3) by default.",
     empty: "No sessions published yet.",
     noMatch: "No session matches your filters.",

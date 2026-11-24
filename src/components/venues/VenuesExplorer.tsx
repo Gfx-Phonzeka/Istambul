@@ -42,7 +42,7 @@ export function VenuesExplorer({ venues, clusters, sports }: {
       ) : (
         <div className="media-grid">
           {shown.map((v) => (
-            <Link key={v.id} href={`/venues/${v.slug}`} className={`card card-link media-card${hover === v.id ? " is-selected" : ""}`}
+            <Link prefetch={false} key={v.id} href={`/venues/${v.slug}`} className={`card card-link media-card${hover === v.id ? " is-selected" : ""}`}
               onMouseEnter={() => setHover(v.id)} onMouseLeave={() => setHover(null)}>
               <div className="media-preview">
                 {v.photo ? <img src={v.photo} alt="" width={640} height={360} loading="lazy" decoding="async" /> : <span className="venue-num">{v.n}</span>}

@@ -17,7 +17,7 @@ const es: PartialMessages = {
     showAll: "Ver todo",
     createNew: "Crear nuevo",
     openMediaHub: "Abrir el Media Hub",
-    fillRequestForm: "Ir a Service Requests",
+    fillRequestForm: "Ir a Solicitudes de servicio",
     browseFaq: "Ver las preguntas frecuentes",
     viewNotices: "Ver todos los avisos",
     viewSchedule: "Ver el calendario de competición",
@@ -67,7 +67,7 @@ const es: PartialMessages = {
     schedule: "Calendario de competición",
     scheduleShort: "Calendario",
     broadcast: "Señal y distribución",
-    requests: "Service Requests",
+    requests: "Solicitudes de servicio",
     faq: "Preguntas frecuentes",
     glossary: "Glosario",
     contacts: "Contactos",
@@ -561,6 +561,12 @@ const es: PartialMessages = {
     done: "Traducción automática añadida. Revísala y después guarda o publica.",
   },
   schedule: {
+    calendar: {
+      discipline: "Disciplina · sede",
+      games: { pan: "Juegos Panamericanos", para: "Juegos Parapanamericanos", main: "Calendario de competencias" },
+      legend: { X: "Competencia", F: "Femenino", M: "Masculino", P: "Competencia con ceremonias de premiación", T: "Clasificación / entrenamiento", C: "Ceremonia" },
+      note: "Días de competencia según los calendarios oficiales (sujetos a cambios). Los horarios de las sesiones se publicarán aquí cuando estén disponibles.",
+    },
     subtitle: "Sesiones de competición por día, deporte y sede. Por defecto, en hora de Lima (PET, UTC−5).",
     empty: "Aún no hay sesiones publicadas.",
     noMatch: "Ninguna sesión coincide con tus filtros.",
@@ -597,7 +603,7 @@ const es: PartialMessages = {
     cols: { time: "Hora (PET)", feed: "Señal", type: "Tipo", venue: "Sede", channel: "Canal" },
     ebuNote: "La responsabilidad del Host Broadcaster termina al poner la señal a disposición.",
     contact: "Contacto de distribución",
-    requestCta: "Ir a Service Requests",
+    requestCta: "Ir a Solicitudes de servicio",
   },
   import: {
     title: "Importar (Excel / CSV)",
@@ -778,7 +784,7 @@ const es: PartialMessages = {
     },
   },
   booking: {
-    title: "Service Requests",
+    title: "Solicitudes de servicio",
     subtitle: "Las reservas con el Host Broadcaster se hacen en el sitio de booking.",
     intro: "Las facilidades y los servicios unilaterales se reservan en el sitio de booking del Host Broadcaster. Ábrelo con el botón de abajo.",
     open: "Abrir el sitio de booking",
