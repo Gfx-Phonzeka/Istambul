@@ -15,3 +15,7 @@ next-env.d.ts
 scripts/guidelines/*.md
 scripts/guidelines/guidelines.json
 *.local.json
+
+# Safety copies of the databases (personal data): never in the repository
+HB-backups/
+backups/
