@@ -578,3 +578,17 @@ export async function importLogistics(form: FormData): Promise<LogisticsImportRe
   revalidatePath("/team", "layout");
   return { ok: true, imported, problems };
 }
+
+/** Coordination: corrects a production-team member's name, phone and organisation (not the email, which is the sign-in). */
+export async function saveContact(_: FormState, form: FormData): Promise<FormState> {
+  const supabase = await coord();
+  const id = uuidOrNull(form.get("profile_id"));
+  if (!supabase || !id) return { error: "error" };
+  const { error } = await supabase.rpc("crew_update_contact", {
+    p_id: id, p_first: clean(form.get("first_name"), 100), p_last: clean(form.get("last_name"), 100),
+    p_phone: clean(form.get("phone"), 50) ?? "", p_org: clean(form.get("organization"), 200) ?? "",
+  });
+  if (error) return { error: "error" };
+  revalidatePath("/team/crew", "layout");
+  return { ok: true };
+}

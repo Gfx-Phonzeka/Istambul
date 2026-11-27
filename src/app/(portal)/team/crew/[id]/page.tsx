@@ -1,8 +1,9 @@
+import { isAdmin } from "@/lib/auth";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireCrew, crewPhotoUrl, isCrewFinance } from "@/lib/crew-server";
 import { loadFinance, defaultBasis } from "@/lib/crew-costs";
-import { saveFinance } from "@/lib/actions/crew";
+import { saveContact, saveFinance } from "@/lib/actions/crew";
 import { loadLogistics, nights } from "@/lib/crew-logistics";
 import { loadCrew } from "@/lib/crew-data";
 import { getT } from "@/lib/i18n/server";
@@ -20,7 +21,7 @@ import { DaysList } from "@/components/crew/DaysList";
 import { formatDate } from "@/lib/format";
 
 export default async function CrewPersonPage({ params }: { params: Promise<{ id: string }> }) {
-  await requireCrew();
+  const me = await requireCrew();
   const { id } = await params;
   const { locale } = await getT();
   const c = crewLabels(locale);
@@ -40,6 +41,19 @@ export default async function CrewPersonPage({ params }: { params: Promise<{ id:
     <div className="stack">
       <PageHeader title={`${p.first_name} ${p.last_name}`} subtitle={[p.email, p.phone, p.organization].filter(Boolean).join(" · ")}
         actions={<Link className="btn btn-sm" href="/team/crew">← {c("back")}</Link>} />
+      {(p.role === "production" || isAdmin(me)) && (
+        <Card title={c("contactTitle")}>
+          <CrewForm action={saveContact} saved={c("saved")} error={c("error")}>
+            <input type="hidden" name="profile_id" value={p.id} />
+            <input name="first_name" className="input" defaultValue={p.first_name} aria-label={c("firstName")} placeholder={c("firstName")} required maxLength={100} />
+            <input name="last_name" className="input" defaultValue={p.last_name} aria-label={c("lastName")} placeholder={c("lastName")} required maxLength={100} />
+            <input name="phone" className="input" defaultValue={p.phone ?? ""} aria-label={c("emergency_phone")} placeholder={c("emergency_phone")} maxLength={50} />
+            <input name="organization" className="input" defaultValue={p.organization ?? ""} aria-label={c("company")} placeholder={c("company")} maxLength={200} />
+            <button className="btn btn-sm btn-primary">{c("save")}</button>
+          </CrewForm>
+          <p className="muted small" style={{ marginBottom: 0 }}>{c("emailNote")}</p>
+        </Card>
+      )}
       <Card title={c("participation")}>
         <ParticipationForm profileId={p.id} L={L}
           functions={functions.filter((f) => f.active || f.id === p.function_id).map((f) => ({ id: f.id, area: f.area, label: fname(f) ?? f.name_en }))}
