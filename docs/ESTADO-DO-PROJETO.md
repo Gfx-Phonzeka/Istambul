@@ -43,7 +43,7 @@ Um só código (Next.js) para os dois; o evento escolhe-se com `NEXT_PUBLIC_EVEN
 Comum aos dois portais: registo com aprovação, perfis e visibilidade por audiência (todos / RHB / parceiros / produção / interno), notícias, briefings (com destaque para a equipa e vídeos só de produção), Media Hub (incluindo documentos por audiência), handbook com PDF, venues, mapas de câmaras, calendário, sinal e distribuição, FAQ, glossário, contactos, páginas legais, pesquisa, notificações, área da equipa (Production Guidelines com storyboard das cerimónias de medalhas, relatórios diários, pedidos da equipa), backoffice completo (utilizadores, conteúdos, importações, editor de câmaras, estatísticas, registos). Navegação corrigida (deixou de haver cliques que demoravam 15 s).
 
 Lima em particular:
-- 84 planos de câmaras importados.
+- 85 planos de câmaras importados.
 - Calendário Pan refeito como o oficial (20 jul – 8 ago, sem chegadas/partidas, coluna "Ubicación" do calendário oficial); venues alinhadas com o calendário oficial (Canchas de Squash e Circuito de Pentatlón em VMT, Circuito de Ciclismo de Montaña em Pachacamac).
 - Cerimónias às 20:00; abertura e encerramento no Estadio Nacional.
 - Canal Integrado (grelha diária, Excel, PDF, linha do tempo), Booking em zona própria do menu.
@@ -72,7 +72,7 @@ Documentos de apoio: `docs/ROADMAP.md` (desenvolvimentos futuros), `docs/skill-h
 ## 6. Pendentes
 
 **Lima — conteúdos**
-- Planos de câmaras em falta: ginástica artística (Pan); para tiro desportivo e para ciclismo de estrada (Parapan).
+- Planos de câmaras em falta: para tiro desportivo e para ciclismo de estrada (Parapan). (Ginástica artística importada a 27 nov.)
 - Calendário Parapan: falta o calendário oficial em imagem para refazer como o Pan (hoje a coluna "Ubicación" mostra o cluster).
 - Fotos: falta a dos Muros de Escalada (Villa El Salvador); confirmar as fontes das fotos enviadas pelo responsável; a foto dos Campos de Críquet parece gerada por computador (confirmar ou trocar).
 - Dados por confirmar: textos legais, emails de contacto, datas de testes, IDs de satélite e de stream, rate card.

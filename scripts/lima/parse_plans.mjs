@@ -40,6 +40,7 @@ const MAP = {
   "Atletismo": [["atletismo", "para-atletismo"], ["estadio-atletico"]],
   "Acuaticos_clavados": [["clavados"], ["centro-acuatico"]],
   "Gimnasia_trampolin": [["trampolin"], ["polideportivo-villa-el-salvador"]],
+  "Gimnasia_artistica": [["gimnasia-artistica"], ["polideportivo-villa-el-salvador"]],
   "Golf": [["golf"], ["lima-golf-club"]],
   "Hipica_Dressage": [["ecuestre"], ["escuela-equitacion-ejercito"], ["Adiestramiento", "Dressage", "Adestramento"], 1],
   "Hipica_Salto": [["ecuestre"], ["escuela-equitacion-ejercito"], ["Salto", "Jumping", "Saltos"], 3],
