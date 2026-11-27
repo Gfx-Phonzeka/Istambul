@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { requireCrew, crewPhotoUrl } from "@/lib/crew-server";
+import { requireCrew, crewPhotoUrl, isCrewFinance } from "@/lib/crew-server";
+import { loadFinance, defaultBasis } from "@/lib/crew-costs";
+import { saveFinance } from "@/lib/actions/crew";
+import { loadLogistics, nights } from "@/lib/crew-logistics";
 import { loadCrew } from "@/lib/crew-data";
 import { getT } from "@/lib/i18n/server";
 import { crewDict, crewLabels, type CrewRecord } from "@/lib/crew";
@@ -25,6 +28,12 @@ export default async function CrewPersonPage({ params }: { params: Promise<{ id:
   const p = people.find((x) => x.id === id);
   if (!p) notFound();
   const L = crewDict(locale);
+  const fin = (await isCrewFinance()) ? await loadFinance() : null;
+  const f = fin?.finance.get(p.id);
+  const logi = await loadLogistics();
+  const trips = logi.travels.filter((x) => x.profile_id === p.id);
+  const stays = logi.stays.filter((x) => x.profile_id === p.id);
+  const HN = new Map(logi.hotels.map((h) => [h.id, h.name]));
   const days = [...personDays(plan, p.id).values()];
   const U = new Map(plan.units.map((u) => [u.id, u.code]));
   return (
@@ -49,6 +58,37 @@ export default async function CrewPersonPage({ params }: { params: Promise<{ id:
           <button className="btn btn-sm btn-primary">{c("apply")}</button>
         </CrewForm>
       </Card>
+      <Card title={`${c("tabTravel")} · ${c("tabHotels")}`}>
+        {trips.length === 0 && stays.length === 0 ? <p className="muted" style={{ margin: 0 }}>—</p> : (
+          <ul className="crew-plain">
+            {trips.map((t) => <li key={t.id}><span>{c(`dir_${t.direction}`)} · {[t.carrier, t.number].filter(Boolean).join(" ")} {t.from_place ?? ""} → {t.to_place ?? ""}</span><span className="small">{t.depart_date} {t.depart_time ?? ""}</span></li>)}
+            {stays.map((st) => <li key={st.id}><span>{HN.get(st.hotel_id)} · {c(`room_${st.room_type}`)}{st.room_code ? ` (${st.room_code})` : ""}</span><span className="small">{st.check_in} → {st.check_out} · {nights(st.check_in, st.check_out)} {c("nights")}</span></li>)}
+          </ul>
+        )}
+        <p className="small" style={{ marginBottom: 0 }}><Link href="/team/crew/travel">{c("tabTravel")}</Link> · <Link href="/team/crew/hotels">{c("tabHotels")}</Link></p>
+      </Card>
+      {fin && (
+        <Card title={c("financeTitle")} id="finance">
+          <CrewForm action={saveFinance} saved={c("saved")} error={c("error")} className="stack-sm">
+            <input type="hidden" name="profile_id" value={p.id} />
+            <div className="crew-grid">
+              <div className="field"><label htmlFor="basis">{c("basis")}</label>
+                <select id="basis" name="basis" className="input" defaultValue={f?.basis ?? defaultBasis(p)}>{["daily", "forfait", "per_diem_only", "company"].map((b) => <option key={b} value={b}>{c(`basis_${b}`)}</option>)}</select></div>
+              <div className="field"><label htmlFor="daily_rate">{c("dailyRate")}</label><input id="daily_rate" name="daily_rate" className="input" inputMode="decimal" defaultValue={f?.daily_rate ?? ""} /></div>
+              <div className="field"><label htmlFor="monthly_rate">{c("monthlyRate")}</label><input id="monthly_rate" name="monthly_rate" className="input" inputMode="decimal" defaultValue={f?.monthly_rate ?? ""} /></div>
+              <div className="field"><label htmlFor="per_diem_zone">{c("perDiemZone")}</label>
+                <select id="per_diem_zone" name="per_diem_zone" className="input" defaultValue={f?.per_diem_zone ?? "intl"}>{["intl", "es", "pt", "custom", "none"].map((z) => <option key={z} value={z}>{c(`zone_${z}`)}</option>)}</select></div>
+              <div className="field"><label htmlFor="per_diem_custom">{c("perDiemCustom")}</label><input id="per_diem_custom" name="per_diem_custom" className="input" inputMode="decimal" defaultValue={f?.per_diem_custom ?? ""} /></div>
+              <div className="field"><label htmlFor="extra_meals">{c("extraMeals")}</label><input id="extra_meals" name="extra_meals" type="number" min={0} className="input" defaultValue={f?.extra_meals ?? 0} /></div>
+              <div className="field"><label htmlFor="adjustment">{c("adjustment")}</label><input id="adjustment" name="adjustment" className="input" inputMode="decimal" defaultValue={f?.adjustment ?? 0} /></div>
+            </div>
+            <label className="crew-check"><input type="checkbox" name="breakfast" defaultChecked={f?.breakfast ?? true} /> {c("breakfast")}</label>
+            <label className="crew-check"><input type="checkbox" name="off_half" defaultChecked={f?.off_half ?? false} /> {c("offHalf")}</label>
+            <div className="field"><label htmlFor="fin_notes">{c("notes")}</label><textarea id="fin_notes" name="notes" className="input" rows={2} defaultValue={f?.notes ?? ""} /></div>
+            <div><button className="btn btn-sm btn-primary">{c("save")}</button></div>
+          </CrewForm>
+        </Card>
+      )}
       <Card title={c("personalData")}>
         {p.record?.updated_at && <p className="muted small" style={{ marginTop: 0 }}>{c("lastUpdate")}: {formatDateTime(p.record.updated_at, locale)}</p>}
         <CrewSheetForm profileId={p.id} record={p.record as CrewRecord | null} photoUrl={await crewPhotoUrl(p.record?.photo_path)} L={L} locale={locale} />

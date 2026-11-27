@@ -2,7 +2,8 @@ import ExcelJS from "exceljs";
 import { NextResponse, type NextRequest } from "next/server";
 import { EVENT } from "@/lib/event";
 import { getProfile } from "@/lib/auth";
-import { isCrewCoord } from "@/lib/crew-server";
+import { isCrewCoord, isCrewFinance } from "@/lib/crew-server";
+import { loadFinance, personCost } from "@/lib/crew-costs";
 import { loadCrew, type CrewPerson } from "@/lib/crew-data";
 import { DAY_CODE, eachDay, loadPlan, personDays, planRange } from "@/lib/crew-days";
 import { hotelOn, loadLogistics, nights } from "@/lib/crew-logistics";
@@ -56,6 +57,7 @@ export async function GET(req: NextRequest) {
   if (!me || me.status !== "approved" || !(await isCrewCoord())) return new NextResponse("Forbidden", { status: 403 });
   const kind = req.nextUrl.searchParams.get("kind") ?? "full";
   if (kind === "days") return daysWorkbook(req);
+  if (kind === "costs") return (await isCrewFinance()) ? costsWorkbook() : new NextResponse("Forbidden", { status: 403 });
   if (kind === "travel" || kind === "rooming" || kind === "transfers") return logisticsWorkbook(kind, req);
   const cols = KINDS[kind];
   if (!cols) return new NextResponse("Not found", { status: 404 });
@@ -164,4 +166,31 @@ async function logisticsWorkbook(kind: "travel" | "rooming" | "transfers", req: 
     ws.columns.forEach((col) => { col.width = 15; });
   }
   return xlsx(wb, kind === "rooming" ? "rooming-list" : kind);
+}
+
+/** Costs per person, per company and the general summary (finance only). */
+async function costsWorkbook() {
+  const [{ people }, plan, logi, fd] = await Promise.all([loadCrew("en"), loadPlan(), loadLogistics(), loadFinance()]);
+  const costs = people.map((p) => personCost(p, plan, fd, logi.travels, logi.stays)).filter((x) => x.days > 0 || x.total !== 0);
+  const wb = new ExcelJS.Workbook();
+  const ws = wb.addWorksheet("Per person");
+  ws.addRow(["Last name", "First name", "Function", "Type", "Paid by", "Paid to", "Mediagest", "Days", "Work days", "Days off", "Standby (per diem only)", "Cachet", "Per diem", "Travel", "Hotel", "Other", "Adjustment", "Total", "Rate missing"]).font = { bold: true };
+  for (const x of costs) {
+    const p = x.person;
+    ws.addRow([p.last_name, p.first_name, p.functionName, p.collaborator_type, x.basis, x.payee, p.in_mediagest ? "Yes" : "No", x.days, x.workDays, x.offDays, x.standbyDays, x.fee, x.perDiem, x.travel, x.hotel, x.other, x.adjustment, x.total, x.missingRate ? "YES" : ""]);
+  }
+  ws.columns.forEach((col, i) => { col.width = i < 6 ? 18 : 11; if (i >= 11 && i <= 17) col.numFmt = "#,##0.00 €"; });
+  const wc = wb.addWorksheet("Companies");
+  wc.addRow(["Company", "Concept", "Amount"]).font = { bold: true };
+  for (const x of costs.filter((x) => x.basis === "company")) wc.addRow([x.payee, `${x.person.first_name} ${x.person.last_name} (${x.days} days)`, x.fee]);
+  for (const s of fd.services) wc.addRow([s.company, s.description ?? "Service", Number(s.amount)]);
+  wc.getColumn(3).numFmt = "#,##0.00 €"; wc.columns.forEach((col) => { col.width = 30; });
+  const wg = wb.addWorksheet("Summary");
+  const tot = (k: "fee" | "perDiem" | "travel" | "hotel" | "other" | "adjustment" | "total") => costs.reduce((s, x) => s + x[k], 0);
+  const services = fd.services.reduce((s, x) => s + Number(x.amount), 0);
+  const general = fd.other.filter((o) => !o.profile_id).reduce((s, o) => s + Number(o.amount), 0);
+  [["Cachets", tot("fee")], ["Per diem", tot("perDiem")], ["Travel", tot("travel")], ["Hotels", tot("hotel")], ["Other (per person)", tot("other") + tot("adjustment")],
+   ["Other (general)", general], ["Closed services", services], ["GRAND TOTAL", tot("total") + services + general]].forEach((r) => wg.addRow(r));
+  wg.getColumn(2).numFmt = "#,##0.00 €"; wg.getColumn(1).width = 26; wg.getColumn(2).width = 18; wg.lastRow!.font = { bold: true };
+  return xlsx(wb, "crew-costs");
 }

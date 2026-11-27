@@ -856,3 +856,10 @@ html[data-event="lima"] .public-brand .brand-logo { width: 96px; }
 }
 .dt-standby { background: #f0e6d8; color: #6b4f2a; }
 .crew-days td.dt-standby { font-weight: 600; }
+.crew-summary { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.crew-summary > div { background: var(--color-surface-muted); border-radius: var(--radius-md); padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; }
+.crew-summary span { font-size: var(--text-xs); color: var(--color-text-muted); }
+.crew-summary .crew-summary-total { background: var(--color-primary-soft); }
+.crew-two { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-top: 12px; }
+.crew-plain { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+.crew-plain li { display: flex; justify-content: space-between; gap: 12px; align-items: center; border-bottom: 1px dashed var(--color-border); padding-bottom: 4px; }

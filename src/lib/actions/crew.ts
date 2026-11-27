@@ -269,3 +269,95 @@ export async function deleteStay(id: string) {
   await supabase.from("crew_stays").delete().eq("id", id);
   revalidatePath("/team", "layout");
 }
+
+// ---------- Phase D: rates and costs (finance only; the database enforces it too) ----------
+async function finance() {
+  const supabase = await createClient();
+  const { data } = await supabase.rpc("is_crew_finance");
+  return data === true ? supabase : null;
+}
+const money = (v: FormDataEntryValue | null) => { const n = Number(String(v ?? "").replace(",", ".").trim()); return String(v ?? "").trim() !== "" && Number.isFinite(n) ? Math.round(n * 100) / 100 : null; };
+
+export async function saveFinance(_: FormState, form: FormData): Promise<FormState> {
+  const supabase = await finance();
+  const profile_id = uuidOrNull(form.get("profile_id"));
+  const basis = clean(form.get("basis")) ?? "daily"; const zone = clean(form.get("per_diem_zone")) ?? "intl";
+  if (!supabase || !profile_id || !["daily", "forfait", "per_diem_only", "company"].includes(basis) || !["intl", "es", "pt", "none", "custom"].includes(zone)) return { error: "error" };
+  const extras = Number.parseInt(String(form.get("extra_meals") ?? "0"), 10);
+  const { error } = await supabase.from("crew_finance").upsert({
+    profile_id, basis, daily_rate: money(form.get("daily_rate")), monthly_rate: money(form.get("monthly_rate")), off_half: form.get("off_half") === "on",
+    per_diem_zone: zone, per_diem_custom: money(form.get("per_diem_custom")), breakfast: form.get("breakfast") === "on",
+    extra_meals: Number.isFinite(extras) && extras >= 0 ? extras : 0, adjustment: money(form.get("adjustment")) ?? 0, notes: clean(form.get("notes"), 1000),
+  }, { onConflict: "profile_id" });
+  if (error) return { error: "error" };
+  revalidatePath("/team/crew", "layout");
+  return { ok: true };
+}
+
+export async function savePerDiem(_: FormState, form: FormData): Promise<FormState> {
+  const supabase = await finance();
+  if (!supabase) return { error: "error" };
+  const value = Object.fromEntries(["intl", "es", "pt"].map((z) => [z, { meal: money(form.get(`${z}_meal`)), breakfast: money(form.get(`${z}_breakfast`)), extra: money(form.get(`${z}_extra`)) }]));
+  const { error } = await supabase.from("crew_settings").upsert({ key: "per_diem", value }, { onConflict: "key" });
+  if (error) return { error: "error" };
+  revalidatePath("/team/crew", "layout");
+  return { ok: true };
+}
+
+export async function addService(_: FormState, form: FormData): Promise<FormState> {
+  const supabase = await finance();
+  const company = clean(form.get("company"), 120); const amount = money(form.get("amount"));
+  if (!supabase || !company || amount == null) return { error: "error" };
+  const { error } = await supabase.from("crew_services").insert({ company, description: clean(form.get("description"), 300), amount, notes: clean(form.get("notes"), 500) });
+  if (error) return { error: "error" };
+  revalidatePath("/team/crew", "layout");
+  return { ok: true };
+}
+
+export async function deleteService(id: string) {
+  const supabase = await finance();
+  if (!supabase || !UUID_RE.test(id)) return;
+  await supabase.from("crew_services").delete().eq("id", id);
+  revalidatePath("/team/crew", "layout");
+}
+
+export async function addOtherCost(_: FormState, form: FormData): Promise<FormState> {
+  const supabase = await finance();
+  const amount = money(form.get("amount")); const category = clean(form.get("category")) ?? "other";
+  if (!supabase || amount == null || !["transfer", "car", "shipping", "other"].includes(category)) return { error: "error" };
+  const { error } = await supabase.from("crew_other_costs").insert({ category, profile_id: uuidOrNull(form.get("profile_id")), description: clean(form.get("description"), 300), amount });
+  if (error) return { error: "error" };
+  revalidatePath("/team/crew", "layout");
+  return { ok: true };
+}
+
+export async function deleteOtherCost(id: string) {
+  const supabase = await finance();
+  if (!supabase || !UUID_RE.test(id)) return;
+  await supabase.from("crew_other_costs").delete().eq("id", id);
+  revalidatePath("/team/crew", "layout");
+}
+
+export async function setTravelCost(_: FormState, form: FormData): Promise<FormState> {
+  const supabase = await finance();
+  const travel_id = uuidOrNull(form.get("travel_id")); const amount = money(form.get("amount"));
+  if (!supabase || !travel_id) return { error: "error" };
+  const { error } = amount == null
+    ? await supabase.from("crew_travel_costs").delete().eq("travel_id", travel_id)
+    : await supabase.from("crew_travel_costs").upsert({ travel_id, amount }, { onConflict: "travel_id" });
+  if (error) return { error: "error" };
+  revalidatePath("/team/crew", "layout");
+  return { ok: true };
+}
+
+export async function setHotelRate(_: FormState, form: FormData): Promise<FormState> {
+  const supabase = await finance();
+  const hotel_id = uuidOrNull(form.get("hotel_id")); const room_type = clean(form.get("room_type")) ?? ""; const night_rate = money(form.get("night_rate"));
+  if (!supabase || !hotel_id || !["single", "double", "twin", "triple", "other"].includes(room_type)) return { error: "error" };
+  const { error } = night_rate == null
+    ? await supabase.from("crew_hotel_rates").delete().eq("hotel_id", hotel_id).eq("room_type", room_type)
+    : await supabase.from("crew_hotel_rates").upsert({ hotel_id, room_type, night_rate }, { onConflict: "hotel_id,room_type" });
+  if (error) return { error: "error" };
+  revalidatePath("/team/crew", "layout");
+  return { ok: true };
+}
