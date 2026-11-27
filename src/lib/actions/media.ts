@@ -58,7 +58,7 @@ export async function setMediaPreview(assetId: string, path: string | null, kind
   return { ok: true };
 }
 
-const BRIEFING_FILE_COLUMNS = { video: "video_path", poster: "poster_path", subtitles_en: "subtitles_en_path", subtitles_tr: "subtitles_tr_path" } as const;
+const BRIEFING_FILE_COLUMNS = { video: "video_path", poster: "poster_path", subtitles_en: "subtitles_en_path", subtitles_tr: "subtitles_tr_path", subtitles_es: "subtitles_es_path", subtitles_pt: "subtitles_pt_path" } as const;
 export type BriefingFileKind = keyof typeof BRIEFING_FILE_COLUMNS;
 
 export async function setBriefingFile(

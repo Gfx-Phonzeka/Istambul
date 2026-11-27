@@ -1,3 +1,4 @@
+import { EVENT } from "@/lib/event";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -49,8 +50,7 @@ export default async function BriefingPage({ params, searchParams }: { params: P
         src={v.video_path ? signedVideo[v.video_path] ?? null : null}
         mime={v.video_mime}
         poster={v.poster_path ? signedPoster[v.poster_path] ?? null : null}
-        hasEn={Boolean(v.subtitles_en_path)}
-        hasTr={Boolean(v.subtitles_tr_path)}
+        subtitles={EVENT.locales.filter((l) => Boolean((v as Record<string, unknown>)[`subtitles_${l}_path`]))}
         watched={Boolean(view)}
       />
       {tx(v, "description", locale) && <p>{tx(v, "description", locale)}</p>}

@@ -426,7 +426,7 @@ const es: PartialMessages = {
     admin: {
       files: "Archivos de vídeo",
       filesHelp: "Sube el vídeo (se recomienda MP4 para que se reproduzca en todos los navegadores), una imagen de portada y los subtítulos en formato WebVTT (.vtt). Los archivos grandes se suben por partes y la subida se reanuda sola si se corta la conexión.",
-      slots: { video: "Vídeo", poster: "Imagen de portada", subtitles_en: "Subtítulos EN (.vtt)", subtitles_tr: "Subtítulos (2.º idioma, .vtt)" },
+      slots: { video: "Vídeo", poster: "Imagen de portada", subtitles_es: "Subtítulos ES (.vtt)", subtitles_en: "Subtítulos EN (.vtt)", subtitles_pt: "Subtítulos PT (.vtt)" },
       none: "Sin archivo",
       upload: "Subir",
       replace: "Sustituir",

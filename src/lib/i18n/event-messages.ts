@@ -14,6 +14,7 @@ const LIMA_EN: PartialMessages = {
   sectionInfo: {
     schedule: "Sessions by day, sport and venue (Lima time).",
     broadcast: "Feed grid, distribution and technical parameters.",
+    briefings: "Information videos with ES/EN/PT subtitles.",
   },
   auth: { orgTypes: { right_holder: "Right Holder", partner: "Partner (Panam Sports, Organising Committee)", other: "Other" } },
   cms: {

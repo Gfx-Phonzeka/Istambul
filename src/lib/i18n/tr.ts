@@ -440,7 +440,7 @@ const tr: Messages = {
     admin: {
       files: "Video dosyaları",
       filesHelp: "Videoyu (tüm tarayıcılarda oynatma için MP4 önerilir), bir kapak görseli ve WebVTT (.vtt) formatında altyazıları yükleyin. Büyük dosyalar parçalar halinde yüklenir ve bağlantı kesilirse otomatik olarak devam eder.",
-      slots: { video: "Video", poster: "Kapak görseli", subtitles_en: "Altyazı EN (.vtt)", subtitles_tr: "Altyazı TR (.vtt)" },
+      slots: { video: "Video", poster: "Kapak görseli", subtitles_en: "Altyazı EN (.vtt)", subtitles_tr: "Altyazı TR (.vtt)", subtitles_es: "Altyazı ES (.vtt)", subtitles_pt: "Altyazı PT (.vtt)" },
       none: "Dosya yok",
       upload: "Yükle",
       replace: "Değiştir",

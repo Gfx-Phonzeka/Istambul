@@ -3,9 +3,10 @@ import { useRef, useState, useTransition } from "react";
 import { setBriefingWatched } from "@/lib/actions/media";
 import { useI18n } from "@/lib/i18n/client";
 import { Badge } from "@/components/ui";
+import { LANG_NAMES, type Locale } from "@/lib/event";
 
-export function BriefingPlayer({ id, src, mime, poster, hasEn, hasTr, watched: initial }: {
-  id: string; src: string | null; mime: string | null; poster: string | null; hasEn: boolean; hasTr: boolean; watched: boolean;
+export function BriefingPlayer({ id, src, mime, poster, subtitles, watched: initial }: {
+  id: string; src: string | null; mime: string | null; poster: string | null; subtitles: Locale[]; watched: boolean;
 }) {
   const { t, locale } = useI18n();
   const [watched, setWatched] = useState(initial);
@@ -33,8 +34,7 @@ export function BriefingPlayer({ id, src, mime, poster, hasEn, hasTr, watched: i
           }}
         >
           <source src={src} type={mime ?? undefined} />
-          {hasEn && <track kind="subtitles" src={`/api/briefings/${id}/subtitles/en`} srcLang="en" label="English" default={locale === "en"} />}
-          {hasTr && <track kind="subtitles" src={`/api/briefings/${id}/subtitles/tr`} srcLang="tr" label="Türkçe" default={locale === "tr"} />}
+          {subtitles.map((l) => <track key={l} kind="subtitles" src={`/api/briefings/${id}/subtitles/${l}`} srcLang={l} label={LANG_NAMES[l]} default={locale === l} />)}
         </video>
       ) : (
         <div className="player player-empty">{t("briefings.noVideo")}</div>

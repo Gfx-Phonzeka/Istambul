@@ -438,7 +438,7 @@ const en = {
     admin: {
       files: "Video files",
       filesHelp: "Upload the video (MP4 recommended for playback in all browsers), a poster image and the subtitles in WebVTT (.vtt) format. Large files are uploaded in parts and resume automatically if the connection drops.",
-      slots: { video: "Video", poster: "Poster image", subtitles_en: "Subtitles EN (.vtt)", subtitles_tr: "Subtitles TR (.vtt)" },
+      slots: { video: "Video", poster: "Poster image", subtitles_en: "Subtitles EN (.vtt)", subtitles_tr: "Subtitles TR (.vtt)", subtitles_es: "Subtitles ES (.vtt)", subtitles_pt: "Subtitles PT (.vtt)" },
       none: "No file",
       upload: "Upload",
       replace: "Replace",

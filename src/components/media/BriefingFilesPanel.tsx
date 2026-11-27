@@ -4,12 +4,13 @@ import { useRouter } from "next/navigation";
 import { ResumableUpload } from "./ResumableUpload";
 import { setBriefingFile, type BriefingFileKind } from "@/lib/actions/media";
 import { useI18n } from "@/lib/i18n/client";
+import { EVENT } from "@/lib/event";
 
 const SLOTS: { kind: BriefingFileKind; accept: string }[] = [
   { kind: "video", accept: "video/mp4,video/webm,video/quicktime" },
   { kind: "poster", accept: "image/png,image/jpeg,image/webp" },
-  { kind: "subtitles_en", accept: ".vtt,text/vtt" },
-  { kind: "subtitles_tr", accept: ".vtt,text/vtt" },
+  // One subtitles file per portal language (Istanbul EN/TR, Lima ES/EN/PT).
+  ...EVENT.locales.map((l) => ({ kind: `subtitles_${l}` as BriefingFileKind, accept: ".vtt,text/vtt" })),
 ];
 
 export function BriefingFilesPanel({ videoId, files }: { videoId: string; files: Record<BriefingFileKind, string | null> }) {

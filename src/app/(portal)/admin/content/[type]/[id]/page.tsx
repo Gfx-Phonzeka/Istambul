@@ -118,6 +118,7 @@ export default async function EditContent({ params, searchParams }: { params: Pr
     extra = <BriefingFilesPanel videoId={String(row.id)} files={{
       video: (row.video_path as string | null) ?? null, poster: (row.poster_path as string | null) ?? null,
       subtitles_en: (row.subtitles_en_path as string | null) ?? null, subtitles_tr: (row.subtitles_tr_path as string | null) ?? null,
+      subtitles_es: (row.subtitles_es_path as string | null) ?? null, subtitles_pt: (row.subtitles_pt_path as string | null) ?? null,
     }} />;
   }
 
