@@ -424,6 +424,17 @@ export async function bulkPeople(_: FormState, form: FormData): Promise<FormStat
   else if (op === "function" && value && UUID_RE.test(value)) { await ensure(); ({ error } = await supabase.from("crew_participation").update({ function_id: value }).in("profile_id", ids)); }
   else if (op === "type" && value && (COLLAB_TYPES as readonly string[]).includes(value)) { await ensure(); ({ error } = await supabase.from("crew_participation").update({ collaborator_type: value }).in("profile_id", ids)); }
   else if (op === "company") { await ensure(); ({ error } = await supabase.from("crew_participation").update({ company: value }).in("profile_id", ids)); }
+  else if (op === "days" || op === "days_clear") {
+    // Work days for the selected people over a period (management, office, IBC…), without needing a team or a unit.
+    const from = clean(form.get("from")); const to = clean(form.get("to")) ?? from;
+    if (!isDate(from) || !isDate(to) || to < from) return { error: "error" };
+    if (op === "days_clear") ({ error } = await supabase.from("crew_person_days").delete().in("profile_id", ids).gte("day", from).lte("day", to));
+    else {
+      if (!value || ![...DAY_TYPES_OK, "standby", "none"].includes(value)) return { error: "error" };
+      const rows = ids.flatMap((profile_id) => range(from, to).map((day) => ({ profile_id, day, day_type: value, unit_id: null, notes: null })));
+      ({ error } = await supabase.from("crew_person_days").upsert(rows, { onConflict: "profile_id,day" }));
+    }
+  }
   else if (op === "mediagest_on" || op === "mediagest_off") { await ensure(); ({ error } = await supabase.from("crew_participation").update({ in_mediagest: op === "mediagest_on" }).in("profile_id", ids)); }
   else return { error: "error" };
   if (error) return { error: "error" };

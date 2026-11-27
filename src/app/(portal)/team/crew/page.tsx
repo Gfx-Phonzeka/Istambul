@@ -53,7 +53,8 @@ export default async function CrewPage({ searchParams }: { searchParams: Promise
               <strong className="small">{c("bulkTitle")}:</strong>
               <BulkValue L={crewDict(locale)} teams={teams.map((t) => ({ value: t.id, label: t.name }))}
                 functions={functions.filter((f) => f.active).map((f) => ({ value: f.id, label: fname(f) ?? f.name_en }))}
-                types={COLLAB_TYPES.map((t) => ({ value: t, label: c(t) }))} />
+                types={COLLAB_TYPES.map((t) => ({ value: t, label: c(t) }))}
+                dayTypes={["office", "live", "travel", "setup", "rehearsal", "check", "off", "standby", "dismantle", "none"].map((d) => ({ value: d, label: c(`dayTypes_${d}`) }))} />
               <button className="btn btn-sm">{c("applyToSelected")}</button>
             </div>
           <div className="table-wrap">
