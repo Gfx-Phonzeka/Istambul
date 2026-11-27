@@ -9,6 +9,8 @@ import { Card, EmptyState, PageHeader } from "@/components/ui";
 import { ConfirmButton } from "@/components/ui/ConfirmButton";
 import { CrewTabs } from "@/components/crew/CrewTabs";
 import { CrewForm } from "@/components/crew/CrewForm";
+import { LogisticsImport } from "@/components/crew/LogisticsImport";
+import { crewDict } from "@/lib/crew";
 
 export const metadata = { title: "Crew Ops · Hotels" };
 const ROOMS = ["single", "double", "twin", "triple", "other"];
@@ -24,6 +26,7 @@ export default async function CrewHotelsPage() {
     <div className="stack">
       <PageHeader title={c("crewOps")} subtitle={c("hotelsIntro")} />
       <CrewTabs active="hotels" c={c} admin={isAdmin(me)} />
+      <Card title={c("importRooming")}><LogisticsImport kind="rooming" L={crewDict(locale)} /></Card>
       <Card title={c("addHotel")}>
         <CrewForm action={addHotel} saved={c("saved")} error={c("error")}>
           <input name="name" className="input" placeholder={c("hotelName")} aria-label={c("hotelName")} required maxLength={120} />

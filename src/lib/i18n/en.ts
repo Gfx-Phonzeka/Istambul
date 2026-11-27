@@ -117,6 +117,7 @@ const en = {
     locked: "Too many failed attempts. For security, sign-in is locked until {time}.",
     registerTitle: "Request Access",
     registerSubtitle: "Fill in the form. The Host Broadcaster team will review your request.",
+    productionInvite: "Host Broadcaster production team: do not register here. You will receive an email invitation from the coordination.",
     firstName: "First name",
     lastName: "Last name",
     workEmail: "Professional email",

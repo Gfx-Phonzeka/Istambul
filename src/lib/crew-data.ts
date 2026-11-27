@@ -3,7 +3,7 @@ import { completeness, type CrewRecord } from "@/lib/crew";
 import type { Locale } from "@/lib/event";
 
 export interface CrewPerson {
-  id: string; role: string; first_name: string; last_name: string; email: string; phone: string | null; organization: string | null; country: string | null;
+  id: string; role: string; invited_at: string | null; last_login_at: string | null; access: "none" | "invited" | "in"; first_name: string; last_name: string; email: string; phone: string | null; organization: string | null; country: string | null;
   record: Partial<CrewRecord> | null; pct: number;
   function_id: string | null; functionName: string | null; area: string | null; position_label: string | null;
   collaborator_type: string | null; company: string | null; notes: string | null; in_mediagest: boolean;
@@ -14,7 +14,7 @@ export interface CrewPerson {
 export async function loadCrew(locale: Locale) {
   const supabase = await createClient();
   const [{ data: profiles }, { data: records }, { data: parts }, { data: functions }, { data: teams }, { data: members }] = await Promise.all([
-    supabase.from("profiles").select("id,first_name,last_name,email,phone,organization,country,role").in("role", ["production", "editor", "admin"]).order("last_name"),
+    supabase.from("profiles").select("id,first_name,last_name,email,phone,organization,country,role,invited_at,last_login_at").in("role", ["production", "editor", "admin"]).order("last_name"),
     supabase.from("crew_records").select("*"),
     supabase.from("crew_participation").select("*"),
     supabase.from("crew_functions").select("*").order("position"),
@@ -33,7 +33,8 @@ export async function loadCrew(locale: Locale) {
       const teamIds = (members ?? []).filter((m) => m.profile_id === p.id).map((m) => m.team_id);
       const record = R.get(p.id) ?? null;
       return {
-        id: p.id, role: p.role, first_name: p.first_name, last_name: p.last_name, email: p.email, phone: p.phone, organization: p.organization, country: p.country,
+        id: p.id, role: p.role, invited_at: p.invited_at, last_login_at: p.last_login_at,
+        access: p.last_login_at ? "in" : p.invited_at ? "invited" : "none", first_name: p.first_name, last_name: p.last_name, email: p.email, phone: p.phone, organization: p.organization, country: p.country,
         record, pct: completeness(record),
         function_id: part?.function_id ?? null, functionName: fname(f), area: f?.area ?? null, position_label: part?.position_label ?? null,
         collaborator_type: part?.collaborator_type ?? null, company: part?.company ?? null, notes: part?.notes ?? null, in_mediagest: Boolean(part?.in_mediagest),

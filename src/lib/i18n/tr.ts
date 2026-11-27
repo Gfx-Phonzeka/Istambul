@@ -119,6 +119,7 @@ const tr: Messages = {
     locked: "Çok fazla hatalı deneme. Güvenlik nedeniyle giriş {time} saatine kadar kilitlendi.",
     registerTitle: "Erişim talep et",
     registerSubtitle: "Formu doldurun. Ev Sahibi Yayıncı ekibi talebinizi inceleyecektir.",
+    productionInvite: "Ev Sahibi Yayıncı yapım ekibi: buradan kayıt olmayın. Koordinasyondan e-posta ile davet alacaksınız.",
     firstName: "Ad",
     lastName: "Soyad",
     workEmail: "Kurumsal e-posta",

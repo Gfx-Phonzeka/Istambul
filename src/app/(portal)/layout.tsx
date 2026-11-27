@@ -8,12 +8,14 @@ import { NAV_GROUPS } from "@/lib/nav";
 import { signOut } from "@/lib/actions/auth";
 import { reportsAccess } from "@/lib/reports";
 import { isCrewCoord } from "@/lib/crew-server";
+import { completeness, crewLabels } from "@/lib/crew";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
 export default async function PortalLayout({ children }: { children: React.ReactNode }) {
   const profile = await requireApproved();
-  const { t } = await getT();
+  const { t, locale } = await getT();
   const supabase = await createClient();
   const { data: notifications } = await supabase
     .from("notifications")
@@ -65,6 +67,12 @@ export default async function PortalLayout({ children }: { children: React.React
     });
   }
 
+  // Production team: a reminder until the crew sheet is complete.
+  let sheetPct = 100;
+  if (profile.role === "production") {
+    const { data: rec } = await supabase.from("crew_records").select("*").eq("profile_id", profile.id).maybeSingle();
+    sheetPct = completeness(rec);
+  }
   return (
     <AppShell
       groups={groups}
@@ -74,6 +82,11 @@ export default async function PortalLayout({ children }: { children: React.React
       staff={isStaff(profile)}
       signOut={signOut}
     >
+      {sheetPct < 100 && (
+        <div className="alert alert-warning small" role="note" style={{ marginBottom: 16 }}>
+          <Link href="/team/sheet"><strong>{crewLabels(locale)("completeSheet", { n: sheetPct })}</strong></Link>
+        </div>
+      )}
       {children}
     </AppShell>
   );

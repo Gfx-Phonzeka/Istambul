@@ -105,6 +105,7 @@ const es: PartialMessages = {
     locked: "Demasiados intentos fallidos. Por seguridad, el acceso está bloqueado hasta las {time}.",
     registerTitle: "Solicitar acceso",
     registerSubtitle: "Completa el formulario. El equipo del Host Broadcaster revisará tu solicitud.",
+    productionInvite: "Equipo de producción del Host Broadcaster: no se registre aquí. Recibirá una invitación por correo de la coordinación.",
     firstName: "Nombre",
     lastName: "Apellidos",
     workEmail: "Correo profesional",

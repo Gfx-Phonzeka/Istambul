@@ -26,6 +26,8 @@ export default async function CrewOverviewPage() {
   const noTeam = people.filter((p) => !p.teamIds.length);
   const noDays = people.filter((p) => !daysOf.get(p.id)!.size);
   const mediagest = people.filter((p) => p.in_mediagest).length;
+  const notInvited = people.filter((p) => p.role === "production" && p.access === "none").length;
+  const invitedNotIn = people.filter((p) => p.access === "invited").length;
   const withDays = people.filter((p) => daysOf.get(p.id)!.size);
   const noOut = withDays.filter((p) => !logi.travels.some((t) => t.profile_id === p.id && t.direction === "outbound"));
   const noRet = withDays.filter((p) => !logi.travels.some((t) => t.profile_id === p.id && t.direction === "return"));
@@ -58,6 +60,8 @@ export default async function CrewOverviewPage() {
       <CrewTabs active="dashboard" c={c} admin={isAdmin(me)} />
       <div className="crew-kpis">
         {kpi(c("kpiPeople"), n)}
+        {kpi(c("kpiNotInvited"), notInvited, notInvited ? "warn" : "ok", "/team/crew")}
+        {kpi(c("kpiInvitedNotIn"), invitedNotIn, invitedNotIn ? "warn" : "ok", "/team/crew")}
         {kpi(c("kpiComplete"), `${complete} (${pct(complete)}%)`, complete === n ? "ok" : "warn", "/team/crew?missing=1")}
         {kpi(c("kpiNoPhoto"), noPhoto, noPhoto ? "warn" : "ok")}
         {kpi(c("kpiNoTeam"), noTeam.length, noTeam.length ? "warn" : "ok")}

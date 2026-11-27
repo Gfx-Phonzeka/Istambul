@@ -21,6 +21,7 @@ export function RegisterForm() {
       <div>
         <h1>{t("auth.registerTitle")}</h1>
         <p className="muted">{t("auth.registerSubtitle")}</p>
+        <div className="alert alert-info small" role="note">{t("auth.productionInvite")}</div>
       </div>
       <FormError state={state} />
       <div className="form-grid">

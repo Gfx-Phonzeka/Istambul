@@ -424,6 +424,14 @@ export async function bulkPeople(_: FormState, form: FormData): Promise<FormStat
   else if (op === "function" && value && UUID_RE.test(value)) { await ensure(); ({ error } = await supabase.from("crew_participation").update({ function_id: value }).in("profile_id", ids)); }
   else if (op === "type" && value && (COLLAB_TYPES as readonly string[]).includes(value)) { await ensure(); ({ error } = await supabase.from("crew_participation").update({ collaborator_type: value }).in("profile_id", ids)); }
   else if (op === "company") { await ensure(); ({ error } = await supabase.from("crew_participation").update({ company: value }).in("profile_id", ids)); }
+  else if (op === "invite") {
+    // Invitations: only administrators (database rule); one email per person with the link to choose a password.
+    const { data: me } = await supabase.rpc("is_admin");
+    if (me !== true) return { error: "error" };
+    for (const id of ids) await supabase.rpc("admin_send_team_invite", { p_user: id });
+    const { after } = await import("next/server"); const { flushEmails } = await import("@/lib/email");
+    after(flushEmails);
+  }
   else if (op === "days" || op === "days_clear") {
     // Work days for the selected people over a period (management, office, IBC…), without needing a team or a unit.
     const from = clean(form.get("from")); const to = clean(form.get("to")) ?? from;
@@ -497,4 +505,76 @@ export async function importCrew(form: FormData): Promise<CrewImportResult> {
   revalidatePath("/team/crew", "layout");
   revalidatePath("/admin/team");
   return { ok: true, created, updated, problems };
+}
+
+/** Admin: invites every production-team member who has not been invited yet and has never signed in. */
+export async function inviteMissing(): Promise<{ sent: number }> {
+  const supabase = await createClient();
+  const { data: me } = await supabase.rpc("is_admin");
+  if (me !== true) return { sent: 0 };
+  const { data } = await supabase.from("profiles").select("id").eq("role", "production").eq("status", "approved").is("invited_at", null).is("last_login_at", null);
+  let sent = 0;
+  for (const r of data ?? []) { const { error } = await supabase.rpc("admin_send_team_invite", { p_user: r.id }); if (!error) sent++; }
+  const { after } = await import("next/server"); const { flushEmails } = await import("@/lib/email");
+  after(flushEmails);
+  revalidatePath("/team/crew", "layout");
+  return { sent };
+}
+
+export type LogisticsImportResult = { ok: true; imported: number; problems: { line: number; problem: string }[] } | { ok: false; error: string };
+
+/** Travel list or rooming list from Excel (coordination). People are matched by email. */
+export async function importLogistics(form: FormData): Promise<LogisticsImportResult> {
+  const supabase = await coord();
+  if (!supabase) return { ok: false, error: "forbidden" };
+  const kind = String(form.get("kind")); const file = form.get("file");
+  if (!(file instanceof File) || file.size === 0 || file.size > 5 * 1024 * 1024 || !["travel", "rooming"].includes(kind)) return { ok: false, error: "no_file" };
+  const L = await import("@/lib/crew-logistics-import");
+  const rows = await L.readRows(file);
+  if (!rows) return { ok: false, error: "unreadable" };
+  const { data: profiles } = await supabase.from("profiles").select("id,email").in("role", ["production", "editor", "admin"]);
+  const P = new Map((profiles ?? []).map((p) => [String(p.email).toLowerCase(), p.id]));
+  const problems: { line: number; problem: string }[] = [];
+  let imported = 0;
+  const pick = (v: string, map: Record<string, string>, def: string) => map[L.norm(v)] ?? (v ? null : def);
+  if (kind === "travel") {
+    for (const { line, cells } of rows) {
+      const email = L.text(cells[0]).toLowerCase(); const profile_id = P.get(email);
+      if (!profile_id) { problems.push({ line, problem: `email not found: ${email}` }); continue; }
+      const direction = pick(L.text(cells[1]), { outbound: "outbound", ida: "outbound", return: "return", vuelta: "return", volta: "return", regreso: "return", internal: "internal", interno: "internal", interna: "internal" }, "outbound");
+      const mode = pick(L.text(cells[2]), { flight: "flight", vuelo: "flight", voo: "flight", train: "train", tren: "train", trem: "train", comboio: "train", car: "car", coche: "car", carro: "car", bus: "bus", autobus: "bus", onibus: "bus", other: "other", otro: "other", outro: "other" }, "flight");
+      const depart_date = L.asDate(cells[7]);
+      if (!direction || !mode || !depart_date) { problems.push({ line, problem: "direction, means or departure date not valid" }); continue; }
+      await supabase.from("crew_travels").delete().eq("profile_id", profile_id).eq("direction", direction).eq("depart_date", depart_date);
+      const { error } = await supabase.from("crew_travels").insert({
+        profile_id, direction, mode, carrier: L.text(cells[3]).slice(0, 80) || null, number: L.text(cells[4]).slice(0, 40) || null,
+        from_place: L.text(cells[5]).slice(0, 80) || null, to_place: L.text(cells[6]).slice(0, 80) || null,
+        depart_date, depart_time: L.asTime(cells[8]), arrive_date: L.asDate(cells[9]) ?? depart_date, arrive_time: L.asTime(cells[10]),
+        booking_ref: L.text(cells[11]).slice(0, 40) || null, transfer_needed: !/^(no|não|nao|n|0|false)$/i.test(L.text(cells[12])),
+        extras: L.text(cells[13]).slice(0, 300) || null, notes: L.text(cells[14]).slice(0, 500) || null,
+      });
+      if (error) problems.push({ line, problem: error.message }); else imported++;
+    }
+  } else {
+    const { data: hotels } = await supabase.from("crew_hotels").select("id,name");
+    const H = new Map((hotels ?? []).map((h) => [L.norm(h.name), h.id]));
+    for (const { line, cells } of rows) {
+      const email = L.text(cells[0]).toLowerCase(); const profile_id = P.get(email);
+      if (!profile_id) { problems.push({ line, problem: `email not found: ${email}` }); continue; }
+      const hotelName = L.text(cells[1]).slice(0, 120); const check_in = L.asDate(cells[2]); const check_out = L.asDate(cells[3]);
+      const room_type = pick(L.text(cells[4]), { single: "single", individual: "single", double: "double", doble: "double", duplo: "double", twin: "twin", triple: "triple", triplo: "triple", other: "other", otra: "other", outro: "other" }, "single");
+      if (!hotelName || !check_in || !check_out || check_out <= check_in || !room_type) { problems.push({ line, problem: "hotel, dates or room not valid" }); continue; }
+      let hotel_id = H.get(L.norm(hotelName));
+      if (!hotel_id) {
+        const { data: h } = await supabase.from("crew_hotels").insert({ name: hotelName }).select("id").single();
+        if (!h) { problems.push({ line, problem: "hotel could not be created" }); continue; }
+        hotel_id = h.id; H.set(L.norm(hotelName), h.id);
+      }
+      await supabase.from("crew_stays").delete().eq("profile_id", profile_id).eq("hotel_id", hotel_id).eq("check_in", check_in);
+      const { error } = await supabase.from("crew_stays").insert({ profile_id, hotel_id, check_in, check_out, room_type, room_code: L.text(cells[5]).slice(0, 20) || null, notes: L.text(cells[6]).slice(0, 300) || null });
+      if (error) problems.push({ line, problem: error.message }); else imported++;
+    }
+  }
+  revalidatePath("/team", "layout");
+  return { ok: true, imported, problems };
 }

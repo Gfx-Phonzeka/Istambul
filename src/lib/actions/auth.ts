@@ -3,6 +3,7 @@ import { intlLocale } from "@/lib/i18n";
 import { EVENT } from "@/lib/event";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { completeness } from "@/lib/crew";
 import { createClient } from "@/lib/supabase/server";
 import { flushEmails } from "@/lib/email";
 import { LOCALE_COOKIE, normalizeLocale } from "@/lib/i18n";
@@ -39,12 +40,17 @@ export async function signIn(_: FormState, form: FormData): Promise<FormState> {
   const { error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) return { error: "auth.invalid", errorVars: { n: 4 } };
 
-  const { data: profile } = await supabase.from("profiles").select("preferred_language,status").eq("email", email).single();
+  const { data: profile } = await supabase.from("profiles").select("id,role,preferred_language,status").eq("email", email).single();
   const store = await cookies();
   if (profile?.preferred_language) {
     store.set(LOCALE_COOKIE, profile.preferred_language, { path: "/", maxAge: 60 * 60 * 24 * 365, sameSite: "lax" });
   }
   if (profile?.status !== "approved") redirect("/account-status");
+  // Production team: until the crew sheet is complete, the first stop is "My crew sheet".
+  if (profile.role === "production" && !String(form.get("next") ?? "")) {
+    const { data: rec } = await supabase.from("crew_records").select("*").eq("profile_id", profile.id).maybeSingle();
+    if (completeness(rec) < 100) redirect("/team/sheet?welcome=1");
+  }
   redirect(safeNext(form.get("next")));
 }
 

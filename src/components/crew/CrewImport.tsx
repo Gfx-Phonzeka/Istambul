@@ -7,7 +7,7 @@ export function CrewImport({ L }: { L: Record<string, string> }) {
   const [pending, start] = useTransition();
   return (
     <form className="crew-filters" onSubmit={(e) => { e.preventDefault(); const fd = new FormData(e.currentTarget); start(async () => setRes(await importCrew(fd))); }}>
-      <a className="btn btn-sm" href="/api/crew/template">{L.downloadTemplate}</a>
+      <a className="btn btn-sm" href="/api/crew/template?kind=crew">{L.downloadTemplate}</a>
       <input type="file" name="file" accept=".xlsx" required aria-label={L.importFile} />
       <button className="btn btn-sm btn-primary" disabled={pending}>{pending ? "…" : L.importFile}</button>
       {res && (res.ok ? (

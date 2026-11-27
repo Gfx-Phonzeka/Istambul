@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
 import { crewDict, crewLabels, type CrewRecord } from "@/lib/crew";
 import { crewPhotoUrl } from "@/lib/crew-server";
-import { Card, PageHeader } from "@/components/ui";
+import { Alert, Card, PageHeader } from "@/components/ui";
 import { CrewSheetForm } from "@/components/crew/CrewSheetForm";
 import { loadPlan, personDays } from "@/lib/crew-days";
 import { venueSportNames } from "@/lib/crew-refs";
@@ -13,7 +13,8 @@ import { formatDate } from "@/lib/format";
 
 export const metadata = { title: "Crew sheet" };
 
-export default async function MySheetPage() {
+export default async function MySheetPage({ searchParams }: { searchParams: Promise<{ welcome?: string }> }) {
+  const sp = await searchParams;
   const me = await requireTeam();
   const { locale } = await getT();
   const c = crewLabels(locale);
@@ -35,6 +36,7 @@ export default async function MySheetPage() {
   return (
     <div className="stack">
       <PageHeader title={c("mySheet")} subtitle={c("mySheetIntro")} />
+      {sp.welcome && <Alert tone="info"><strong>{c("welcomeTitle")}.</strong> {c("welcomeText")}</Alert>}
       <Card title={c("myRole")}>
         {fnName || teamNames.length ? (
           <dl className="crew-dl">
