@@ -12,7 +12,7 @@ export const DAY_CODE: Record<DayType, string> = {
 
 export interface Unit { id: string; code: string; name: string | null; size: string | null; mode: string | null; cameras: number | null; notes: string | null; position: number }
 export interface UnitDay { unit_id: string; day: string; day_type: DayType; venue_id: string | null; sport_id: string | null; call_time: string | null; notes: string | null }
-export interface Assignment { id: string; team_id: string; unit_id: string; start_date: string; end_date: string; notes: string | null }
+export interface Assignment { id: string; team_id: string; unit_id: string | null; start_date: string; end_date: string; notes: string | null; day_type: DayType; venue_id: string | null }
 export interface Travel { id: string; profile_id: string; direction: string; mode: string; carrier: string | null; number: string | null; from_place: string | null; to_place: string | null;
   depart_date: string; depart_time: string | null; arrive_date: string | null; arrive_time: string | null; booking_ref: string | null; transfer_needed: boolean; extras: string | null; notes: string | null }
 export interface PersonDayRow { profile_id: string; day: string; day_type: DayType | "none" | null; unit_id: string | null; notes: string | null }
@@ -51,6 +51,10 @@ export function personDays(plan: Plan, profileId: string): Map<string, PersonDay
   const teams = new Set(plan.members.filter((m) => m.profile_id === profileId).map((m) => m.team_id));
   for (const a of plan.assignments.filter((x) => teams.has(x.team_id))) {
     for (const day of eachDay(a.start_date, a.end_date)) {
+      if (!a.unit_id) { // team without a unit (IBC/MCR, management…): every day of the period
+        out.set(day, { day, type: a.day_type ?? "office", unitId: null, venueId: a.venue_id, sportId: null, call: null, manual: false, note: a.notes });
+        continue;
+      }
       const u = UD.get(`${a.unit_id}|${day}`);
       if (!u) continue;
       out.set(day, { day, type: u.day_type, unitId: u.unit_id, venueId: u.venue_id, sportId: u.sport_id, call: u.call_time, manual: false, note: u.notes });

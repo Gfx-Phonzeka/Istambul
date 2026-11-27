@@ -115,6 +115,7 @@ const L: Record<"en" | "es" | "pt" | "tr", Dict> = {
     kpiPeople: "People", kpiComplete: "Sheet complete", kpiNoPhoto: "Without photo", kpiNoTeam: "Without team", kpiNoDays: "Without days", kpiMediagest: "In Mediagest",
     kpiUnits: "Units", kpiTeams: "Teams", kpiPersonDays: "Person-days", kpiNoOutbound: "Without outbound trip", kpiNoReturn: "Without return trip", kpiNoHotel: "Without hotel",
     headcount: "People working per day", byDayType: "Days by type", attention: "Needs attention", seeList: "see list", costTotal: "Estimated total cost", upcoming: "Arrivals in the next 7 days",
+    noUnitWork: "Work periods without a unit", noUnitHelp: "For teams that work without a production unit (IBC/MCR, management, BVM…): the team works every day of the period with this day type. Each person's days are generated from here.", addPeriod: "Add period", withoutUnit: "without unit",
     tabPeople: "People", tabTeams: "Teams", tabFunctions: "Functions", tabAccess: "Access",
   },
   es: {
@@ -190,6 +191,7 @@ const L: Record<"en" | "es" | "pt" | "tr", Dict> = {
     kpiPeople: "Personas", kpiComplete: "Ficha completa", kpiNoPhoto: "Sin foto", kpiNoTeam: "Sin equipo", kpiNoDays: "Sin días", kpiMediagest: "En Mediagest",
     kpiUnits: "Unidades", kpiTeams: "Equipos", kpiPersonDays: "Días-persona", kpiNoOutbound: "Sin viaje de ida", kpiNoReturn: "Sin viaje de vuelta", kpiNoHotel: "Sin hotel",
     headcount: "Personas trabajando por día", byDayType: "Días por tipo", attention: "Requiere atención", seeList: "ver lista", costTotal: "Coste total estimado", upcoming: "Llegadas en los próximos 7 días",
+    noUnitWork: "Periodos de trabajo sin unidad", noUnitHelp: "Para equipos que trabajan sin unidad de producción (IBC/MCR, gestión, BVM…): el equipo trabaja todos los días del periodo con este tipo de día. De aquí salen los días de cada persona.", addPeriod: "Añadir periodo", withoutUnit: "sin unidad",
     tabPeople: "Personas", tabTeams: "Equipos", tabFunctions: "Funciones", tabAccess: "Acceso",
   },
   pt: {
@@ -265,6 +267,7 @@ const L: Record<"en" | "es" | "pt" | "tr", Dict> = {
     kpiPeople: "Pessoas", kpiComplete: "Ficha completa", kpiNoPhoto: "Sem foto", kpiNoTeam: "Sem equipe", kpiNoDays: "Sem dias", kpiMediagest: "No Mediagest",
     kpiUnits: "Unidades", kpiTeams: "Equipes", kpiPersonDays: "Dias-pessoa", kpiNoOutbound: "Sem viagem de ida", kpiNoReturn: "Sem viagem de volta", kpiNoHotel: "Sem hotel",
     headcount: "Pessoas trabalhando por dia", byDayType: "Dias por tipo", attention: "Precisa de atenção", seeList: "ver lista", costTotal: "Custo total estimado", upcoming: "Chegadas nos próximos 7 dias",
+    noUnitWork: "Períodos de trabalho sem unidade", noUnitHelp: "Para equipes que trabalham sem unidade de produção (IBC/MCR, gestão, BVM…): a equipe trabalha todos os dias do período com este tipo de dia. Daqui saem os dias de cada pessoa.", addPeriod: "Adicionar período", withoutUnit: "sem unidade",
     tabPeople: "Pessoas", tabTeams: "Equipes", tabFunctions: "Funções", tabAccess: "Acesso",
   },
   tr: {} as Dict,

@@ -170,8 +170,10 @@ export async function addAssignment(_: FormState, form: FormData): Promise<FormS
   const supabase = await coord();
   const team_id = uuidOrNull(form.get("team_id")); const unit_id = uuidOrNull(form.get("unit_id"));
   const start_date = clean(form.get("from")); const end_date = clean(form.get("to"));
-  if (!supabase || !team_id || !unit_id || !isDate(start_date) || !isDate(end_date) || end_date < start_date) return { error: "error" };
-  const { error } = await supabase.from("crew_assignments").insert({ team_id, unit_id, start_date, end_date, notes: clean(form.get("notes"), 300) });
+  const day_type = clean(form.get("day_type")) ?? "office";
+  // Without a unit (IBC/MCR, management…) the team works every day of the period with this day type.
+  if (!supabase || !team_id || !isDate(start_date) || !isDate(end_date) || end_date < start_date || !DAY_TYPES_OK.includes(day_type)) return { error: "error" };
+  const { error } = await supabase.from("crew_assignments").insert({ team_id, unit_id, start_date, end_date, day_type, venue_id: uuidOrNull(form.get("venue_id")), notes: clean(form.get("notes"), 300) });
   if (error) return { error: "error" };
   revalidatePath("/team", "layout");
   return { ok: true };
