@@ -1,5 +1,5 @@
 "use client";
-import { useActionState, useRef, useState } from "react";
+import { startTransition, useActionState, type FormEvent, useRef, useState } from "react";
 import { saveCrewSheet } from "@/lib/actions/crew";
 import { createClient } from "@/lib/supabase/client";
 import { EXTRA_FIELDS, SHEET_FIELDS, completeness, type CrewRecord } from "@/lib/crew";
@@ -17,6 +17,8 @@ export function CrewSheetForm({ profileId, record, photoUrl, L, locale }: {
   profileId: string; record: Partial<CrewRecord> | null; photoUrl: string | null; L: Labels; locale: string;
 }) {
   const [state, action, pending] = useActionState(saveCrewSheet, undefined);
+  // Submit without the automatic form reset, so the saved values stay on screen.
+  const submit = (e: FormEvent<HTMLFormElement>) => { e.preventDefault(); const fd = new FormData(e.currentTarget); startTransition(() => action(fd)); };
   const [photoPath, setPhotoPath] = useState(record?.photo_path ?? "");
   const [preview, setPreview] = useState(photoUrl);
   const [uploading, setUploading] = useState(false);
@@ -55,7 +57,7 @@ export function CrewSheetForm({ profileId, record, photoUrl, L, locale }: {
   };
 
   return (
-    <form action={action} className="stack">
+    <form onSubmit={submit} className="stack">
       <input type="hidden" name="profile_id" value={profileId} />
       <input type="hidden" name="photo_path" value={photoPath} />
       <div className="crew-progress" aria-label={L.complete.replace("{n}", String(pct))}>

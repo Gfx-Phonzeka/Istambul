@@ -1,5 +1,5 @@
 "use client";
-import { useActionState, useState } from "react";
+import { startTransition, useActionState, type FormEvent, useState } from "react";
 import { saveParticipation } from "@/lib/actions/crew";
 import { COLLAB_TYPES } from "@/lib/crew";
 
@@ -11,10 +11,12 @@ export function ParticipationForm({ profileId, value, functions, teams, L }: {
   value: { function_id: string | null; position_label: string | null; collaborator_type: string | null; company: string | null; notes: string | null; teamIds: string[] };
 }) {
   const [state, action, pending] = useActionState(saveParticipation, undefined);
+  // Submit without the automatic form reset, so the saved values stay on screen.
+  const submit = (e: FormEvent<HTMLFormElement>) => { e.preventDefault(); const fd = new FormData(e.currentTarget); startTransition(() => action(fd)); };
   const [type, setType] = useState(value.collaborator_type ?? "");
   const areas = [...new Set(functions.map((f) => f.area))];
   return (
-    <form action={action} className="stack">
+    <form onSubmit={submit} className="stack">
       <input type="hidden" name="profile_id" value={profileId} />
       <div className="crew-grid">
         <div className="field">

@@ -104,8 +104,21 @@ O plano gratuito do Supabase chega para a fase de teste com cerca de 500 pessoas
    - Funcionários: regras diferentes, [A CONFIRMAR] (o responsável envia depois).
 6. **Acesso à gestão (Crew Ops):** direção, produtor selecionado (acumula funções de gestão) e administrador do site (também acumula); mais 1 ou 2 pessoas que **só** acedem a esta parte do portal (controlling e finanças da empresa).
 7. **IBAN:** os IBAN dos freelancers **não** entram no portal (ficam no sistema financeiro).
+8. **"MEDIA GEST" na grelha:** indica que os dados já estão na base de faturação. O Mediagest é a base de dados da empresa (ligada ao SAP) para pagamentos e faturação. O portal não substitui o Mediagest: na fase B, marca quem já foi lançado lá.
+9. **Nomes das funções:** inglês e português (Lima em português do Brasil, Istambul em português de Portugal).
 
-**Ainda em aberto:** o que é "MEDIA GEST" na grelha; validação da lista de funções (abaixo).
+**Tabela de cachets (recebida a 27 nov 2026, confidencial: os valores ficam fora do repositório).** Estrutura a usar na fase B:
+- Nível júnior / sénior; tabela de referência do cliente; tipo de faturação (recibos verdes/unipessoal ou cooperativa/sociedade por quotas).
+- Cachet por dia, ou forfait de 30 dias por função.
+- Produções internacionais: dias de viagem com valor próprio (refeições incluídas); dias de montagem pagos como assistente sénior; dias off a metade do cachet mais refeições.
+- Sem cachet no dia de viagem quando a partida é a partir das 21h ou a chegada até às 9h.
+- Responsável de material, chefe técnico e produtor recebem a montagem como dia de operação.
+- Chefe técnico que acumula com uplinker tem um acréscimo fixo no cachet base.
+- Assistente de câmara pela tabela sénior (júnior só em casos excecionais indicados pela coordenação).
+- Refeições por local (Portugal, Espanha, resto do mundo): pequeno-almoço (saída até às 7h), almoço, jantar, extra.
+- [A CONFIRMAR] Nos Jogos (forfait), os dias off pagam-se por inteiro, como disse o responsável, ou a metade do cachet, como diz a tabela para produções internacionais?
+
+**Ainda em aberto:** regras de per diem dos funcionários; validação da lista de funções (abaixo).
 
 ## 7. Lista de funções (rascunho para validar)
 

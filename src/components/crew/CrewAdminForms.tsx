@@ -33,7 +33,6 @@ export function AddFunctionForm({ L, areas }: { L: Record<string, string>; areas
       <input name="area" className="input" list="crew-areas" placeholder={L.area} aria-label={L.area} required maxLength={80} />
       <datalist id="crew-areas">{areas.map((a) => <option key={a} value={a} />)}</datalist>
       <input name="name_en" className="input" placeholder={`${L.function} (EN)`} aria-label={`${L.function} (EN)`} required maxLength={120} />
-      <input name="name_es" className="input" placeholder={`${L.function} (ES)`} aria-label={`${L.function} (ES)`} maxLength={120} />
       <input name="name_pt" className="input" placeholder={`${L.function} (PT)`} aria-label={`${L.function} (PT)`} maxLength={120} />
       <button className="btn btn-sm btn-primary" disabled={pending}>{L.addFunction}</button>
       {state?.error && <span className="small" style={{ color: "var(--color-danger)" }} role="alert">{L.error}</span>}
