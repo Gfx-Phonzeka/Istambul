@@ -41,8 +41,16 @@ export default async function CrewPersonPage({ params }: { params: Promise<{ id:
     <div className="stack">
       <PageHeader title={`${p.first_name} ${p.last_name}`} subtitle={[p.email, p.phone, p.organization].filter(Boolean).join(" · ")}
         actions={<Link className="btn btn-sm" href="/team/crew">← {c("back")}</Link>} />
+      <nav className="crew-jump" aria-label={c("personalData")}>
+        {(p.role === "production" || isAdmin(me)) && <a href="#contact">{c("contactTitle")}</a>}
+        <a href="#participation">{c("participation")}</a>
+        <a href="#personal">{c("personalData")} ({p.pct}%)</a>
+        <a href="#days">{c("personDays")}</a>
+        <a href="#travel">{c("tabTravel")} · {c("tabHotels")}</a>
+        {fin && <a href="#finance">{c("financeTitle")}</a>}
+      </nav>
       {(p.role === "production" || isAdmin(me)) && (
-        <Card title={c("contactTitle")}>
+        <Card title={c("contactTitle")} id="contact">
           <CrewForm action={saveContact} saved={c("saved")} error={c("error")}>
             <input type="hidden" name="profile_id" value={p.id} />
             <input name="first_name" className="input" defaultValue={p.first_name} aria-label={c("firstName")} placeholder={c("firstName")} required maxLength={100} />
@@ -54,13 +62,17 @@ export default async function CrewPersonPage({ params }: { params: Promise<{ id:
           <p className="muted small" style={{ marginBottom: 0 }}>{c("emailNote")}</p>
         </Card>
       )}
-      <Card title={c("participation")}>
+      <Card title={c("participation")} id="participation">
         <ParticipationForm profileId={p.id} L={L}
           functions={functions.filter((f) => f.active || f.id === p.function_id).map((f) => ({ id: f.id, area: f.area, label: fname(f) ?? f.name_en }))}
           teams={teams.map((t) => ({ id: t.id, name: t.name, kind: t.kind }))}
           value={{ function_id: p.function_id, position_label: p.position_label, collaborator_type: p.collaborator_type, company: p.company, notes: p.notes, teamIds: p.teamIds, in_mediagest: p.in_mediagest }} />
       </Card>
-      <Card title={`${c("personDays")} (${days.length})`}>
+      <Card title={c("personalData")} id="personal">
+        {p.record?.updated_at && <p className="muted small" style={{ marginTop: 0 }}>{c("lastUpdate")}: {formatDateTime(p.record.updated_at, locale)}</p>}
+        <CrewSheetForm profileId={p.id} record={p.record as CrewRecord | null} photoUrl={await crewPhotoUrl(p.record?.photo_path)} L={L} locale={locale} />
+      </Card>
+      <Card title={`${c("personDays")} (${days.length})`} id="days">
         <p className="muted small" style={{ marginTop: 0 }}>{c("personDaysHelp")}</p>
         {days.length > 0 && <DaysList days={days} c={c} U={U} V={V} S={S} fmt={(d) => formatDate(`${d}T12:00:00Z`, locale, "UTC")} />}
         <h3 style={{ marginBottom: 8 }}>{c("exception")}</h3>
@@ -72,7 +84,7 @@ export default async function CrewPersonPage({ params }: { params: Promise<{ id:
           <button className="btn btn-sm btn-primary">{c("apply")}</button>
         </CrewForm>
       </Card>
-      <Card title={`${c("tabTravel")} · ${c("tabHotels")}`}>
+      <Card title={`${c("tabTravel")} · ${c("tabHotels")}`} id="travel">
         {trips.length === 0 && stays.length === 0 ? <p className="muted" style={{ margin: 0 }}>—</p> : (
           <ul className="crew-plain">
             {trips.map((t) => <li key={t.id}><span>{c(`dir_${t.direction}`)} · {[t.carrier, t.number].filter(Boolean).join(" ")} {t.from_place ?? ""} → {t.to_place ?? ""}</span><span className="small">{t.depart_date} {t.depart_time ?? ""}</span></li>)}
@@ -103,10 +115,6 @@ export default async function CrewPersonPage({ params }: { params: Promise<{ id:
           </CrewForm>
         </Card>
       )}
-      <Card title={c("personalData")}>
-        {p.record?.updated_at && <p className="muted small" style={{ marginTop: 0 }}>{c("lastUpdate")}: {formatDateTime(p.record.updated_at, locale)}</p>}
-        <CrewSheetForm profileId={p.id} record={p.record as CrewRecord | null} photoUrl={await crewPhotoUrl(p.record?.photo_path)} L={L} locale={locale} />
-      </Card>
     </div>
   );
 }

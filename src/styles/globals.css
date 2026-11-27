@@ -875,3 +875,7 @@ html[data-event="lima"] .public-brand .brand-logo { width: 96px; }
 .crew-bar-fill { width: 100%; background: var(--color-primary); border-radius: 3px 3px 0 0; min-height: 1px; }
 .crew-bar-n { font-size: 10px; color: var(--color-text-muted); }
 .crew-bar-d { font-size: 9px; color: var(--color-text-muted); writing-mode: vertical-rl; transform: rotate(180deg); margin-top: 2px; }
+.crew-jump { display: flex; flex-wrap: wrap; gap: 6px; position: sticky; top: 8px; z-index: 5; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-pill); padding: 6px 10px; }
+.crew-jump a { font-size: var(--text-sm); padding: 2px 10px; border-radius: var(--radius-pill); text-decoration: none; }
+.crew-jump a:hover { background: var(--color-surface-muted); }
+.card[id] { scroll-margin-top: 64px; }
