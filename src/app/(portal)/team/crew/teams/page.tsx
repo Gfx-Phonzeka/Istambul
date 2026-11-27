@@ -44,7 +44,7 @@ export default async function CrewTeamsPage() {
         {teams.length === 0 ? <EmptyState icon="users">—</EmptyState> : (
           <div className="table-wrap">
             <table className="table">
-              <thead><tr><th>{c("teamName")}</th><th>{c("teamKind")}</th><th>{c("people")}</th><th>{c("assignments")}</th><th /></tr></thead>
+              <thead><tr><th>{c("teamName")}</th><th>{c("teamKind")}</th><th>{c("people")}</th><th>{c("periods")}</th><th /></tr></thead>
               <tbody>
                 {teams.map((t) => {
                   const ms = people.filter((p) => p.teamIds.includes(t.id));
