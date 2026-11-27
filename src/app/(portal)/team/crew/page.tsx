@@ -18,7 +18,7 @@ export const metadata = { title: "Crew Ops" };
 export default async function CrewPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
   const me = await requireCrew();
   const sp = await searchParams;
-  const { locale } = await getT();
+  const { t, locale } = await getT();
   const c = crewLabels(locale);
   const { people, functions, teams, fname } = await loadCrew(locale);
   const q = (sp.q ?? "").toLowerCase().trim();
@@ -63,7 +63,7 @@ export default async function CrewPage({ searchParams }: { searchParams: Promise
                 {list.map((p) => (
                   <tr key={p.id}>
                     <td><input type="checkbox" name="ids" value={p.id} aria-label={`${p.first_name} ${p.last_name}`} /></td>
-                    <td><strong>{p.first_name} {p.last_name}</strong><div className="muted small">{p.email}{p.phone ? ` · ${p.phone}` : ""}</div></td>
+                    <td><strong>{p.first_name} {p.last_name}</strong>{p.role !== "production" ? <> <Badge>{t(`admin.roles.${p.role}`)}</Badge></> : null}<div className="muted small">{p.email}{p.phone ? ` · ${p.phone}` : ""}</div></td>
                     <td className="small">{p.functionName ?? "—"}{p.position_label ? <div className="muted">{p.position_label}</div> : null}</td>
                     <td className="small">{p.teamNames.join(", ") || "—"}</td>
                     <td className="small">{p.collaborator_type ? c(p.collaborator_type) : "—"}{p.company ? <div className="muted">{p.company}</div> : null}</td>
