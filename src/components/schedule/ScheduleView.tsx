@@ -169,7 +169,9 @@ function Timeline({ sessions, day, days, setDay, dayKey, dayLabel, time, tz, cle
   const from = Math.max(0, Math.floor(Math.min(8, ...items.map((s) => hourOf(s.start)))));
   const to = Math.min(24, Math.ceil(Math.max(22, ...items.map((s) => { const e = hourOf(s.end); return e < hourOf(s.start) ? 24 : e; }))));
   const span = to - from;
-  const venues = [...new Map(items.map((s) => [s.venueId, s.venue])).entries()].sort((a, b) => a[1].localeCompare(b[1]));
+  // One row per sport (the main search criterion); the venue is secondary information under the sport name and in each block.
+  const sportsOfDay = [...new Map(items.map((s) => [s.sportId, s.sport])).entries()].sort((a, b) => a[1].localeCompare(b[1]));
+  const venuesOf = (sid: string) => [...new Set(items.filter((s) => s.sportId === sid).map((s) => s.venue))].join(" · ");
   return (
     <div className="stack-sm">
       <div className="chips">
@@ -185,18 +187,18 @@ function Timeline({ sessions, day, days, setDay, dayKey, dayLabel, time, tz, cle
                   {Array.from({ length: span }, (_, i) => <span key={i} style={{ left: `${(i / span) * 100}%` }}>{String(from + i).padStart(2, "0")}:00</span>)}
                 </div>
               </div>
-              {venues.map(([vid, vname]) => (
-                <div key={vid} className="tl-row">
-                  <div className="tl-label small"><strong>{vname}</strong></div>
+              {sportsOfDay.map(([sid, sname]) => (
+                <div key={sid} className="tl-row">
+                  <div className="tl-label small"><strong>{sname}</strong><div className="muted tl-venue">{venuesOf(sid)}</div></div>
                   <div className="tl-track">
                     {Array.from({ length: span }, (_, i) => <span key={`h${i}`} className="tl-hourline" style={{ left: `${(i / span) * 100}%` }} aria-hidden="true" />)}
-                    {items.filter((s) => s.venueId === vid).map((s) => {
+                    {items.filter((s) => s.sportId === sid).map((s) => {
                       const a = hourOf(s.start), b0 = hourOf(s.end), b = b0 < a ? 24 : b0;
                       return (
                         <a key={s.id} href={`/schedule?session=${s.id}`} className={`tl-block${s.isMedal ? " is-medal" : ""}`}
                           style={{ left: `${((a - from) / span) * 100}%`, width: `${Math.max(2, ((b - a) / span) * 100)}%` }}
-                          title={`${time(s.start)}–${time(s.end)} · ${s.sport} · ${s.phase}`}>
-                          <strong>{s.sport}</strong> <span>{s.phase}</span>
+                          title={`${time(s.start)}–${time(s.end)} · ${s.sport} · ${[s.discipline, s.phase].filter(Boolean).join(" · ")} · ${s.venue}`}>
+                          <strong>{[s.discipline, s.phase].filter(Boolean).join(" · ") || s.sport}</strong> <span>{time(s.start)}–{time(s.end)}</span>
                           <span className="tl-badges">{s.isMedal && "🥇"}{s.isOq && " OQ"}</span>
                         </a>
                       );

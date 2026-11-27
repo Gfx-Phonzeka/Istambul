@@ -883,3 +883,4 @@ html[data-event="lima"] .public-brand .brand-logo { width: 96px; }
 .crew-name-link:hover strong { text-decoration: underline; }
 .crew-inline input[type="date"] { min-width: 150px; }
 .crew-inline input[type="time"] { min-width: 110px; }
+.tl-venue { font-size: 0.6875rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
