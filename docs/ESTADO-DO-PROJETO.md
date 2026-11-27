@@ -63,6 +63,7 @@ Documentos de apoio: `docs/ROADMAP.md` (desenvolvimentos futuros), `docs/skill-h
 | Data | Agente | O que foi feito | Ficou a meio | Bases de dados alteradas | Publicado |
 |---|---|---|---|---|---|
 | 2026-11-25 | Claude Code | Fotos de 35 sedes de Lima; regras para trabalhar em tandem (AGENTS.md, guia, cópia de segurança). | Nada. | Lima: fotos de sedes. | Sim (ambos) |
+| 2026-11-27 | Claude Code | Manuais operacionais da equipa nas Production Guidelines: Lima caps. 16–18 (ES/PT-BR, EN guardado), Istambul caps. 16–17 (EN/TR). Regra: só 1 FOP produzido, sem equipas ENG nos FOPs secundários. | Procurar o texto "Soporte ENG / Multi-FOP" que o responsável mostrou (não está nos portais). | Lima e Istambul: capítulos novos nas Guidelines. | Só dados (sem publicação de código) |
 
 ## 6. Pendentes
 
