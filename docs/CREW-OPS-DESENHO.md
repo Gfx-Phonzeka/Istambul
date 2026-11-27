@@ -1,6 +1,6 @@
 # Crew Ops · Desenho para aprovação
 
-Proposta de uma área nova do HB Portal para gerir a equipa de produção: pessoas, equipas, dias de trabalho, viagens, alojamento e custos. Serve para Istambul 2027 e para Lima 2027 e substitui as folhas de Excel de "crew control". **Estado:** Fase A e Fase B publicadas nos dois portais (27 nov 2026). Fases C (viagens, alojamento, transfers) e D (tarifas e custos) por fazer.
+Proposta de uma área nova do HB Portal para gerir a equipa de produção: pessoas, equipas, dias de trabalho, viagens, alojamento e custos. Serve para Istambul 2027 e para Lima 2027 e substitui as folhas de Excel de "crew control". **Estado:** Fases A, B, C e D publicadas nos dois portais (27 nov 2026), mais importação Excel, geração do plano a partir do calendário, edição em bloco, equipas sem unidade (IBC) e Painel. Em teste com a equipa.
 
 ## 1. A ideia principal
 
