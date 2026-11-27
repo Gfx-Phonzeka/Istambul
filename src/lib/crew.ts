@@ -77,7 +77,7 @@ const L: Record<"en" | "es" | "pt" | "tr", Dict> = {
     exception: "Add an exception", note: "Note", total: "Total days", grid: "Days of the whole crew", gridHelp: "Generated from units, assignments and exceptions. ✎ = exception.",
     serviceTitle: "Daily service sheet", serviceIntro: "What each unit does on the day and who works on it.", noService: "Nothing planned for this day.",
     exportDays: "Crew control (days)", mediagest: "In Mediagest", mediagestHelp: "Already entered in the billing system (Mediagest / SAP).",
-    allUnits: "All units", confirmDeleteUnit: "Delete this unit with its daily plan and assignments?", generated: "automatic", exceptionMark: "exception", unitDetail: "Unit", show: "Show", print: "Print",
+    allUnits: "All units", date: "Date", confirmDeleteUnit: "Delete this unit with its daily plan and assignments?", generated: "automatic", exceptionMark: "exception", unitDetail: "Unit", show: "Show", print: "Print",
     tabPeople: "People", tabTeams: "Teams", tabFunctions: "Functions", tabAccess: "Access",
   },
   es: {
@@ -115,7 +115,7 @@ const L: Record<"en" | "es" | "pt" | "tr", Dict> = {
     exception: "Añadir una excepción", note: "Nota", total: "Total de días", grid: "Días de todo el equipo", gridHelp: "Generados a partir de unidades, asignaciones y excepciones. ✎ = excepción.",
     serviceTitle: "Hoja de servicio diaria", serviceIntro: "Qué hace cada unidad ese día y quién trabaja en ella.", noService: "No hay nada planificado para este día.",
     exportDays: "Crew control (días)", mediagest: "En Mediagest", mediagestHelp: "Ya dado de alta en el sistema de facturación (Mediagest / SAP).",
-    allUnits: "Todas las unidades", confirmDeleteUnit: "¿Eliminar esta unidad con su plan diario y asignaciones?", generated: "automático", exceptionMark: "excepción", unitDetail: "Unidad", show: "Mostrar", print: "Imprimir",
+    allUnits: "Todas las unidades", date: "Fecha", confirmDeleteUnit: "¿Eliminar esta unidad con su plan diario y asignaciones?", generated: "automático", exceptionMark: "excepción", unitDetail: "Unidad", show: "Mostrar", print: "Imprimir",
     tabPeople: "Personas", tabTeams: "Equipos", tabFunctions: "Funciones", tabAccess: "Acceso",
   },
   pt: {
@@ -153,7 +153,7 @@ const L: Record<"en" | "es" | "pt" | "tr", Dict> = {
     exception: "Adicionar uma exceção", note: "Nota", total: "Total de dias", grid: "Dias de toda a equipe", gridHelp: "Gerados a partir das unidades, atribuições e exceções. ✎ = exceção.",
     serviceTitle: "Folha de serviço diária", serviceIntro: "O que cada unidade faz no dia e quem trabalha nela.", noService: "Nada planejado para este dia.",
     exportDays: "Crew control (dias)", mediagest: "No Mediagest", mediagestHelp: "Já lançado no sistema de faturamento (Mediagest / SAP).",
-    allUnits: "Todas as unidades", confirmDeleteUnit: "Excluir esta unidade com o plano diário e as atribuições?", generated: "automático", exceptionMark: "exceção", unitDetail: "Unidade", show: "Mostrar", print: "Imprimir",
+    allUnits: "Todas as unidades", date: "Data", confirmDeleteUnit: "Excluir esta unidade com o plano diário e as atribuições?", generated: "automático", exceptionMark: "exceção", unitDetail: "Unidade", show: "Mostrar", print: "Imprimir",
     tabPeople: "Pessoas", tabTeams: "Equipes", tabFunctions: "Funções", tabAccess: "Acesso",
   },
   tr: {} as Dict,

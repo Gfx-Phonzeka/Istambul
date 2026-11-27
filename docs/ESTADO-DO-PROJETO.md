@@ -66,6 +66,7 @@ Documentos de apoio: `docs/ROADMAP.md` (desenvolvimentos futuros), `docs/skill-h
 | 2026-11-27 | Claude Code | Manuais operacionais da equipa fundidos nas Production Guidelines (cap. 7 Operações na sede, 11 Contingências, 14 Checklists), sem capítulos duplicados. Istambul: secções novas/atualizadas em EN/TR; o PT das secções atualizadas de Istambul ficou com o texto antigo. Regra: só 1 FOP produzido, sem equipas ENG nos FOPs secundários. | Procurar o texto "Soporte ENG / Multi-FOP" que o responsável mostrou (não está nos portais). | Lima e Istambul: capítulos novos nas Guidelines. | Só dados (sem publicação de código) |
 | 2026-11-27 (2) | Claude Code | **Crew Ops, Fase A** nos dois portais: "Minha ficha" (dados pessoais, documento, emergência, uniforme, foto para a credencial); área "Crew Ops" (pessoas com função, posição, tipo de colaborador e equipas; equipas; funções em EN/PT; acessos de coordenação/finanças, incluindo pessoas fora da equipa de produção); exportação para Excel (completa, contactos, uniformes, credenciação). Respostas do responsável sobre pagamentos registadas em `docs/CREW-OPS-DESENHO.md`. | Fase B (dias e pagamentos). | Lima e Istambul: tabelas e regras do Crew Ops (migrações 0025–0027 e lima/1008), lista de funções. | Sim (ambos) |
 | 2026-11-27 (3) | Claude Code | Relatório diário do **produtor** no formato "Daily Venue Report" (horas de início/fim; Produção, Operações técnicas e Serviços de apoio com "sem ocorrências / ocorrências / N/A" por item e descrição; notas do dia). Relatório do realizador sem alterações. Nova página **"A minha sede"** (sede, dias de competição, planos de câmaras, a minha equipa com contactos, documentos). DCAS: carregar no Media Hub, categoria Documentos, audiência "todos". | Plano diário por pessoa (montagem/ensaio/competição/viagem) chega com a fase B do Crew Ops. | Lima e Istambul: colunas novas nos relatórios e função da equipa da sede (migração 0028). | Sim (ambos) |
+| 2026-11-27 (4) | Claude Code | Istambul: 12 secções das Production Guidelines traduzidas para português (Contingências, Operações na sede, Checklists). Lima: emails automáticos e notificações em ES/PT/EN; legendas dos briefings em ES/EN/PT. Media Hub: documentos (DCAS) ligáveis a sede/desporto, aparecem em "A minha sede". **Crew Ops, Fase B:** unidades de produção com plano diário, equipas atribuídas às unidades por datas, dias de cada pessoa (com exceções), grelha tipo crew control + Excel, folha de serviço diária, marca "Mediagest"; os dias aparecem em "Minha ficha" e em "A minha sede". | Fases C e D do Crew Ops. | Lima e Istambul: migrações 0029–0031; Lima: lima/1009 (emails). Istambul: textos PT das Guidelines. | Sim (ambos) |
 
 ## 6. Pendentes
 
@@ -74,13 +75,12 @@ Documentos de apoio: `docs/ROADMAP.md` (desenvolvimentos futuros), `docs/skill-h
 - Calendário Parapan: falta o calendário oficial em imagem para refazer como o Pan (hoje a coluna "Ubicación" mostra o cluster).
 - Fotos: falta a dos Muros de Escalada (Villa El Salvador); confirmar as fontes das fotos enviadas pelo responsável; a foto dos Campos de Críquet parece gerada por computador (confirmar ou trocar).
 - Dados por confirmar: textos legais, emails de contacto, datas de testes, IDs de satélite e de stream, rate card.
-- Emails automáticos de Lima ainda em inglês; legendas dos briefings só em EN/TR.
 
 **Decisões do responsável**
 - Passar o Supabase ao plano Pro (necessário para ficheiros > 50 MB e para dados da equipa).
 - Mudar a palavra-passe da conta demo de administrador de Istambul (apareceu num registo interno de comandos).
 
-**Crew Ops (operações da equipa), Istambul e Lima** — desenho completo em `docs/CREW-OPS-DESENHO.md`. Fase A publicada; próximas fases B–D só com pedido.
+**Crew Ops (operações da equipa), Istambul e Lima** — desenho completo em `docs/CREW-OPS-DESENHO.md`. Fases A e B publicadas; C (viagens, alojamento, transfers) e D (custos) só com pedido.
 - Por fazer na Fase A, se o responsável quiser: as pessoas que só têm acesso de finanças passarem a ver apenas o Crew Ops (hoje veem também as partes públicas do portal).
 - Validar a lista de funções; enviar as regras de per diem dos funcionários.
 - Base: o plano operacional (PU/LPU, modo OB/REMI/REMOTE, plano diário) gera os dias de cada pessoa, a partir dos ficheiros "Crew Control" e "Tentative Operational Plan" de Istambul.

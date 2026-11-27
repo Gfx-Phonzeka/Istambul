@@ -42,7 +42,7 @@ export default async function CrewUnitPage({ params }: { params: Promise<{ id: s
         {days.length === 0 ? <p className="muted" style={{ marginBottom: 0 }}>{c("noPlan")}</p> : (
           <div className="table-wrap" style={{ marginTop: 12 }}>
             <table className="table">
-              <thead><tr><th>{c("from")}</th><th>{c("dayType")}</th><th>{c("venue")} · {c("sport")}</th><th>{c("callTime")}</th><th>{c("note")}</th></tr></thead>
+              <thead><tr><th>{c("date")}</th><th>{c("dayType")}</th><th>{c("venue")} · {c("sport")}</th><th>{c("callTime")}</th><th>{c("note")}</th></tr></thead>
               <tbody>
                 {days.map((d) => (
                   <tr key={d.day}>

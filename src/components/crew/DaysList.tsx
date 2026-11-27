@@ -7,7 +7,7 @@ export function DaysList({ days, c, U, V, S, fmt }: {
   return (
     <div className="table-wrap">
       <table className="table">
-        <thead><tr><th>{c("from")}</th><th>{c("dayType")}</th><th>{c("unit")}</th><th>{c("venue")} · {c("sport")}</th><th>{c("callTime")}</th></tr></thead>
+        <thead><tr><th>{c("date")}</th><th>{c("dayType")}</th><th>{c("unit")}</th><th>{c("venue")} · {c("sport")}</th><th>{c("callTime")}</th></tr></thead>
         <tbody>
           {days.map((d) => (
             <tr key={d.day}>
