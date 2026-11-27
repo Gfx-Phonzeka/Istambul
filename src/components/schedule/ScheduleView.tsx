@@ -198,8 +198,8 @@ function Timeline({ sessions, day, days, setDay, dayKey, dayLabel, time, tz, cle
                         <a key={s.id} href={`/schedule?session=${s.id}`} className={`tl-block${s.isMedal ? " is-medal" : ""}`}
                           style={{ left: `${((a - from) / span) * 100}%`, width: `${Math.max(2, ((b - a) / span) * 100)}%` }}
                           title={`${time(s.start)}–${time(s.end)} · ${s.sport} · ${[s.discipline, s.phase].filter(Boolean).join(" · ")} · ${s.venue}`}>
-                          <strong>{[s.discipline, s.phase].filter(Boolean).join(" · ") || s.sport}</strong> <span>{time(s.start)}–{time(s.end)}</span>
-                          <span className="tl-badges">{s.isMedal && "🥇"}{s.isOq && " OQ"}</span>
+                          <strong>{[s.discipline, s.phase].filter(Boolean).join(" · ") || s.sport}</strong>
+                          <span>{time(s.start)}–{time(s.end)}{s.isMedal && " 🥇"}{s.isOq && " · OQ"}</span>
                         </a>
                       );
                     })}
