@@ -6,11 +6,17 @@ Proposta de uma área nova do HB Portal para gerir a equipa de produção: pesso
 
 Hoje a mesma pessoa é escrita à mão em várias folhas (custos, rooming list, transfers, acreditações) e o plano operacional não alimenta os dias de cada pessoa.
 
-No Crew Ops, **o plano operacional é a fonte** e o resto é gerado a partir dele:
+No Crew Ops, **o plano operacional é a fonte** e o resto é gerado a partir dele. Há três peças, independentes entre si:
 
-1. Cada unidade de produção (PU / LPU) tem o seu plano diário: chegada, montagem, ensaio, directo, regresso.
-2. Cada pessoa pertence a uma equipa de uma unidade (por exemplo, PU 2 – Técnica).
-3. Os dias de trabalho de cada pessoa saem do plano da sua unidade e dos seus voos. A coordenação só acerta as exceções.
+| Peça | O que é | Exemplo |
+|---|---|---|
+| **Unidade de produção** (PU / LPU) | OB van ou flypack, com o seu plano diário e os desportos/sedes que cobre por períodos. Uma unidade pode cobrir vários desportos. | PU 2: atletismo de 9 a 15, depois rugby de 18 a 21 |
+| **Equipa técnica** | Fica ligada à sua unidade (engenheiros, CCU, áudio, assistentes). | Técnica da PU 2 |
+| **Equipa operacional / artística** | Realizador, câmaras, EVS (e por vezes o produtor). É independente e pode "saltar" de unidade em unidade, muitas vezes por estar unida por nacionalidade ou empresa. | Equipa "Lisboa A": PU 2 de 9 a 15, depois PU 5 de 17 a 21 |
+
+1. Cada equipa (técnica ou operacional) é **atribuída a unidades por períodos de datas**.
+2. Cada pessoa pertence a uma ou mais equipas, e por isso pode passar por **várias unidades** ao longo dos Jogos. O produtor pode ir com a equipa operacional ou ficar com a técnica, conforme a gestão decidir.
+3. Os dias de trabalho de cada pessoa saem das atribuições das suas equipas e dos seus voos. A coordenação só acerta as exceções.
 4. Os custos, a rooming list, os transfers e as listas saem daí, sem escrever duas vezes.
 
 ## 2. Quem vê o quê
@@ -26,15 +32,15 @@ Os dados pessoais (documento, data de nascimento, contactos de emergência) só 
 
 ## 3. As partes
 
-1. **Ficha pessoal**, preenchida pela própria pessoa:
+1. **Ficha pessoal**, preenchida pela própria pessoa. Para já com os dados gerais abaixo. Quando chegar a **matriz de dados do Comité Organizador**, os campos que faltarem são acrescentados sem refazer a ficha. A exportação para a acreditação sai no formato exato dessa matriz.
    - nome, nacionalidade, documento (número e validade, **sem cópia do documento**), data de nascimento, género;
    - email, telefone, contacto de emergência;
    - tamanhos de polo e hoodie;
    - foto para acreditação;
    - línguas.
 2. **Participação no evento**, definida pela coordenação:
-   - função (da lista de funções: Realizador, Operador de câmara 1, EVS 1…);
-   - equipa (PU n – Produção / Técnica, IBC/MCR, BVM, Management);
+   - função (da lista de funções, ver secção 7) e, quando faz falta, a posição concreta (por exemplo "Câmara 3 – SSM esquerda, tatami 2");
+   - equipas a que pertence (técnica de uma unidade, operacional/artística, IBC/MCR, BVM, Management), com as datas de cada atribuição;
    - sede e desporto;
    - tipo de colaborador e entidade (Medialuso, freelancer, empresa do grupo).
 3. **Unidades de produção e plano operacional:**
@@ -77,7 +83,7 @@ Cada fase fica utilizável e é publicada nos dois portais antes de passar à se
 | Fase | O que entra | Para que serve logo |
 |---|---|---|
 | A | Ficha pessoal, participação, equipas, níveis de acesso, importação e exportação Excel | Base da equipa e listas (contactos, uniformes, acreditação) |
-| B | Unidades de produção, plano operacional, dias gerados por pessoa, folha de serviço diária | Substitui a grelha de dias do crew control |
+| B | Unidades de produção, equipas técnicas e operacionais, atribuições por datas, dias gerados por pessoa, folha de serviço diária | Substitui a grelha de dias do crew control |
 | C | Viagens, alojamento, transfers | Rooming list e lista de chegadas/partidas automáticas |
 | D | Tarifas, custos, resumo geral | Substitui o cálculo de custos e o "General Cost" |
 
@@ -92,5 +98,26 @@ O plano gratuito do Supabase chega para a fase de teste com cerca de 500 pessoas
 3. Omnicam4Sky, CLS e Overon são empresas do grupo (paga-se à empresa) ou fornecedores externos (um quarto tipo)?
 4. O que significam "MEDIA GEST" e os códigos MD e CHECK na grelha de dias?
 5. O per diem dos funcionários é sempre igual (115 €/dia), ou há acertos individuais como na folha atual ("+6 −32,5", "−15")?
-6. O IBAN dos freelancers entra no portal, ou fica só no sistema financeiro? (Recomendação: fica fora do portal.)
-7. Quem são, por nome de função, as pessoas com acesso de coordenação e de finanças?
+6. Quem são, por nome de função, as pessoas com acesso de coordenação e de finanças?
+
+**Decidido:** o IBAN dos freelancers **não** entra no portal (fica no sistema financeiro).
+
+## 7. Lista de funções (rascunho para validar)
+
+Rascunho feito a partir das funções do crew control de Istambul. Os números ("Câmara 3", "EVS 2") e as especificações ("SSM esquerda", "tatami 2") deixam de ser funções diferentes: passam a ser a **posição** dentro da função.
+
+| Área | Funções |
+|---|---|
+| Direção e gestão | Project Leader · Project Manager · Head of Production / Content · Production (coordenação) · Logistics Manager · BMS General Manager · BMS Commercial Manager |
+| Engenharia (gestão) | IBC Engineering Manager · Deputy Engineering Manager · Venues Tech Manager · RF & LiveU Coordinator |
+| Sedes | Broadcast Venue Manager (BVM) |
+| Produção na unidade | Producer · TV Director · TV Director Assistant · Floor Manager |
+| Câmaras | Camera Operator · PTZ Camera Operator · Camera Assistant · Special Cameras Technician |
+| Repetições | EVS Operator |
+| Técnica da unidade | OB Van Video Engineer · OB Van Audio Engineer · OB Van Material Video Supervisor · OB Van Material Audio Supervisor / Tech Assistant · CCU Operator · Audio Assistant · RF Technician · Setup Engineer / Technician |
+| Comentários | Commentary Mixer Tech (VoIP) |
+| IBC / MCR | CDT Coordinator · CDT Operator · Contribution Network Manager · Contribution Network Operator · EVS Engineer · Ingest Coordinator · Ingest Operator · Media Manager Supervisor · Logger · Editor Supervisor · Editor · Making Of Operator · Audio Tech Coordinator · Electricity Technician · Installer |
+| Qualidade | PQC (Production Quality Control) · Tech PQC |
+| Logística de produção | Producer / Logistic Producer |
+
+Falta validar: nomes finais (inglês, ou também espanhol e português?), funções que faltam em Lima (por exemplo produção de conteúdo, ENG da zona mista, gráficos) e as que se juntam ou separam.
