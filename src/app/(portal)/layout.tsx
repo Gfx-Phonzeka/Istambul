@@ -31,6 +31,7 @@ export default async function PortalLayout({ children }: { children: React.React
         ...(isTeam(profile)
           ? [
               { key: "team.navHome", href: "/team", icon: "broadcast" },
+              { key: "myVenue.nav", href: "/team/venue", icon: "pin" },
               { key: "team.links.guidelines", href: "/team/guidelines", icon: "book" },
               ...(reportsAccess(profile).any ? [{ key: "reports.nav", href: "/team/reports", icon: "file" }] : []),
               { key: "team.links.requests", href: "/team/requests", icon: "inbox" },

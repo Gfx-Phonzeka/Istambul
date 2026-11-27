@@ -6,7 +6,7 @@ import { getT } from "@/lib/i18n/server";
 import { tx, cols, DEFAULT_LOCALE } from "@/lib/i18n";
 import { EVENT_TZ, formatDate, formatDateTime } from "@/lib/format";
 import type { Locale } from "@/lib/i18n";
-import { fileHref, isDay, reportsAccess, todayIn, type ReportFile } from "@/lib/reports";
+import { PRODUCER_AREAS, fileHref, isDay, reportKind, reportsAccess, todayIn, type ReportFile } from "@/lib/reports";
 import { Alert, Card, EmptyState, PageHeader } from "@/components/ui";
 import { DailyReportForm, DeletePqcButton, PqcForm } from "@/components/reports/ReportForms";
 
@@ -71,11 +71,13 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
         <Card title={`${t("reports.myReport")} · ${day(date, locale)}`} actions={m?.updated_at ? <span className="muted small">{t("reports.lastSaved", { when: formatDateTime(m.updated_at, locale) })}</span> : undefined}>
           <DailyReportForm
             key={`${date}-${m?.id ?? "new"}-${m?.updated_at ?? ""}`}
-            uid={me.id} date={date} venues={opts(V)} sports={opts(S)}
+            uid={me.id} date={date} venues={opts(V)} sports={opts(S)} canChooseKind={can.admin}
             initial={{
               id: m?.id, venue_id: m?.venue_id ?? me.team_venue_id ?? "", sport_id: m?.sport_id ?? me.team_sport_id ?? "",
               sessions: m?.sessions ?? "", summary: m?.summary ?? "", technical_issues: m?.technical_issues ?? "",
               editorial_issues: m?.editorial_issues ?? "", attachments: (m?.attachments ?? []) as ReportFile[], updated_at: m?.updated_at,
+              kind: (m?.kind as "producer" | "director") ?? (can.admin ? "producer" : reportKind(me)), start_time: m?.start_time ?? "", end_time: m?.end_time ?? "",
+              checks: (m?.checks ?? {}) as Record<string, string>, logistics_issues: m?.logistics_issues ?? "",
             }}
           />
         </Card>
@@ -93,10 +95,35 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
                     <strong>{r.author_name || "—"}{r.author_function ? <span className="muted small"> · {r.author_function}</span> : null}</strong>
                     <span className="muted small">{formatDateTime(r.updated_at, locale)}</span>
                   </div>
-                  <div className="small muted">{[where(r), r.sessions].filter(Boolean).join(" · ") || "—"}</div>
-                  <div><strong className="small">{t("reports.summary")}</strong><p style={{ margin: 0, whiteSpace: "pre-wrap" }}>{r.summary}</p></div>
-                  {r.technical_issues && <div><strong className="small">{t("reports.technical")}</strong><p style={{ margin: 0, whiteSpace: "pre-wrap" }}>{r.technical_issues}</p></div>}
-                  {r.editorial_issues && <div><strong className="small">{t("reports.editorial")}</strong><p style={{ margin: 0, whiteSpace: "pre-wrap" }}>{r.editorial_issues}</p></div>}
+                  <div className="small muted">
+                    <span className="badge">{t(`reports.kinds.${r.kind ?? "director"}`)}</span>{" "}
+                    {[where(r), r.sessions, r.kind === "producer" && (r.start_time || r.end_time) ? `${r.start_time || "?"}–${r.end_time || "?"}` : ""].filter(Boolean).join(" · ") || "—"}
+                  </div>
+                  {r.kind === "producer" ? (
+                    <>
+                      {PRODUCER_AREAS.map((area) => {
+                        const checks = (r.checks ?? {}) as Record<string, string>;
+                        const text = r[area.text] as string;
+                        const bad = area.items.filter((i) => checks[i] === "incident");
+                        return (
+                          <div key={area.key}>
+                            <strong className="small">{t(`reports.producer.areas.${area.key}`)}</strong>{" "}
+                            {bad.length === 0
+                              ? <span className="badge badge-success">{t("reports.producer.allOk")}</span>
+                              : bad.map((i) => <span key={i} className="badge badge-danger" style={{ marginRight: 4 }}>{t(`reports.producer.items.${i}`)}</span>)}
+                            {text && <p style={{ margin: "4px 0 0", whiteSpace: "pre-wrap" }}>{text}</p>}
+                          </div>
+                        );
+                      })}
+                      {r.summary && <div><strong className="small">{t("reports.producer.notes")}</strong><p style={{ margin: 0, whiteSpace: "pre-wrap" }}>{r.summary}</p></div>}
+                    </>
+                  ) : (
+                    <>
+                      <div><strong className="small">{t("reports.summary")}</strong><p style={{ margin: 0, whiteSpace: "pre-wrap" }}>{r.summary}</p></div>
+                      {r.technical_issues && <div><strong className="small">{t("reports.technical")}</strong><p style={{ margin: 0, whiteSpace: "pre-wrap" }}>{r.technical_issues}</p></div>}
+                      {r.editorial_issues && <div><strong className="small">{t("reports.editorial")}</strong><p style={{ margin: 0, whiteSpace: "pre-wrap" }}>{r.editorial_issues}</p></div>}
+                    </>
+                  )}
                   {files.length > 0 && (
                     <div className="small"><strong>{t("reports.attachments")}:</strong> {files.map((f, i) => <span key={f.path}>{i > 0 && " · "}<a href={fileHref(f)} target="_blank" rel="noreferrer">{f.name}</a></span>)}</div>
                   )}

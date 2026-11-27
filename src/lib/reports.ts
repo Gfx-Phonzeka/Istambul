@@ -24,3 +24,16 @@ export function todayIn(tz: string) {
 export const isDay = (s: unknown): s is string => typeof s === "string" && /^\d{4}-\d{2}-\d{2}$/.test(s) && !Number.isNaN(Date.parse(s));
 
 export const fileHref = (f: { path: string; name: string }) => `/api/reports/file?path=${encodeURIComponent(f.path)}&name=${encodeURIComponent(f.name)}`;
+
+/** Producer's daily venue report: areas and the items checked in each (No incidents / Incidents / N/A). */
+export const PRODUCER_AREAS = [
+  { key: "production", items: ["camera_plan", "replays", "graphics", "unilateral", "personnel"], text: "editorial_issues" },
+  { key: "technical", items: ["video", "audio", "lighting", "power", "transmission", "cabling"], text: "technical_issues" },
+  { key: "logistics", items: ["transport", "security", "catering", "other"], text: "logistics_issues" },
+] as const;
+export const CHECK_VALUES = ["ok", "incident", "na"] as const;
+export type CheckValue = (typeof CHECK_VALUES)[number];
+export const PRODUCER_ITEMS: string[] = PRODUCER_AREAS.flatMap((a) => [...a.items]);
+
+/** Producers fill in the venue report; directors (and admins by default) the director's report. */
+export const reportKind = (p: Profile | null): "producer" | "director" => (fn(p) === "producer" ? "producer" : "director");

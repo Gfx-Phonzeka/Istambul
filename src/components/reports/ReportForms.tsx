@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useI18n } from "@/lib/i18n/client";
 import { addPqcReport, deleteDailyReport, deletePqcReport, discardReportUpload, saveDailyReport } from "@/lib/actions/reports";
-import { REPORT_MAX_BYTES, fileHref, type ReportFile } from "@/lib/reports";
+import { CHECK_VALUES, PRODUCER_AREAS, REPORT_MAX_BYTES, fileHref, type ReportFile } from "@/lib/reports";
 
 type Opt = { id: string; title: string };
 
@@ -43,9 +43,45 @@ function Selects({ venues, sports, venue, sport, setVenue, setSport }: { venues:
 export interface DailyReportValues {
   id?: string; venue_id: string; sport_id: string; sessions: string; summary: string;
   technical_issues: string; editorial_issues: string; attachments: ReportFile[]; updated_at?: string;
+  kind: "producer" | "director"; start_time: string; end_time: string; checks: Record<string, string>; logistics_issues: string;
 }
 
-export function DailyReportForm({ uid, date, initial, venues, sports }: { uid: string; date: string; initial: DailyReportValues; venues: Opt[]; sports: Opt[] }) {
+/** Producer's venue report: each item of each area is "No incidents", "Incidents" or "N/A", plus a description per area. */
+function ProducerChecks({ v, set }: { v: DailyReportValues; set: <K extends keyof DailyReportValues>(k: K, val: DailyReportValues[K]) => void }) {
+  const { t } = useI18n();
+  return (
+    <>
+      {PRODUCER_AREAS.map((area) => (
+        <fieldset key={area.key} className="report-area">
+          <legend>{t(`reports.producer.areas.${area.key}`)}</legend>
+          <div className="report-checks" role="table">
+            {area.items.map((item) => (
+              <div key={item} className="report-check" role="row">
+                <span role="rowheader">{t(`reports.producer.items.${item}`)}</span>
+                <div className="report-check-opts" role="radiogroup" aria-label={t(`reports.producer.items.${item}`)}>
+                  {CHECK_VALUES.map((c) => (
+                    <label key={c} className={`report-opt report-opt-${c}`}>
+                      <input type="radio" name={`chk-${item}`} value={c} checked={(v.checks[item] ?? "ok") === c}
+                        onChange={() => set("checks", { ...v.checks, [item]: c })} />
+                      {t(`reports.producer.values.${c}`)}
+                    </label>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="field" style={{ marginTop: 10 }}>
+            <label htmlFor={`r-${area.key}`}>{t("reports.producer.description")}</label>
+            <textarea id={`r-${area.key}`} className="textarea" rows={3} maxLength={10000} value={v[area.text]} placeholder={t("reports.producer.nothing")}
+              onChange={(e) => set(area.text, e.target.value)} />
+          </div>
+        </fieldset>
+      ))}
+    </>
+  );
+}
+
+export function DailyReportForm({ uid, date, initial, venues, sports, canChooseKind = false }: { uid: string; date: string; initial: DailyReportValues; venues: Opt[]; sports: Opt[]; canChooseKind?: boolean }) {
   const { t } = useI18n();
   const router = useRouter();
   const [v, setV] = useState(initial);
@@ -88,6 +124,15 @@ export function DailyReportForm({ uid, date, initial, venues, sports }: { uid: s
   return (
     <div className="stack">
       {msg && <div className={`alert alert-${msg.tone}`}>{msg.text}</div>}
+      {canChooseKind && (
+        <div className="field" style={{ maxWidth: 320 }}>
+          <label htmlFor="r-kind">{t("reports.kind")}</label>
+          <select id="r-kind" className="select" value={v.kind} onChange={(e) => set("kind", e.target.value as "producer" | "director")}>
+            <option value="producer">{t("reports.kinds.producer")}</option>
+            <option value="director">{t("reports.kinds.director")}</option>
+          </select>
+        </div>
+      )}
       <div className="form-grid">
         <Selects venues={venues} sports={sports} venue={v.venue_id} sport={v.sport_id} setVenue={(x) => set("venue_id", x)} setSport={(x) => set("sport_id", x)} />
         <div className="field">
@@ -95,6 +140,26 @@ export function DailyReportForm({ uid, date, initial, venues, sports }: { uid: s
           <input id="r-sessions" className="input" value={v.sessions} maxLength={500} placeholder={t("reports.sessionsHint")} onChange={(e) => set("sessions", e.target.value)} />
         </div>
       </div>
+      {v.kind === "producer" ? (
+        <>
+      <div className="form-grid">
+        <div className="field">
+          <label htmlFor="r-start">{t("reports.producer.start")}</label>
+          <input id="r-start" type="time" className="input" value={v.start_time} onChange={(e) => set("start_time", e.target.value)} />
+        </div>
+        <div className="field">
+          <label htmlFor="r-end">{t("reports.producer.end")}</label>
+          <input id="r-end" type="time" className="input" value={v.end_time} onChange={(e) => set("end_time", e.target.value)} />
+        </div>
+      </div>
+      <ProducerChecks v={v} set={set} />
+      <div className="field">
+        <label htmlFor="r-summary">{t("reports.producer.notes")}</label>
+        <textarea id="r-summary" className="textarea" rows={5} maxLength={10000} value={v.summary} placeholder={t("reports.producer.notesHint")} onChange={(e) => set("summary", e.target.value)} />
+      </div>
+        </>
+      ) : (
+        <>
       <div className="field">
         <label htmlFor="r-summary">{t("reports.summary")} *</label>
         <textarea id="r-summary" className="textarea" rows={6} maxLength={10000} value={v.summary} placeholder={t("reports.summaryHint")} onChange={(e) => set("summary", e.target.value)} />
@@ -109,6 +174,8 @@ export function DailyReportForm({ uid, date, initial, venues, sports }: { uid: s
           <textarea id="r-edit" className="textarea" rows={5} maxLength={10000} value={v.editorial_issues} placeholder={t("reports.noneHint")} onChange={(e) => set("editorial_issues", e.target.value)} />
         </div>
       </div>
+        </>
+      )}
       <div className="field">
         <label htmlFor="r-files">{t("reports.attachments")}</label>
         {v.attachments.length > 0 && (

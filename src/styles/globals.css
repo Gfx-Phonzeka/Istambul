@@ -811,3 +811,21 @@ html[data-event="lima"] .public-brand .brand-logo { width: 96px; }
 .crew-dl { display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; margin: 0; }
 .crew-dl dt { color: var(--color-text-muted); }
 .crew-dl dd { margin: 0; }
+
+/* ---------- Producer report + My venue ---------- */
+.report-area { border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 12px 16px 16px; margin: 0; min-width: 0; }
+.report-area legend { font-weight: 600; padding: 0 6px; }
+.report-checks { display: grid; gap: 6px; }
+.report-check { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 12px; padding: 4px 0; border-bottom: 1px dashed var(--color-border); }
+.report-check:last-child { border-bottom: 0; }
+.report-check-opts { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+.report-opt { display: inline-flex; align-items: center; gap: 4px; font-size: var(--text-sm); padding: 2px 10px; border: 1px solid var(--color-border); border-radius: var(--radius-pill); cursor: pointer; }
+.report-opt input { margin: 0; }
+.report-opt-ok:has(input:checked) { background: #e3f4ea; border-color: #7cc49a; }
+.report-opt-incident:has(input:checked) { background: #fde6e4; border-color: #e58a80; }
+.report-opt-na:has(input:checked) { background: var(--color-surface-muted); }
+.myvenue-head { display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-start; }
+.myvenue-photo { width: 220px; max-width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: var(--radius-md); }
+.myvenue-days { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+.myvenue-day { font-size: var(--text-xs); padding: 2px 8px; border-radius: var(--radius-pill); background: var(--color-surface-muted); }
+.myvenue-day[class*="cal-"] { color: #fff; }
