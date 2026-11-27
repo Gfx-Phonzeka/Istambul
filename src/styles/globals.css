@@ -879,3 +879,7 @@ html[data-event="lima"] .public-brand .brand-logo { width: 96px; }
 .crew-jump a { font-size: var(--text-sm); padding: 2px 10px; border-radius: var(--radius-pill); text-decoration: none; }
 .crew-jump a:hover { background: var(--color-surface-muted); }
 .card[id] { scroll-margin-top: 64px; }
+.crew-name-link { text-decoration: none; color: var(--color-primary); }
+.crew-name-link:hover strong { text-decoration: underline; }
+.crew-inline input[type="date"] { min-width: 150px; }
+.crew-inline input[type="time"] { min-width: 110px; }

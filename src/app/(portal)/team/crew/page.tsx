@@ -66,7 +66,7 @@ export default async function CrewPage({ searchParams }: { searchParams: Promise
                 {list.map((p) => (
                   <tr key={p.id}>
                     <td><input type="checkbox" name="ids" value={p.id} aria-label={`${p.first_name} ${p.last_name}`} /></td>
-                    <td><strong>{p.first_name} {p.last_name}</strong>{p.role !== "production" ? <> <Badge>{t(`admin.roles.${p.role}`)}</Badge></> : null}<div className="muted small">{p.email}{p.phone ? ` · ${p.phone}` : ""}</div></td>
+                    <td><Link href={`/team/crew/${p.id}`} className="crew-name-link"><strong>{p.first_name} {p.last_name}</strong> ✎</Link>{p.role !== "production" ? <> <Badge>{t(`admin.roles.${p.role}`)}</Badge></> : null}<div className="muted small">{p.email}{p.phone ? ` · ${p.phone}` : ""}</div></td>
                     <td className="small">{p.functionName ?? "—"}{p.position_label ? <div className="muted">{p.position_label}</div> : null}</td>
                     <td className="small">{p.teamNames.join(", ") || "—"}</td>
                     <td className="small">{p.collaborator_type ? c(p.collaborator_type) : "—"}{p.company ? <div className="muted">{p.company}</div> : null}</td>
