@@ -91,16 +91,21 @@ Cada fase fica utilizável e é publicada nos dois portais antes de passar à se
 
 O plano gratuito do Supabase chega para a fase de teste com cerca de 500 pessoas: as fotos de acreditação ocupam cerca de 100 MB. Antes de usar dados reais de toda a equipa, recomenda-se o plano pago, por causa das cópias de segurança automáticas (decisão do responsável).
 
-## 6. Decisões em aberto
+## 6. Decisões
 
-1. Os dias de voo e as folgas (OFF) contam para o pagamento dos freelancers? (Na folha atual contam todos os dias preenchidos.)
-2. A tarifa mensal divide-se sempre por 30, ou pelos dias do mês?
-3. Omnicam4Sky, CLS e Overon são empresas do grupo (paga-se à empresa) ou fornecedores externos (um quarto tipo)?
-4. O que significam "MEDIA GEST" e os códigos MD e CHECK na grelha de dias?
-5. O per diem dos funcionários é sempre igual (115 €/dia), ou há acertos individuais como na folha atual ("+6 −32,5", "−15")?
-6. Quem são, por nome de função, as pessoas com acesso de coordenação e de finanças?
+**Respondidas pelo responsável (27 nov 2026):**
+1. **Dias pagos (forfait):** os dias de voo e as folgas contam como dias. Exceção: os dias livres entre o Pan e o Parapan (10 a 15 dias); se, por acordo com o freelancer, ele não regressar a casa, nesses dias só recebe per diem.
+2. **Tarifa mensal:** divide-se sempre por 30.
+3. **Omnicam4Sky, CLS, Overon e semelhantes:** pagam-se às empresas como serviço fechado (não entram no cálculo por dias).
+4. **Códigos da grelha:** MD = Match Day (dia de competição); CHECK = dia de check ou de teste.
+5. **Per diem dos freelancers:**
+   - Internacional (fora da Península Ibérica): 32,5 € por almoço ou jantar; 7,5 € pequeno-almoço; 7,5 € extra (mais de 16 horas).
+   - Espanha: 20 € por almoço ou jantar; 7,5 € pequeno-almoço; 7,5 € extra.
+   - Funcionários: regras diferentes, [A CONFIRMAR] (o responsável envia depois).
+6. **Acesso à gestão (Crew Ops):** direção, produtor selecionado (acumula funções de gestão) e administrador do site (também acumula); mais 1 ou 2 pessoas que **só** acedem a esta parte do portal (controlling e finanças da empresa).
+7. **IBAN:** os IBAN dos freelancers **não** entram no portal (ficam no sistema financeiro).
 
-**Decidido:** o IBAN dos freelancers **não** entra no portal (fica no sistema financeiro).
+**Ainda em aberto:** o que é "MEDIA GEST" na grelha; validação da lista de funções (abaixo).
 
 ## 7. Lista de funções (rascunho para validar)
 

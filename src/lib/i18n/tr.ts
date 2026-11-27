@@ -931,6 +931,7 @@ const tr: Messages = {
     how3: "Mekân tesisleri sınırlıdır: talep mevcut olandan fazla olduğunda olağan tahsis prosedürü uygulanır.",
     rules: "Gözlemci koltuğu bir yayın operasyon pozisyonu değildir. Uluslararası sinyal, açılış animasyonundan kapanış animasyonuna kadar eksiksiz ve üzerine tek taraflı sinyal eklenmeden verilir.",
   },
+  crew: { navSheet: "Ekip formum", navOps: "Crew Ops" },
   team: {
     navHome: "Ekip alanı",
     title: "Üretim Ekibi",

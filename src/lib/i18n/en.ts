@@ -929,6 +929,7 @@ const en = {
     how3: "Venue facilities are limited: when demand is higher than what is available, the usual allocation procedure applies.",
     rules: "The observer seat is not a broadcast operating position. The international signal is delivered complete, from the opening to the closing animation, with no unilateral signal on top.",
   },
+  crew: { navSheet: "My crew sheet", navOps: "Crew Ops" },
   team: {
     navHome: "Team area",
     title: "Production Team",

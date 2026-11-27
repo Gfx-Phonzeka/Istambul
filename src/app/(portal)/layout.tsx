@@ -7,6 +7,7 @@ import { getT } from "@/lib/i18n/server";
 import { NAV_GROUPS } from "@/lib/nav";
 import { signOut } from "@/lib/actions/auth";
 import { reportsAccess } from "@/lib/reports";
+import { isCrewCoord } from "@/lib/crew-server";
 
 export const dynamic = "force-dynamic";
 
@@ -21,15 +22,22 @@ export default async function PortalLayout({ children }: { children: React.React
     .limit(20);
 
   const groups = [...NAV_GROUPS];
-  if (isTeam(profile)) {
+  const crewCoord = await isCrewCoord();
+  if (isTeam(profile) || crewCoord) {
     // Production team area: only for the production team, editors and admins.
     groups.splice(2, 0, {
       title: "nav.groupTeam",
       items: [
-        { key: "team.navHome", href: "/team", icon: "broadcast" },
-        { key: "team.links.guidelines", href: "/team/guidelines", icon: "book" },
-        ...(reportsAccess(profile).any ? [{ key: "reports.nav", href: "/team/reports", icon: "file" }] : []),
-        { key: "team.links.requests", href: "/team/requests", icon: "inbox" },
+        ...(isTeam(profile)
+          ? [
+              { key: "team.navHome", href: "/team", icon: "broadcast" },
+              { key: "team.links.guidelines", href: "/team/guidelines", icon: "book" },
+              ...(reportsAccess(profile).any ? [{ key: "reports.nav", href: "/team/reports", icon: "file" }] : []),
+              { key: "team.links.requests", href: "/team/requests", icon: "inbox" },
+              { key: "crew.navSheet", href: "/team/sheet", icon: "user" },
+            ]
+          : []),
+        ...(crewCoord ? [{ key: "crew.navOps", href: "/team/crew", icon: "users" }] : []),
       ],
     });
   }

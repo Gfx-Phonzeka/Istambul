@@ -900,6 +900,7 @@ const es: PartialMessages = {
     how3: "Las facilidades en sede son limitadas: cuando la demanda supera lo disponible, se aplica el procedimiento habitual de arbitraje.",
     rules: "El asiento de observador no es una posición de operación broadcast. La señal internacional se entrega íntegra, de la secuencia animada de apertura a la de cierre, sin señal unilateral encima.",
   },
+  crew: { navSheet: "Mi ficha", navOps: "Crew Ops" },
   team: {
     navHome: "Área del equipo",
     title: "Equipo de producción",

@@ -740,6 +740,7 @@ const pt: PartialMessages = {
     how3: "As facilidades nas sedes são limitadas: quando a procura supera o disponível, aplica-se o procedimento habitual de arbitragem.",
     rules: "O assento de observador não é uma posição de operação broadcast. O sinal internacional é entregue completo, da vinheta de abertura à de encerramento, sem sinal unilateral por cima.",
   },
+  crew: { navSheet: "Minha ficha", navOps: "Crew Ops" },
   team: {
     navHome: "Área da equipe",
     title: "Equipe de produção",
