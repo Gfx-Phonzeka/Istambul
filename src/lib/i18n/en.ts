@@ -336,6 +336,7 @@ const en = {
       position: "Lower numbers appear first.",
       link: "Optional. A portal address (e.g. /requests) or a full web address.",
       subtype: "e.g. Logo, Font, Template, Lower third, Stinger.",
+      mediaVenue: "Optional. For venue documents such as the DCAS: they also appear on the venue's \"My venue\" page.",
       code: "Unique code used by the Excel import, e.g. ATH-0627-E.",
       infoSlug: "Fixed address of the block. “additional-production” is shown in Broadcast → Additional production.",
       mapXY: "Position of the pin on the schematic map, from 0 (left/top) to 100 (right/bottom).",

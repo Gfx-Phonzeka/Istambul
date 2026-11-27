@@ -182,6 +182,9 @@ CONTENT_TYPES.media_asset = {
     { name: "subtype", label: "cms.fields.subtype", kind: "text", help: "cms.help.subtype" },
     title,
     { name: "description", label: "cms.fields.description", kind: "textarea", bilingual: true },
+    // Optional: links a document (e.g. a DCAS) to its venue / sport so it also shows on "My venue".
+    { name: "venue_id", label: "cms.fields.venue", kind: "reference", ref: "venue", help: "cms.help.mediaVenue" },
+    { name: "sport_id", label: "cms.fields.sport", kind: "reference", ref: "sport" },
     position, visibility,
   ],
   order: [{ column: "category", ascending: true }, { column: "position", ascending: true }],

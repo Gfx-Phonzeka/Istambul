@@ -338,6 +338,7 @@ const tr: Messages = {
       position: "Küçük sayılar önce görünür.",
       link: "İsteğe bağlı. Bir portal adresi (örn. /requests) veya tam web adresi.",
       subtype: "örn. Logo, Yazı tipi, Şablon, Alt yazı bandı, Stinger.",
+      mediaVenue: "İsteğe bağlı. DCAS gibi mekân belgeleri için: \"Mekânım\" sayfasında da görünür.",
       code: "Excel içe aktarmasında kullanılan benzersiz kod, örn. ATH-0627-E.",
       infoSlug: "Bloğun sabit adresi. “additional-production”, Yayın → Ek prodüksiyon bölümünde gösterilir.",
       mapXY: "İşaretin şematik haritadaki konumu, 0 (sol/üst) ile 100 (sağ/alt) arası.",

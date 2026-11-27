@@ -324,6 +324,7 @@ const es: PartialMessages = {
       position: "Los números más bajos aparecen primero.",
       link: "Opcional. Una dirección del portal (p. ej. /requests) o una dirección web completa.",
       subtype: "P. ej. Logo, Fuente, Plantilla, Rótulo, Stinger.",
+      mediaVenue: "Opcional. Para documentos de una sede, como el DCAS: también aparecen en la página \"Mi sede\".",
       code: "Código único usado por la importación de Excel, p. ej. ATH-0727-E.",
       infoSlug: "Dirección fija del bloque. «additional-production» aparece en Señal → Producción adicional.",
       mapXY: "Posición del marcador en el mapa esquemático, de 0 (izquierda/arriba) a 100 (derecha/abajo).",

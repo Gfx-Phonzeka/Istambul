@@ -44,13 +44,14 @@ export default async function MyVenuePage({ searchParams }: { searchParams: Prom
     );
   }
 
-  const [{ data: cal }, { data: sports }, { data: sessions }, plans, { data: files }, { data: team }] = await Promise.all([
+  const [{ data: cal }, { data: sports }, { data: sessions }, plans, { data: files }, { data: team }, { data: mediaDocs }] = await Promise.all([
     supabase.from("calendar_rows").select(`id,games,sport_id,${cols("label")},days` as "*").eq("venue_id", v.id).order("position"),
     supabase.from("sports").select(`id,${cols("title")}` as "*"),
     supabase.from("schedule_sessions").select(`id,sport_id,start_at,end_at,is_medal,${cols("phase")},${cols("discipline")}` as "*").eq("venue_id", v.id).eq("status", "published").order("start_at").limit(200),
     loadPlans(supabase, locale, false),
     supabase.from("venue_files").select("*").eq("venue_id", v.id).order("position"),
     supabase.rpc("my_venue_team", { p_venue: v.id }),
+    supabase.from("media_assets").select(`id,sport_id,subtype,${cols("title")}` as "*").eq("venue_id", v.id).eq("status", "published").order("position"),
   ]);
   const S = new Map((sports ?? []).map((s) => [s.id, tx(s, "title", locale)]));
   const rows = (cal ?? []) as unknown as { id: string; games: string; sport_id: string | null; days: Record<string, string> }[];
@@ -149,12 +150,22 @@ export default async function MyVenuePage({ searchParams }: { searchParams: Prom
       </Card>
 
       <Card title={t("myVenue.documents")}>
+        {((mediaDocs ?? []) as unknown as { id: string; sport_id: string | null; subtype: string | null }[]).length > 0 && (
+          <ul className="stack-sm" style={{ listStyle: "none", padding: 0, margin: "0 0 12px" }}>
+            {((mediaDocs ?? []) as unknown as { id: string; sport_id: string | null; subtype: string | null }[]).map((d) => (
+              <li key={d.id}>
+                <Link href={`/media-hub?item=${d.id}`}>{tx(d, "title", locale)}</Link>
+                <span className="muted small">{[d.subtype, d.sport_id && S.get(d.sport_id)].filter(Boolean).map((x) => ` · ${x}`).join("")}</span>
+              </li>
+            ))}
+          </ul>
+        )}
         {docs.length > 0 && (
           <ul className="stack-sm" style={{ listStyle: "none", padding: 0, margin: "0 0 12px" }}>
             {docs.map((d) => <li key={d.id}><Link href={`/venues/${v.slug}#documents`}>{tx(d, "title", locale) || d.file_name}</Link></li>)}
           </ul>
         )}
-        <p style={{ margin: 0 }}>{t("myVenue.dcas")} <Link href="/media-hub?category=documents">{t("myVenue.openMedia")} →</Link></p>
+        <p className="muted small" style={{ margin: 0 }}>{t("myVenue.dcas")} <Link href="/media-hub?category=documents">{t("myVenue.openMedia")} →</Link></p>
       </Card>
     </div>
   );
