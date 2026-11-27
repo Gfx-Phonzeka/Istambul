@@ -1,6 +1,6 @@
 # HB Portal · Estado do projeto
 
-Atualizado a 25 de novembro de 2026. Este ficheiro guarda as regras, decisões e pendentes do projeto para não dependerem da memória da conversa. Repositório público: **nunca** escrever aqui palavras-passe, chaves ou dados pessoais.
+Atualizado a 27 de novembro de 2026. Este ficheiro guarda as regras, decisões e pendentes do projeto para não dependerem da memória da conversa. Repositório público: **nunca** escrever aqui palavras-passe, chaves ou dados pessoais.
 
 ## 1. Regras de trabalho (dadas pelo responsável do projeto)
 
@@ -64,6 +64,7 @@ Documentos de apoio: `docs/ROADMAP.md` (desenvolvimentos futuros), `docs/skill-h
 |---|---|---|---|---|---|
 | 2026-11-25 | Claude Code | Fotos de 35 sedes de Lima; regras para trabalhar em tandem (AGENTS.md, guia, cópia de segurança). | Nada. | Lima: fotos de sedes. | Sim (ambos) |
 | 2026-11-27 | Claude Code | Manuais operacionais da equipa fundidos nas Production Guidelines (cap. 7 Operações na sede, 11 Contingências, 14 Checklists), sem capítulos duplicados. Istambul: secções novas/atualizadas em EN/TR; o PT das secções atualizadas de Istambul ficou com o texto antigo. Regra: só 1 FOP produzido, sem equipas ENG nos FOPs secundários. | Procurar o texto "Soporte ENG / Multi-FOP" que o responsável mostrou (não está nos portais). | Lima e Istambul: capítulos novos nas Guidelines. | Só dados (sem publicação de código) |
+| 2026-11-27 (2) | Claude Code | **Crew Ops, Fase A** nos dois portais: "Minha ficha" (dados pessoais, documento, emergência, uniforme, foto para a credencial); área "Crew Ops" (pessoas com função, posição, tipo de colaborador e equipas; equipas; funções em EN/PT; acessos de coordenação/finanças, incluindo pessoas fora da equipa de produção); exportação para Excel (completa, contactos, uniformes, credenciação). Respostas do responsável sobre pagamentos registadas em `docs/CREW-OPS-DESENHO.md`. | Fase B (dias e pagamentos). | Lima e Istambul: tabelas e regras do Crew Ops (migrações 0025–0027 e lima/1008), lista de funções. | Sim (ambos) |
 
 ## 6. Pendentes
 
@@ -78,9 +79,10 @@ Documentos de apoio: `docs/ROADMAP.md` (desenvolvimentos futuros), `docs/skill-h
 - Passar o Supabase ao plano Pro (necessário para ficheiros > 50 MB e para dados da equipa).
 - Mudar a palavra-passe da conta demo de administrador de Istambul (apareceu num registo interno de comandos).
 
-**Ideia em estudo: módulo de operações da equipa ("HB Ops"), para Istambul e Lima** — não implementar sem pedido.
+**Crew Ops (operações da equipa), Istambul e Lima** — desenho completo em `docs/CREW-OPS-DESENHO.md`. Fase A publicada; próximas fases B–D só com pedido.
+- Por fazer na Fase A, se o responsável quiser: as pessoas que só têm acesso de finanças passarem a ver apenas o Crew Ops (hoje veem também as partes públicas do portal).
+- Validar a lista de funções; enviar as regras de per diem dos funcionários; confirmar como se pagam os dias off nos Jogos (forfait inteiro ou metade do cachet).
 - Base: o plano operacional (PU/LPU, modo OB/REMI/REMOTE, plano diário) gera os dias de cada pessoa, a partir dos ficheiros "Crew Control" e "Tentative Operational Plan" de Istambul.
 - Três tipos de colaborador: freelancer (cachet por dias), funcionário (só per diem), funcionário de empresa do grupo (paga-se à empresa).
 - Viagens, alojamento (rooming list), transfers, folhas de serviço, checklists de venue, registo de incidentes, resumo de custos automático, import/export Excel. Auto-preenchimento pelas pessoas. Sem cópias de passaportes.
 - Fora do âmbito (decidido): inventário de equipamento, log de momentos/medalhas, pedidos de clips, alertas meteorológicos.
-- Perguntas em aberto: dias de voo e OFF são pagos? A tarifa mensal divide-se por 30 ou pelos dias do mês? Omnicam4Sky, CLS e Overon são empresas do grupo ou fornecedores? O que é "MEDIA GEST" e os códigos MD e CHECK? Os acertos "+6 −32,5" e "−15" no per diem são individuais?
