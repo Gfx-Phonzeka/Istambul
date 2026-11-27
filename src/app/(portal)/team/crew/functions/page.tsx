@@ -6,6 +6,8 @@ import { crewDict, crewLabels } from "@/lib/crew";
 import { Card, PageHeader } from "@/components/ui";
 import { CrewTabs } from "@/components/crew/CrewTabs";
 import { AddFunctionForm, FunctionToggle } from "@/components/crew/CrewAdminForms";
+import { ConfirmButton } from "@/components/ui/ConfirmButton";
+import { deleteFunction } from "@/lib/actions/crew";
 
 export const metadata = { title: "Crew Ops · Functions" };
 
@@ -25,7 +27,15 @@ export default async function CrewFunctionsPage() {
           <div className="crew-fn-list">
             {functions.filter((f) => f.area === a).map((f) => {
               const n = people.filter((p) => p.function_id === f.id).length;
-              return <div key={f.id} className="crew-fn"><FunctionToggle id={f.id} active={f.active} label={fname(f) ?? f.name_en} />{n > 0 && <span className="badge">{n}</span>}</div>;
+              return (
+                <div key={f.id} className="crew-fn">
+                  <FunctionToggle id={f.id} active={f.active} label={fname(f) ?? f.name_en} />
+                  <span className="row" style={{ gap: 6 }}>
+                    {n > 0 && <span className="badge">{n}</span>}
+                    <ConfirmButton className="btn btn-sm btn-ghost" message={c("confirmDeleteFunction")} confirmLabel={c("delete")} onConfirm={deleteFunction.bind(null, f.id)}>✕</ConfirmButton>
+                  </span>
+                </div>
+              );
             })}
           </div>
         </Card>

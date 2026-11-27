@@ -361,3 +361,127 @@ export async function setHotelRate(_: FormState, form: FormData): Promise<FormSt
   revalidatePath("/team/crew", "layout");
   return { ok: true };
 }
+
+// ---------- Faster data entry ----------
+
+/** Deletes a function; if someone already has it, it is only switched off (so their data is kept). */
+export async function deleteFunction(id: string) {
+  const supabase = await coord();
+  if (!supabase || !UUID_RE.test(id)) return;
+  const { count } = await supabase.from("crew_participation").select("profile_id", { count: "exact", head: true }).eq("function_id", id);
+  if (count) await supabase.from("crew_functions").update({ active: false }).eq("id", id);
+  else await supabase.from("crew_functions").delete().eq("id", id);
+  revalidatePath("/team/crew", "layout");
+}
+
+const shiftDay = (d: string, n: number) => { const x = new Date(`${d}T12:00:00Z`); x.setUTCDate(x.getUTCDate() + n); return x.toISOString().slice(0, 10); };
+
+/** Builds a unit's plan from the competition calendar: match days (MD) of the chosen sport/venue,
+ *  N set-up days and rehearsal days before MD1, dismantling after the last MD, and the gaps as days off. */
+export async function generateFromCalendar(_: FormState, form: FormData): Promise<FormState> {
+  const supabase = await coord();
+  const unit_id = uuidOrNull(form.get("unit_id")); const row_id = uuidOrNull(form.get("calendar_row"));
+  const n = (k: string, max = 15) => { const v = Number.parseInt(String(form.get(k) ?? "0"), 10); return Number.isFinite(v) && v >= 0 ? Math.min(v, max) : 0; };
+  if (!supabase || !unit_id || !row_id) return { error: "error" };
+  const { data: row } = await supabase.from("calendar_rows").select("sport_id,venue_id,days").eq("id", row_id).maybeSingle();
+  const days = Object.entries((row?.days ?? {}) as Record<string, string>).filter(([, code]) => code !== "C").map(([d, code]) => [d, code] as const).sort();
+  if (!row || !days.length) return { error: "error" };
+  const call = clean(form.get("call_time"), 10);
+  const plan = new Map<string, string>();
+  for (const [d, code] of days) plan.set(d, code === "T" ? "check" : "live");
+  const first = days[0][0]; const last = days[days.length - 1][0];
+  const reh = n("rehearsal_days"); const setup = n("setup_days", 30); const dism = n("dismantle_days");
+  for (let i = 1; i <= reh; i++) plan.set(shiftDay(first, -i), "rehearsal");
+  for (let i = 1; i <= setup; i++) plan.set(shiftDay(first, -reh - i), "setup");
+  for (let i = 1; i <= dism; i++) plan.set(shiftDay(last, i), "dismantle");
+  if (form.get("fill_off") === "on") for (const d of range(first, last)) if (!plan.has(d)) plan.set(d, "off");
+  const rows = [...plan].map(([day, day_type]) => ({
+    unit_id, day, day_type, venue_id: row.venue_id, sport_id: row.sport_id, call_time: day_type === "live" ? call : null, notes: null,
+  }));
+  const { error } = await supabase.from("crew_unit_days").upsert(rows, { onConflict: "unit_id,day" });
+  if (error) return { error: "error" };
+  revalidatePath("/team", "layout");
+  return { ok: true };
+}
+
+/** Same change for several people at once (team, function, type, company, Mediagest). */
+export async function bulkPeople(_: FormState, form: FormData): Promise<FormState> {
+  const supabase = await coord();
+  const ids = form.getAll("ids").map(String).filter((x) => UUID_RE.test(x)).slice(0, 500);
+  const op = clean(form.get("op")); const value = clean(form.get("value"), 120);
+  if (!supabase || !ids.length || !op) return { error: "error" };
+  const ensure = async () => {
+    const { data } = await supabase.from("crew_participation").select("profile_id").in("profile_id", ids);
+    const have = new Set((data ?? []).map((r) => r.profile_id));
+    const missing = ids.filter((id) => !have.has(id)).map((profile_id) => ({ profile_id }));
+    if (missing.length) await supabase.from("crew_participation").insert(missing);
+  };
+  let error = null as unknown;
+  if (op === "team_add" && value && UUID_RE.test(value)) ({ error } = await supabase.from("crew_team_members").upsert(ids.map((profile_id) => ({ team_id: value, profile_id })), { onConflict: "team_id,profile_id" }));
+  else if (op === "team_remove" && value && UUID_RE.test(value)) ({ error } = await supabase.from("crew_team_members").delete().eq("team_id", value).in("profile_id", ids));
+  else if (op === "function" && value && UUID_RE.test(value)) { await ensure(); ({ error } = await supabase.from("crew_participation").update({ function_id: value }).in("profile_id", ids)); }
+  else if (op === "type" && value && (COLLAB_TYPES as readonly string[]).includes(value)) { await ensure(); ({ error } = await supabase.from("crew_participation").update({ collaborator_type: value }).in("profile_id", ids)); }
+  else if (op === "company") { await ensure(); ({ error } = await supabase.from("crew_participation").update({ company: value }).in("profile_id", ids)); }
+  else if (op === "mediagest_on" || op === "mediagest_off") { await ensure(); ({ error } = await supabase.from("crew_participation").update({ in_mediagest: op === "mediagest_on" }).in("profile_id", ids)); }
+  else return { error: "error" };
+  if (error) return { error: "error" };
+  revalidatePath("/team/crew", "layout");
+  return { ok: true };
+}
+
+export type CrewImportResult = { ok: true; created: number; updated: number; problems: { line: number; email: string; problem: string }[] } | { ok: false; error: string };
+
+/** Admin: imports the crew from the Excel template (accounts, function, position, teams, type, company). */
+export async function importCrew(form: FormData): Promise<CrewImportResult> {
+  const { requireAdmin } = await import("@/lib/auth");
+  await requireAdmin();
+  const { readCrewFile, norm } = await import("@/lib/crew-import");
+  const file = form.get("file");
+  if (!(file instanceof File) || file.size === 0) return { ok: false, error: "no_file" };
+  if (file.size > 5 * 1024 * 1024) return { ok: false, error: "too_large" };
+  const read = await readCrewFile(file);
+  if ("error" in read) return { ok: false, error: read.error };
+  const supabase = await createClient();
+  const [{ data: fns }, { data: teams }, { data: venues }] = await Promise.all([
+    supabase.from("crew_functions").select("id,name_en,name_es,name_pt"),
+    supabase.from("crew_teams").select("id,name"),
+    supabase.from("venues").select("*"),
+  ]);
+  const F = new Map<string, string>();
+  for (const f of fns ?? []) for (const n of [f.name_en, f.name_es, f.name_pt]) if (n) F.set(norm(n), f.id);
+  const T = new Map((teams ?? []).map((t) => [norm(t.name), t.id]));
+  const V = new Map<string, string>();
+  for (const v of (venues ?? []) as Record<string, string>[]) for (const [k, val] of Object.entries(v)) if (k.startsWith("title_") && val) V.set(norm(val), v.id);
+  const TYPES: Record<string, string> = { freelancer: "freelancer", freelance: "freelancer", employee: "employee", funcionario: "employee", empleado: "employee", groupcompany: "group_company", empresadogrupo: "group_company", funcionariodeempresadogrupo: "group_company" };
+  let created = 0, updated = 0;
+  const problems: { line: number; email: string; problem: string }[] = [];
+  for (const { line, data } of read.rows) {
+    const fnId = data.function ? F.get(norm(data.function)) ?? null : null;
+    if (data.function && !fnId) problems.push({ line, email: data.email, problem: `function not found: ${data.function}` });
+    const venueId = data.venue ? V.get(norm(data.venue)) ?? "" : "";
+    const { data: res, error } = await supabase.rpc("admin_import_team_member", {
+      p: { email: data.email, first_name: data.first_name, last_name: data.last_name, phone: data.phone, lang: data.lang || "en",
+        function: data.function, organization: data.company, venue_id: venueId, sport_id: "" },
+    });
+    const r = res as { ok: boolean; id?: string; status?: string; error?: string } | null;
+    if (error || !r?.ok || !r.id) { problems.push({ line, email: data.email, problem: r?.error ?? "failed" }); continue; }
+    if (r.status === "created") created++; else updated++;
+    const type = TYPES[norm(data.type)] ?? null;
+    await supabase.from("crew_participation").upsert({
+      profile_id: r.id, function_id: fnId, position_label: data.position || null, collaborator_type: type,
+      company: data.company || null, in_mediagest: /^(yes|sim|si|s|y|1|true)$/i.test(data.mediagest),
+    }, { onConflict: "profile_id" });
+    for (const name of data.teams.split(/[,;]/).map((x) => x.trim()).filter(Boolean)) {
+      let tid = T.get(norm(name));
+      if (!tid) {
+        const { data: t } = await supabase.from("crew_teams").insert({ name, kind: /^(pu|lpu|ob)\b|t[eé]cnic/i.test(name) ? "technical" : "operational" }).select("id").single();
+        if (!t) continue;
+        tid = t.id; T.set(norm(name), t.id);
+      }
+      await supabase.from("crew_team_members").upsert({ team_id: tid, profile_id: r.id }, { onConflict: "team_id,profile_id" });
+    }
+  }
+  revalidatePath("/team/crew", "layout");
+  revalidatePath("/admin/team");
+  return { ok: true, created, updated, problems };
+}

@@ -863,3 +863,4 @@ html[data-event="lima"] .public-brand .brand-logo { width: 96px; }
 .crew-two { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-top: 12px; }
 .crew-plain { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
 .crew-plain li { display: flex; justify-content: space-between; gap: 12px; align-items: center; border-bottom: 1px dashed var(--color-border); padding-bottom: 4px; }
+.crew-bulk { background: var(--color-surface-muted); padding: 8px 10px; border-radius: var(--radius-md); margin: 0; }

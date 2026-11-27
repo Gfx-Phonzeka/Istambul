@@ -6,6 +6,12 @@ import { getT } from "@/lib/i18n/server";
 import { crewLabels } from "@/lib/crew";
 import { Badge, Card, EmptyState, PageHeader } from "@/components/ui";
 import { CrewTabs } from "@/components/crew/CrewTabs";
+import { CrewForm } from "@/components/crew/CrewForm";
+import { CrewImport } from "@/components/crew/CrewImport";
+import { SelectAll } from "@/components/crew/SelectAll";
+import { BulkValue } from "@/components/crew/BulkValue";
+import { bulkPeople } from "@/lib/actions/crew";
+import { crewDict, COLLAB_TYPES } from "@/lib/crew";
 
 export const metadata = { title: "Crew Ops" };
 
@@ -26,6 +32,7 @@ export default async function CrewPage({ searchParams }: { searchParams: Promise
     <div className="stack">
       <PageHeader title={c("crewOps")} subtitle={c("crewIntro")} />
       <CrewTabs active="people" c={c} admin={isAdmin(me)} />
+      {isAdmin(me) && <Card title={c("importTitle")}><p className="muted small" style={{ marginTop: 0 }}>{c("importHelp")}</p><CrewImport L={crewDict(locale)} /></Card>}
       <Card title={`${c("people")} (${list.length})`} actions={<div className="crew-actions">{exp("full", c("exportFull"))}{exp("contacts", c("exportContacts"))}{exp("uniforms", c("exportUniforms"))}{exp("accreditation", c("exportAccreditation"))}</div>}>
         <form className="crew-filters" method="get">
           <input name="q" className="input" placeholder={c("search")} defaultValue={sp.q ?? ""} aria-label={c("search")} />
@@ -41,12 +48,21 @@ export default async function CrewPage({ searchParams }: { searchParams: Promise
           <button className="btn btn-sm">{c("filter")}</button>
         </form>
         {list.length === 0 ? <EmptyState icon="users">{c("noPeople")}</EmptyState> : (
+          <CrewForm action={bulkPeople} saved={c("saved")} error={c("error")} className="stack-sm">
+            <div className="crew-filters crew-bulk">
+              <strong className="small">{c("bulkTitle")}:</strong>
+              <BulkValue L={crewDict(locale)} teams={teams.map((t) => ({ value: t.id, label: t.name }))}
+                functions={functions.filter((f) => f.active).map((f) => ({ value: f.id, label: fname(f) ?? f.name_en }))}
+                types={COLLAB_TYPES.map((t) => ({ value: t, label: c(t) }))} />
+              <button className="btn btn-sm">{c("applyToSelected")}</button>
+            </div>
           <div className="table-wrap">
             <table className="table">
-              <thead><tr><th>{c("name")}</th><th>{c("function")}</th><th>{c("teams")}</th><th>{c("type")}</th><th>{c("data")}</th><th /></tr></thead>
+              <thead><tr><th><SelectAll label={c("selectAll")} /></th><th>{c("name")}</th><th>{c("function")}</th><th>{c("teams")}</th><th>{c("type")}</th><th>{c("data")}</th><th /></tr></thead>
               <tbody>
                 {list.map((p) => (
                   <tr key={p.id}>
+                    <td><input type="checkbox" name="ids" value={p.id} aria-label={`${p.first_name} ${p.last_name}`} /></td>
                     <td><strong>{p.first_name} {p.last_name}</strong><div className="muted small">{p.email}{p.phone ? ` · ${p.phone}` : ""}</div></td>
                     <td className="small">{p.functionName ?? "—"}{p.position_label ? <div className="muted">{p.position_label}</div> : null}</td>
                     <td className="small">{p.teamNames.join(", ") || "—"}</td>
@@ -58,6 +74,7 @@ export default async function CrewPage({ searchParams }: { searchParams: Promise
               </tbody>
             </table>
           </div>
+          </CrewForm>
         )}
       </Card>
     </div>
