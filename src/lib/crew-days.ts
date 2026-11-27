@@ -3,15 +3,18 @@
 import { createClient } from "@/lib/supabase/server";
 
 export const DAY_TYPES = ["travel", "setup", "rehearsal", "check", "live", "off", "dismantle", "office"] as const;
-export type DayType = (typeof DAY_TYPES)[number];
+/** Only as a per-person exception: day off between Pan and Parapan staying at destination (only per diem). */
+export type DayType = (typeof DAY_TYPES)[number] | "standby";
 /** Short codes as in the crew control sheets. */
 export const DAY_CODE: Record<DayType, string> = {
-  travel: "FLY", setup: "SET UP", rehearsal: "REH", check: "CHECK", live: "MD", off: "OFF", dismantle: "DISM", office: "IBC",
+  travel: "FLY", setup: "SET UP", rehearsal: "REH", check: "CHECK", live: "MD", off: "OFF", dismantle: "DISM", office: "IBC", standby: "OFF*",
 };
 
 export interface Unit { id: string; code: string; name: string | null; size: string | null; mode: string | null; cameras: number | null; notes: string | null; position: number }
 export interface UnitDay { unit_id: string; day: string; day_type: DayType; venue_id: string | null; sport_id: string | null; call_time: string | null; notes: string | null }
 export interface Assignment { id: string; team_id: string; unit_id: string; start_date: string; end_date: string; notes: string | null }
+export interface Travel { id: string; profile_id: string; direction: string; mode: string; carrier: string | null; number: string | null; from_place: string | null; to_place: string | null;
+  depart_date: string; depart_time: string | null; arrive_date: string | null; arrive_time: string | null; booking_ref: string | null; transfer_needed: boolean; extras: string | null; notes: string | null }
 export interface PersonDayRow { profile_id: string; day: string; day_type: DayType | "none" | null; unit_id: string | null; notes: string | null }
 export interface PersonDay { day: string; type: DayType; unitId: string | null; venueId: string | null; sportId: string | null; call: string | null; manual: boolean; note: string | null }
 
@@ -25,16 +28,18 @@ export const eachDay = (from: string, to: string) => {
 
 export async function loadPlan() {
   const supabase = await createClient();
-  const [{ data: units }, { data: unitDays }, { data: assignments }, { data: members }, { data: personDays }] = await Promise.all([
+  const [{ data: units }, { data: unitDays }, { data: assignments }, { data: members }, { data: personDays }, { data: travels }] = await Promise.all([
     supabase.from("crew_units").select("*").order("position").order("code"),
     supabase.from("crew_unit_days").select("*").order("day"),
     supabase.from("crew_assignments").select("*").order("start_date"),
     supabase.from("crew_team_members").select("team_id,profile_id"),
     supabase.from("crew_person_days").select("profile_id,day,day_type,unit_id,notes"),
+    supabase.from("crew_travels").select("*").order("depart_date"), // own trips, or all for coordination
   ]);
   return {
     units: (units ?? []) as Unit[], unitDays: (unitDays ?? []) as UnitDay[], assignments: (assignments ?? []) as Assignment[],
     members: (members ?? []) as { team_id: string; profile_id: string }[], personDays: (personDays ?? []) as PersonDayRow[],
+    travels: (travels ?? []) as Travel[],
   };
 }
 export type Plan = Awaited<ReturnType<typeof loadPlan>>;
@@ -49,6 +54,14 @@ export function personDays(plan: Plan, profileId: string): Map<string, PersonDay
       const u = UD.get(`${a.unit_id}|${day}`);
       if (!u) continue;
       out.set(day, { day, type: u.day_type, unitId: u.unit_id, venueId: u.venue_id, sportId: u.sport_id, call: u.call_time, manual: false, note: u.notes });
+    }
+  }
+  // Outbound and return trips are travel days (FLY), unless a manual exception says otherwise.
+  for (const t of plan.travels.filter((x) => x.profile_id === profileId && x.direction !== "internal")) {
+    for (const day of [t.depart_date, t.arrive_date].filter((d): d is string => Boolean(d))) {
+      const base = out.get(day);
+      out.set(day, { day, type: "travel", unitId: base?.unitId ?? null, venueId: null, sportId: null, call: null, manual: false,
+        note: [t.carrier, t.number, t.from_place && t.to_place ? `${t.from_place} → ${t.to_place}` : null].filter(Boolean).join(" ") || null });
     }
   }
   for (const o of plan.personDays.filter((x) => x.profile_id === profileId)) {
@@ -66,6 +79,6 @@ export function personDays(plan: Plan, profileId: string): Map<string, PersonDay
 
 /** First and last day of the whole plan (units and exceptions). */
 export function planRange(plan: Plan): [string, string] | null {
-  const all = [...plan.unitDays.map((d) => d.day), ...plan.personDays.map((d) => d.day), ...plan.assignments.flatMap((a) => [a.start_date, a.end_date])].sort();
+  const all = [...plan.unitDays.map((d) => d.day), ...plan.personDays.map((d) => d.day), ...plan.travels.flatMap((t) => [t.depart_date, t.arrive_date].filter(Boolean) as string[]), ...plan.assignments.flatMap((a) => [a.start_date, a.end_date])].sort();
   return all.length ? [all[0], all[all.length - 1]] : null;
 }

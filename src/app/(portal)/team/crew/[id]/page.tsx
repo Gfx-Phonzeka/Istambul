@@ -43,7 +43,7 @@ export default async function CrewPersonPage({ params }: { params: Promise<{ id:
         <h3 style={{ marginBottom: 8 }}>{c("exception")}</h3>
         <CrewForm action={setPersonDays} saved={c("saved")} error={c("error")}>
           <input type="hidden" name="profile_id" value={p.id} />
-          <PeriodFields c={c} extraTypes={["none", "auto"]} />
+          <PeriodFields c={c} extraTypes={["standby", "none", "auto"]} />
           <select name="unit_id" className="input" aria-label={c("unit")} defaultValue=""><option value="">{c("unit")}</option>{plan.units.map((u) => <option key={u.id} value={u.id}>{u.code}</option>)}</select>
           <input name="notes" className="input" placeholder={c("note")} aria-label={c("note")} maxLength={300} />
           <button className="btn btn-sm btn-primary">{c("apply")}</button>

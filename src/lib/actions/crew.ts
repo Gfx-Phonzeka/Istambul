@@ -195,11 +195,77 @@ export async function setPersonDays(_: FormState, form: FormData): Promise<FormS
     const { error } = await supabase.from("crew_person_days").delete().eq("profile_id", profile_id).gte("day", from).lte("day", to);
     if (error) return { error: "error" };
   } else {
-    if (![...DAY_TYPES_OK, "none"].includes(type ?? "")) return { error: "error" };
+    if (![...DAY_TYPES_OK, "standby", "none"].includes(type ?? "")) return { error: "error" };
     const rows = range(from, to).map((day) => ({ profile_id, day, day_type: type, unit_id: uuidOrNull(form.get("unit_id")), notes: clean(form.get("notes"), 300) }));
     const { error } = await supabase.from("crew_person_days").upsert(rows, { onConflict: "profile_id,day" });
     if (error) return { error: "error" };
   }
   revalidatePath("/team", "layout");
   return { ok: true };
+}
+
+// ---------- Phase C: travel, hotels, stays ----------
+const tm = (v: FormDataEntryValue | null) => { const s = String(v ?? "").trim(); return /^\d{2}:\d{2}$/.test(s) ? s : null; };
+const dt = (v: FormDataEntryValue | null) => { const s = String(v ?? "").trim(); return isDate(s) ? s : null; };
+
+export async function addTravel(_: FormState, form: FormData): Promise<FormState> {
+  const supabase = await coord();
+  const profile_id = uuidOrNull(form.get("profile_id")); const depart_date = dt(form.get("depart_date"));
+  const direction = clean(form.get("direction")) ?? "outbound"; const mode = clean(form.get("mode")) ?? "flight";
+  if (!supabase || !profile_id || !depart_date || !["outbound", "return", "internal"].includes(direction) || !["flight", "train", "car", "bus", "other"].includes(mode)) return { error: "error" };
+  const { error } = await supabase.from("crew_travels").insert({
+    profile_id, direction, mode, carrier: clean(form.get("carrier"), 80), number: clean(form.get("number"), 40),
+    from_place: clean(form.get("from_place"), 80), to_place: clean(form.get("to_place"), 80),
+    depart_date, depart_time: tm(form.get("depart_time")), arrive_date: dt(form.get("arrive_date")) ?? depart_date, arrive_time: tm(form.get("arrive_time")),
+    booking_ref: clean(form.get("booking_ref"), 40), transfer_needed: form.get("transfer_needed") === "on",
+    extras: clean(form.get("extras"), 300), notes: clean(form.get("notes"), 500),
+  });
+  if (error) return { error: "error" };
+  revalidatePath("/team", "layout");
+  return { ok: true };
+}
+
+export async function deleteTravel(id: string) {
+  const supabase = await coord();
+  if (!supabase || !UUID_RE.test(id)) return;
+  await supabase.from("crew_travels").delete().eq("id", id);
+  revalidatePath("/team", "layout");
+}
+
+export async function addHotel(_: FormState, form: FormData): Promise<FormState> {
+  const supabase = await coord();
+  const name = clean(form.get("name"), 120);
+  if (!supabase || !name) return { error: "error" };
+  const { error } = await supabase.from("crew_hotels").insert({
+    name, address: clean(form.get("address"), 200), city: clean(form.get("city"), 80), phone: clean(form.get("phone"), 40), notes: clean(form.get("notes"), 500),
+  });
+  if (error) return { error: "error" };
+  revalidatePath("/team", "layout");
+  return { ok: true };
+}
+
+export async function deleteHotel(id: string) {
+  const supabase = await coord();
+  if (!supabase || !UUID_RE.test(id)) return;
+  await supabase.from("crew_hotels").delete().eq("id", id);
+  revalidatePath("/team", "layout");
+}
+
+export async function addStay(_: FormState, form: FormData): Promise<FormState> {
+  const supabase = await coord();
+  const profile_id = uuidOrNull(form.get("profile_id")); const hotel_id = uuidOrNull(form.get("hotel_id"));
+  const check_in = dt(form.get("check_in")); const check_out = dt(form.get("check_out"));
+  const room_type = clean(form.get("room_type")) ?? "single";
+  if (!supabase || !profile_id || !hotel_id || !check_in || !check_out || check_out <= check_in || !["single", "double", "twin", "triple", "other"].includes(room_type)) return { error: "error" };
+  const { error } = await supabase.from("crew_stays").insert({ profile_id, hotel_id, check_in, check_out, room_type, room_code: clean(form.get("room_code"), 20), notes: clean(form.get("notes"), 300) });
+  if (error) return { error: "error" };
+  revalidatePath("/team", "layout");
+  return { ok: true };
+}
+
+export async function deleteStay(id: string) {
+  const supabase = await coord();
+  if (!supabase || !UUID_RE.test(id)) return;
+  await supabase.from("crew_stays").delete().eq("id", id);
+  revalidatePath("/team", "layout");
 }

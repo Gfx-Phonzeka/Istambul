@@ -854,3 +854,5 @@ html[data-event="lima"] .public-brand .brand-logo { width: 96px; }
   .no-print, .sidebar, .topbar, nav, header.app-header { display: none !important; }
   body { background: #fff; }
 }
+.dt-standby { background: #f0e6d8; color: #6b4f2a; }
+.crew-days td.dt-standby { font-weight: 600; }

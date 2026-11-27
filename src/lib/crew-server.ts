@@ -23,3 +23,16 @@ export async function crewPhotoUrl(path: string | null | undefined): Promise<str
   const { data } = await supabase.storage.from("crew-photos").createSignedUrl(path, 300);
   return data?.signedUrl ?? null;
 }
+
+/** True for admins and people with Crew Ops "finance" access (rates and costs). */
+export const isCrewFinance = cache(async (): Promise<boolean> => {
+  const supabase = await createClient();
+  const { data } = await supabase.rpc("is_crew_finance");
+  return data === true;
+});
+
+export async function requireCrewFinance(): Promise<Profile> {
+  const profile = await requireApproved();
+  if (!(await isCrewFinance())) redirect("/team/crew");
+  return profile;
+}
