@@ -1,10 +1,11 @@
 import { Tabs } from "@/components/ui";
 import { isCrewFinance } from "@/lib/crew-server";
 
-type Key = "people" | "teams" | "units" | "days" | "service" | "travel" | "hotels" | "transfers" | "costs" | "functions" | "access";
+type Key = "dashboard" | "people" | "teams" | "units" | "days" | "service" | "travel" | "hotels" | "transfers" | "costs" | "functions" | "access";
 export async function CrewTabs({ active, c, admin }: { active: Key; c: (k: string) => string; admin: boolean }) {
   const finance = await isCrewFinance();
   const items = [
+    { key: "dashboard", href: "/team/crew/overview", label: c("tabDashboard") },
     { key: "people", href: "/team/crew", label: c("tabPeople") },
     { key: "teams", href: "/team/crew/teams", label: c("tabTeams") },
     { key: "units", href: "/team/crew/units", label: c("tabUnits") },
