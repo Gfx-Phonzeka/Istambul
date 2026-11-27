@@ -48,6 +48,7 @@ export async function saveParticipation(_: FormState, form: FormData): Promise<F
   const { error } = await supabase.from("crew_participation").upsert({
     profile_id, function_id: clean(form.get("function_id")), position_label: clean(form.get("position_label")),
     collaborator_type: type, company: type === "group_company" ? clean(form.get("company")) : null, notes: clean(form.get("notes"), 2000),
+    in_mediagest: form.get("in_mediagest") === "on",
   }, { onConflict: "profile_id" });
   if (error) return { error: "error" };
   const teams = form.getAll("teams").map(String);
@@ -105,4 +106,100 @@ export async function setCrewAccess(profileId: string, level: "coordination" | "
   if (level === "none") await supabase.from("crew_staff").delete().eq("profile_id", profileId);
   else await supabase.from("crew_staff").upsert({ profile_id: profileId, level }, { onConflict: "profile_id" });
   revalidatePath("/team/crew", "layout");
+}
+
+// ---------- Phase B: units, daily plan, assignments, per-person exceptions ----------
+const DAY_TYPES_OK = ["travel", "setup", "rehearsal", "check", "live", "off", "dismantle", "office"];
+const isDate = (s: string | null): s is string => !!s && /^\d{4}-\d{2}-\d{2}$/.test(s);
+const UUID_RE = /^[0-9a-f-]{36}$/;
+const uuidOrNull = (v: FormDataEntryValue | null) => { const s = String(v ?? ""); return UUID_RE.test(s) ? s : null; };
+function range(from: string, to: string) {
+  const out: string[] = []; const d = new Date(`${from}T12:00:00Z`); const end = new Date(`${to}T12:00:00Z`);
+  for (let i = 0; d <= end && i < 120; i++) { out.push(d.toISOString().slice(0, 10)); d.setUTCDate(d.getUTCDate() + 1); }
+  return out;
+}
+
+export async function addUnit(_: FormState, form: FormData): Promise<FormState> {
+  const supabase = await coord();
+  const code = clean(form.get("code"), 40);
+  if (!supabase || !code) return { error: "error" };
+  const size = clean(form.get("size")); const mode = clean(form.get("mode"));
+  const cams = Number.parseInt(String(form.get("cameras") ?? ""), 10);
+  const { error } = await supabase.from("crew_units").insert({
+    code, name: clean(form.get("name"), 120), size: ["XL", "L", "M", "S"].includes(size ?? "") ? size : null,
+    mode: ["OB", "REMI", "REMOTE", "FLYPACK"].includes(mode ?? "") ? mode : null, cameras: Number.isFinite(cams) ? cams : null,
+    notes: clean(form.get("notes"), 1000),
+  });
+  if (error) return { error: "error" };
+  revalidatePath("/team/crew", "layout");
+  return { ok: true };
+}
+
+export async function deleteUnit(id: string) {
+  const supabase = await coord();
+  if (!supabase || !UUID_RE.test(id)) return;
+  await supabase.from("crew_units").delete().eq("id", id);
+  revalidatePath("/team/crew", "layout");
+}
+
+/** Sets (or clears) the unit's plan for every day of a period. */
+export async function applyUnitDays(_: FormState, form: FormData): Promise<FormState> {
+  const supabase = await coord();
+  const unit_id = uuidOrNull(form.get("unit_id"));
+  const from = clean(form.get("from")); const to = clean(form.get("to")) ?? from;
+  const type = clean(form.get("day_type"));
+  if (!supabase || !unit_id || !isDate(from) || !isDate(to) || to < from) return { error: "error" };
+  const days = range(from, to);
+  if (type === "clear") {
+    const { error } = await supabase.from("crew_unit_days").delete().eq("unit_id", unit_id).gte("day", from).lte("day", to);
+    if (error) return { error: "error" };
+  } else {
+    if (!DAY_TYPES_OK.includes(type ?? "")) return { error: "error" };
+    const rows = days.map((day) => ({
+      unit_id, day, day_type: type, venue_id: uuidOrNull(form.get("venue_id")), sport_id: uuidOrNull(form.get("sport_id")),
+      call_time: clean(form.get("call_time"), 10), notes: clean(form.get("notes"), 300),
+    }));
+    const { error } = await supabase.from("crew_unit_days").upsert(rows, { onConflict: "unit_id,day" });
+    if (error) return { error: "error" };
+  }
+  revalidatePath("/team", "layout");
+  return { ok: true };
+}
+
+export async function addAssignment(_: FormState, form: FormData): Promise<FormState> {
+  const supabase = await coord();
+  const team_id = uuidOrNull(form.get("team_id")); const unit_id = uuidOrNull(form.get("unit_id"));
+  const start_date = clean(form.get("from")); const end_date = clean(form.get("to"));
+  if (!supabase || !team_id || !unit_id || !isDate(start_date) || !isDate(end_date) || end_date < start_date) return { error: "error" };
+  const { error } = await supabase.from("crew_assignments").insert({ team_id, unit_id, start_date, end_date, notes: clean(form.get("notes"), 300) });
+  if (error) return { error: "error" };
+  revalidatePath("/team", "layout");
+  return { ok: true };
+}
+
+export async function deleteAssignment(id: string) {
+  const supabase = await coord();
+  if (!supabase || !UUID_RE.test(id)) return;
+  await supabase.from("crew_assignments").delete().eq("id", id);
+  revalidatePath("/team", "layout");
+}
+
+/** Exceptions for one person over a period: a day type, "none" (no work) or "auto" (remove the exception). */
+export async function setPersonDays(_: FormState, form: FormData): Promise<FormState> {
+  const supabase = await coord();
+  const profile_id = uuidOrNull(form.get("profile_id"));
+  const from = clean(form.get("from")); const to = clean(form.get("to")) ?? from;
+  const type = clean(form.get("day_type"));
+  if (!supabase || !profile_id || !isDate(from) || !isDate(to) || to < from) return { error: "error" };
+  if (type === "auto") {
+    const { error } = await supabase.from("crew_person_days").delete().eq("profile_id", profile_id).gte("day", from).lte("day", to);
+    if (error) return { error: "error" };
+  } else {
+    if (![...DAY_TYPES_OK, "none"].includes(type ?? "")) return { error: "error" };
+    const rows = range(from, to).map((day) => ({ profile_id, day, day_type: type, unit_id: uuidOrNull(form.get("unit_id")), notes: clean(form.get("notes"), 300) }));
+    const { error } = await supabase.from("crew_person_days").upsert(rows, { onConflict: "profile_id,day" });
+    if (error) return { error: "error" };
+  }
+  revalidatePath("/team", "layout");
+  return { ok: true };
 }

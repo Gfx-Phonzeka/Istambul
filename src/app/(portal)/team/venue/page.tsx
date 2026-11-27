@@ -9,6 +9,8 @@ import { signPaths } from "@/lib/media";
 import { reportsAccess } from "@/lib/reports";
 import { isCrewCoord } from "@/lib/crew-server";
 import { Card, EmptyState, PageHeader } from "@/components/ui";
+import { DAY_CODE, loadPlan, personDays } from "@/lib/crew-days";
+import { crewLabels } from "@/lib/crew";
 
 export const metadata = { title: "My venue" };
 
@@ -65,6 +67,12 @@ export default async function MyVenuePage({ searchParams }: { searchParams: Prom
   const people = (team ?? []) as Member[];
   const fnName = (m: Member) => (locale === "pt" && m.function_pt) || (locale === "es" && m.function_es) || m.function_en || m.team_function || "—";
   const canReport = reportsAccess(me).write;
+  // Daily plan of the team at this venue (Crew Ops phase B): dates when a unit works here, and each person's day.
+  const plan = await loadPlan();
+  const c = crewLabels(locale);
+  const venueDates = [...new Set(plan.unitDays.filter((d) => d.venue_id === v.id).map((d) => d.day))].sort();
+  const U = new Map(plan.units.map((u) => [u.id, u.code]));
+  const grid = people.map((m) => ({ m, days: personDays(plan, m.id) }));
 
   return (
     <div className="stack">
@@ -146,7 +154,25 @@ export default async function MyVenuePage({ searchParams }: { searchParams: Prom
             </table>
           </div>
         )}
-        <p className="muted small" style={{ marginBottom: 0 }}><strong>{t("myVenue.daily")}:</strong> {t("myVenue.dailySoon")}</p>
+        <h3 style={{ marginBottom: 8 }}>{t("myVenue.daily")}</h3>
+        {venueDates.length === 0 || grid.length === 0 ? <p className="muted small" style={{ margin: 0 }}>{c("noPlan")}</p> : (
+          <div className="crew-grid-wrap">
+            <table className="crew-days">
+              <thead><tr><th className="crew-days-name">{t("myVenue.name")}</th>{venueDates.map((d) => <th key={d}>{d.slice(8)}/{d.slice(5, 7)}</th>)}</tr></thead>
+              <tbody>
+                {grid.map(({ m, days }) => (
+                  <tr key={m.id}>
+                    <th className="crew-days-name">{m.first_name} {m.last_name}<div className="muted small">{fnName(m)}</div></th>
+                    {venueDates.map((d) => {
+                      const x = days.get(d);
+                      return <td key={d} className={x ? `dt-${x.type}` : ""} title={x ? c(`dayTypes_${x.type}`) : ""}>{x ? <>{DAY_CODE[x.type]}{x.unitId ? <div className="crew-days-unit">{U.get(x.unitId)}</div> : null}{x.call ? <div className="crew-days-unit">{x.call}</div> : null}</> : ""}</td>;
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </Card>
 
       <Card title={t("myVenue.documents")}>

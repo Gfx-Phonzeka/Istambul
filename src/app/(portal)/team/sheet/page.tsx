@@ -5,6 +5,10 @@ import { crewDict, crewLabels, type CrewRecord } from "@/lib/crew";
 import { crewPhotoUrl } from "@/lib/crew-server";
 import { Card, PageHeader } from "@/components/ui";
 import { CrewSheetForm } from "@/components/crew/CrewSheetForm";
+import { loadPlan, personDays } from "@/lib/crew-days";
+import { venueSportNames } from "@/lib/crew-refs";
+import { DaysList } from "@/components/crew/DaysList";
+import { formatDate } from "@/lib/format";
 
 export const metadata = { title: "Crew sheet" };
 
@@ -18,6 +22,9 @@ export default async function MySheetPage() {
     supabase.from("crew_participation").select("position_label,collaborator_type,company,crew_functions(name_en,name_es,name_pt)").eq("profile_id", me.id).maybeSingle(),
     supabase.from("crew_team_members").select("crew_teams(name)").eq("profile_id", me.id),
   ]);
+  const [plan, { V, S }] = await Promise.all([loadPlan(), venueSportNames(locale)]);
+  const myDays = [...personDays(plan, me.id).values()];
+  const U = new Map(plan.units.map((u) => [u.id, u.code]));
   const fn = part?.crew_functions as unknown as Record<string, string> | null;
   const fnName = fn ? (fn[`name_${locale}`] || fn.name_en) : null;
   const teamNames = (teams ?? []).map((t) => (t.crew_teams as unknown as { name: string } | null)?.name).filter(Boolean);
@@ -32,6 +39,10 @@ export default async function MySheetPage() {
             {part?.collaborator_type && <><dt>{c("type")}</dt><dd>{c(part.collaborator_type)}{part.company ? ` · ${part.company}` : ""}</dd></>}
           </dl>
         ) : <p className="muted" style={{ margin: 0 }}>{c("notAssigned")}</p>}
+      </Card>
+      <Card title={`${c("myDays")}${myDays.length ? ` (${myDays.length})` : ""}`}>
+        {myDays.length === 0 ? <p className="muted" style={{ margin: 0 }}>{c("myDaysEmpty")}</p>
+          : <DaysList days={myDays} c={c} U={U} V={V} S={S} fmt={(d) => formatDate(`${d}T12:00:00Z`, locale, "UTC")} />}
       </Card>
       <Card title={c("personalData")}>
         <CrewSheetForm profileId={me.id} record={record as CrewRecord | null} photoUrl={await crewPhotoUrl(record?.photo_path)} L={crewDict(locale)} locale={locale} />

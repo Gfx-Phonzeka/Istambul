@@ -8,7 +8,7 @@ type Team = { id: string; name: string; kind: string };
 
 export function ParticipationForm({ profileId, value, functions, teams, L }: {
   profileId: string; functions: Fn[]; teams: Team[]; L: Record<string, string>;
-  value: { function_id: string | null; position_label: string | null; collaborator_type: string | null; company: string | null; notes: string | null; teamIds: string[] };
+  value: { function_id: string | null; position_label: string | null; collaborator_type: string | null; company: string | null; notes: string | null; teamIds: string[]; in_mediagest?: boolean };
 }) {
   const [state, action, pending] = useActionState(saveParticipation, undefined);
   // Submit without the automatic form reset, so the saved values stay on screen.
@@ -56,6 +56,7 @@ export function ParticipationForm({ profileId, value, functions, teams, L }: {
           </div>
         )}
       </fieldset>
+      <label className="crew-check" title={L.mediagestHelp}><input type="checkbox" name="in_mediagest" defaultChecked={value.in_mediagest} /> {L.mediagest} <span className="muted small">· {L.mediagestHelp}</span></label>
       <div className="field">
         <label htmlFor="notes">{L.notes}</label>
         <textarea id="notes" name="notes" className="input" rows={3} defaultValue={value.notes ?? ""} />
