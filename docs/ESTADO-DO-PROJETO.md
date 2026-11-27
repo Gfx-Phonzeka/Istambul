@@ -75,7 +75,7 @@ Documentos de apoio: `docs/ROADMAP.md` (desenvolvimentos futuros), `docs/skill-h
 - Planos de câmaras em falta: para tiro desportivo e para ciclismo de estrada (Parapan). (Ginástica artística importada a 27 nov.)
 - Calendário Parapan: falta o calendário oficial em imagem para refazer como o Pan (hoje a coluna "Ubicación" mostra o cluster).
 - Fotos: falta a dos Muros de Escalada (Villa El Salvador); confirmar as fontes das fotos enviadas pelo responsável; a foto dos Campos de Críquet parece gerada por computador (confirmar ou trocar).
-- Dados por confirmar: textos legais, emails de contacto, datas de testes, IDs de satélite e de stream, rate card.
+- Textos legais de Lima feitos a partir do aviso legal da Mediapro (27 nov); falta o Jurídico validar a entidade titular, a lei peruana e os prazos [POR CONFIRMAR]. Dados por confirmar: emails de contacto, datas de testes, IDs de satélite e de stream, rate card.
 
 **Decisões do responsável**
 - Passar o Supabase ao plano Pro (necessário para ficheiros > 50 MB e para dados da equipa).
