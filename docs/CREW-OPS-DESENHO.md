@@ -116,7 +116,7 @@ O plano gratuito do Supabase chega para a fase de teste com cerca de 500 pessoas
 - Chefe técnico que acumula com uplinker tem um acréscimo fixo no cachet base.
 - Assistente de câmara pela tabela sénior (júnior só em casos excecionais indicados pela coordenação).
 - Refeições por local (Portugal, Espanha, resto do mundo): pequeno-almoço (saída até às 7h), almoço, jantar, extra.
-- [A CONFIRMAR] Nos Jogos (forfait), os dias off pagam-se por inteiro, como disse o responsável, ou a metade do cachet, como diz a tabela para produções internacionais?
+- **Decidido:** em forfait (como nos Jogos), os dias off contam como dias normais. A regra de dias off a metade do cachet mais refeições aplica-se só a produções internacionais de curta duração, pagas ao dia.
 
 **Ainda em aberto:** regras de per diem dos funcionários; validação da lista de funções (abaixo).
 

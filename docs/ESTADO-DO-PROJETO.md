@@ -81,7 +81,7 @@ Documentos de apoio: `docs/ROADMAP.md` (desenvolvimentos futuros), `docs/skill-h
 
 **Crew Ops (operações da equipa), Istambul e Lima** — desenho completo em `docs/CREW-OPS-DESENHO.md`. Fase A publicada; próximas fases B–D só com pedido.
 - Por fazer na Fase A, se o responsável quiser: as pessoas que só têm acesso de finanças passarem a ver apenas o Crew Ops (hoje veem também as partes públicas do portal).
-- Validar a lista de funções; enviar as regras de per diem dos funcionários; confirmar como se pagam os dias off nos Jogos (forfait inteiro ou metade do cachet).
+- Validar a lista de funções; enviar as regras de per diem dos funcionários.
 - Base: o plano operacional (PU/LPU, modo OB/REMI/REMOTE, plano diário) gera os dias de cada pessoa, a partir dos ficheiros "Crew Control" e "Tentative Operational Plan" de Istambul.
 - Três tipos de colaborador: freelancer (cachet por dias), funcionário (só per diem), funcionário de empresa do grupo (paga-se à empresa).
 - Viagens, alojamento (rooming list), transfers, folhas de serviço, checklists de venue, registo de incidentes, resumo de custos automático, import/export Excel. Auto-preenchimento pelas pessoas. Sem cópias de passaportes.
